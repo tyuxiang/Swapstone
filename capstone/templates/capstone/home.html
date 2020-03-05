@@ -12,7 +12,7 @@
   <link href="{% static 'css/home.css' %}" rel="stylesheet">
   <title>Main Page</title>
       <body>
-    <nav class="navbar fixed-top flex-md-nowrap p-0">
+    <nav class="navbar fixed-top flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{% url 'home' %}">Swapstone</a>
   <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
   <ul class="navbar-nav px-3">
@@ -55,9 +55,10 @@
             </a>
           </li>
         </ul>
+        <button class="save-btn btn-lg btn-success btn-block">Save</button>
       </div>
     </nav>
-    <main role="main" class="col-md-10 ml-sm-auto col-lg-10 px-0">
+    <main role="main" class="col-md-8 ml-sm-auto col-lg-10 px-0">
       <div class = "map" id = "main">
         <div id = "tools">
           <input type="checkbox" id="editorMode"><span class="checkboxtext font-size:1pt">Editor Mode</span></input>
@@ -70,6 +71,16 @@
         </div>
       </div>
     </main>
+    <nav class="col-md-2 d-none d-md-block bg-light rightbar">
+      <div class="rightbar-sticky">
+        <ul class="list-of-booths flex-column">
+          <li class="booth-item">
+            <a class="booth-link">Booth #1</a>
+          </li>
+        </ul>
+        <button class="allocate-btn btn-lg btn-dark btn-block">Allocate</button>
+      </div>
+    </nav>
   </div>
 </div>
   <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>

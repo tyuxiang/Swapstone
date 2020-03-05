@@ -1,0 +1,260 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  </head>
+
+  <style>
+    #allocation{
+      width: 100%;
+      padding-right: 15px;
+      padding-left: 15px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    #allocation image{
+      padding-right: 15px;
+      padding-left: 15px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    #y-axis{
+      width: 100%;
+      /* padding-right: 15px;
+      padding-left: 15px; */
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    #allocation .tick{
+      opacity: 0.2;
+    }
+
+    input[type=checkbox]{
+      /* Double-sized Checkboxes */
+      -ms-transform: scale(2); /* IE */
+      -moz-transform: scale(2); /* FF */
+      -webkit-transform: scale(2); /* Safari and Chrome */
+      -o-transform: scale(2); /* Opera */
+      transform: scale(2);
+      padding: 10px;
+      margin: 10px;
+    }
+
+    .checkboxtext{
+      font-size: 25px;
+    }
+
+    #x-axis{
+      width: 100%;
+      /* padding-right: 15px;
+      padding-left: 15px; */
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    .booth{
+      fill: white;
+      stroke-width: 2px;
+      stroke: black;
+    }
+
+    #tools{
+      margin: 10px;
+    }
+
+    #selection-container{
+      margin: 15px;
+      padding : 10px;
+      stroke-width: 1px;
+      stroke: black;
+      border-style: solid;
+      border-color: black;
+    }
+
+  </style>
+
+  <title>Hello, world!</title>
+    </head>
+    <body>
+      <div class = "container" id = "main">
+        <h1>swapstone</h1>
+        <div id = "tools">
+          <input type="checkbox" id="editorMode"><span class="checkboxtext">Editor Mode</span></input>
+          <input type="checkbox"> </input>
+        </div>
+        <div id = "allocation-container">
+        </div>
+        <div id = "selection-container">
+          <h2>Selected Booth:</h2>
+          <p id = "selected-booth-name"></p>
+        </div>
+          <!-- <img src = "{% static 'images/scratch.png' %}"></div> -->
+      </div>
+
+      <!-- Optional JavaScript -->
+      <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </body>
+</html>
+<script src="http://d3js.org/d3.v5.js"></script>
+<script>
+  var width = 800, height = 800;
+  
+  var ratiox = width / 1000;
+  var ratioy = height / 1000;
+  
+  var data = [{ "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :0},
+  { "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 0},
+  { "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 0},
+  { "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 0},
+  { "x" : 400, "y" : 450, "width" : 40, "height" : 40, "group" : "C4", "rotate" : 0},
+  { "x" : 400, "y" : 490, "width" : 40, "height" : 40, "group" : "C28", "rotate" : 0}];
+
+  var xscale = d3.scaleLinear()
+          .range([0, width - 5])
+          ;
+  
+  var yscale = d3.scaleLinear()
+          .range([height - 5, 0])
+          ;
+  
+  var x_axis = d3.axisBottom(xscale)
+          .tickSize(height - 5)
+          .ticks(40)
+          ;
+  
+  var y_axis = d3.axisLeft(yscale)
+          .tickSize(-width + 5)
+          .ticks(40)
+          ;
+
+  // var zoom = d3.zoom()
+  //   .scaleExtent([1, 40])
+  //   .translateExtent([[-100, -100], [width + 90, height + 100]])
+  //   .on("zoom", zoomed);
+
+  // function zoomed() {
+  //   svg.attr("transform", d3.event.transform);
+  //   svg.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
+  //   svg.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
+  // }
+
+  var svg = d3.select("#main")
+              .select("#allocation-container")
+              .append("svg")
+              .attr("id", "allocation")
+              .attr("width", width)
+              .attr("height", height)
+              ;
+
+  var image = svg.append('image')
+                .attr('width', width - 5)
+                .attr('height', height - 5)
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr("href", "{% static 'images/scratch.jpg' %}")
+                ;
+  
+    svg.append("g")
+        .attr("id", "x-axis")
+        .call(x_axis)
+        ;
+
+    svg.append("g")
+        .attr("id", "y-axis")
+        .call(y_axis)
+        ;
+
+  // function dragstarted(d) {
+  //   d3.select(this).attr("stroke", "black");
+  // }
+
+  // function dragged(d) {
+  //   d3.select(this).raise().attr("x", d.x = d3.event.x).attr("y", d.y = d3.event.y);
+  // }
+
+  // function dragended(d) {
+  //   d3.select(this).attr("stroke", null);
+  // }
+
+  // var drag = d3.drag()
+  //     .on("start", dragstarted)
+  //     .on("drag", dragged)
+  //     .on("end", dragended);;
+
+  var booth = svg.selectAll(".dot")
+                .data(data)
+                .enter()
+                .append("g")
+                
+            booth.append("rect")
+                .attr("class", "booth")
+                .attr("id", function(d){
+                  return 'group' + d.group;
+                })
+                .attr("x", function(d){
+                  return d.x * ratiox;
+                })
+                .attr("y", function(d){
+                  return d.y * ratioy;
+                })
+                .attr("height", function(d){
+                  return d.height * ratioy;
+                })
+                .attr("width", function(d){
+                  return d.width * ratiox;
+                })
+                // .attr("transform", "translate(0," + height + ")")
+                .attr("transform", function(d){
+                  return "rotate(" + d.rotate + ")";
+                })
+                // .call(drag)
+                .on("click", function(d){
+                  console.log(d.group);
+                  $("#selected-booth-name").text(d.group);
+                })
+                ;
+                
+
+
+    var text = svg.selectAll(".dot")
+                  .data(data)
+                  .enter()
+                  .append("text")
+                  .attr("class", "name")
+                  .attr('text-anchor', 'middle')
+                  .style("font-size", "14px")
+                  .attr("x", function(d){
+                    return (d.x + d.width / 2) * ratiox;
+                  })
+                  .attr("y", function(d){
+                    return (d.y + d.height / 2) * ratioy;
+                  })
+                  .attr("transform", function(d){
+                    return "rotate(" + d.rotate + ")";
+                  })
+                  .text(function(d){
+                    return d.group;
+                  })
+                  ;
+      
+    var text2 = d3.select("body")
+                    .append("text")
+                    .attr("x", 400)
+                    .attr("y", 400)
+                    .text("Hello There")
+                    ;
+
+    svg.call(d3.zoom().on("zoom", zoomed));
+        
+</script>

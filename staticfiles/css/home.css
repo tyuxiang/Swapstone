@@ -81,20 +81,28 @@ body {
 /*
  * Navbar
  */
+ .navbar {
+  background-color: #ff8300;
+}
 
 .navbar-brand {
   padding-top: .75rem;
   padding-bottom: .75rem;
   font-size: 1rem;
-  background-color: rgba(0, 0, 0, .25);
-  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+  color: #fff6ec;
+  background-color: rgba(0, 0, 0, .15);
+  /*box-shadow: inset -1px 0 0 rgba(0, 0, 0, .2);*/
 }
 
-.navbar .form-control {
+.nav-link{
+  color: #000000;
+}
+
+/*.navbar .form-control {
   padding: .75rem 1rem;
   border-width: 0;
   border-radius: 0;
-}
+}*/
 
 .form-control-dark {
   color: #fff;
@@ -115,4 +123,58 @@ input[type=checkbox]{
 
 .checkboxtext{
   font-size: 20px;
+}
+
+#allocation{
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#allocation image{
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#y-axis{
+  width: 100%;
+  /* padding-right: 15px;
+  padding-left: 15px; */
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#allocation .tick{
+  opacity: 0.2;
+}
+
+#x-axis{
+  width: 100%;
+  /* padding-right: 15px;
+  padding-left: 15px; */
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.booth{
+  fill: white;
+  stroke-width: 2px;
+  stroke: black;
+}
+
+#tools{
+  margin: 10px;
+}
+
+#selection-container{
+  margin: 15px;
+  padding : 10px;
+  stroke-width: 1px;
+  stroke: black;
+  border-style: solid;
+  border-color: black;
 }

@@ -9,72 +9,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   </head>
 
-  <style>
-    #allocation{
-      width: 100%;
-      padding-right: 15px;
-      padding-left: 15px;
-      margin-right: auto;
-      margin-left: auto;
-    }
-
-    #allocation image{
-      padding-right: 15px;
-      padding-left: 15px;
-      margin-right: auto;
-      margin-left: auto;
-    }
-
-    #y-axis{
-      width: 100%;
-      /* padding-right: 15px;
-      padding-left: 15px; */
-      margin-right: auto;
-      margin-left: auto;
-    }
-
-    #allocation .tick{
-      opacity: 0.2;
-    }
-
-    #x-axis{
-      width: 100%;
-      /* padding-right: 15px;
-      padding-left: 15px; */
-      margin-right: auto;
-      margin-left: auto;
-    }
-
-    .booth{
-      fill: white;
-      stroke-width: 2px;
-      stroke: black;
-    }
-
-    #tools{
-      margin: 10px;
-    }
-
-    #selection-container{
-      margin: 15px;
-      padding : 10px;
-      stroke-width: 1px;
-      stroke: black;
-      border-style: solid;
-      border-color: black;
-    }
-
-  </style>
   <link href="{% static 'css/home.css' %}" rel="stylesheet">
   <title>Main Page</title>
-    </head>
       <body>
-    <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Swapstone</a>
-  <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+    <nav class="navbar fixed-top flex-md-nowrap p-0">
+  <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{% url 'home' %}">Swapstone</a>
+  <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
   <ul class="navbar-nav px-3">
     <li class="nav-item text-nowrap">
-      <a class="nav-link" href="#">Sign out</a>
+      <a class="nav-link" href="{% url 'logout' %}">Log out</a>
     </li>
   </ul>
 </nav>
@@ -87,11 +30,11 @@
           <li class="nav-item">
             <a class="nav-link active" href="#">
               <span data-feather="home"></span>
-              Main <span class="sr-only">(current)</span>
+              Home <span class="sr-only">(current)</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url 'csv' %}">
               <span data-feather="file"></span>
               Load CSV File
             </a>

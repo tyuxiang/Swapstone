@@ -20,5 +20,7 @@ from capstone import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', views.login, name='login'),
-    path('', include('capstone.urls'))
+    path('logout/', views.logout, name='logout'),
+    path('load_csv/', views.csv, name='csv'),
+    path('', views.home, name='home')
 ]

@@ -91,91 +91,160 @@
 </html>
 <script src="http://d3js.org/d3.v5.js"></script>
 <script>
-  var width = 800, height = 800;
+ // initialize constant
+ const MAX_WIDTH = 830;
+  const MAX_HEIGHT = 637;
   
-  var ratiox = width / 1000;
-  var ratioy = height / 1000;
+  const ratiox = MAX_WIDTH / 1000;
+  const ratioy = MAX_HEIGHT / 1000;
+
+  //for zoom functionality
+  const MAX_TRANSLATE_X = MAX_WIDTH / 2;
+  const MIN_TRANSLATE_X = -MAX_TRANSLATE_X;
+  const MAX_TRANSLATE_Y = MAX_HEIGHT / 2;
+  const MIN_TRANSLATE_Y = -MAX_TRANSLATE_Y;
   
-  var data = [{ "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :0},
+  // dummy data
+  // maybe data = function() -> import data -> json preferred
+  const data = [{ "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :0},
   { "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 0},
   { "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 0},
   { "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 0},
   { "x" : 400, "y" : 450, "width" : 40, "height" : 40, "group" : "C4", "rotate" : 0},
   { "x" : 400, "y" : 490, "width" : 40, "height" : 40, "group" : "C28", "rotate" : 0}];
 
+
+  var img = new Image();
+
+  img.onload = function (){
+    var h = img.height;
+    var w = img.width;
+
+    console.log(h, w);
+  }
+
+  img.src = "{% static 'images/scratch.jpg' %}"
+  // inititalizing the axis and scale
   var xscale = d3.scaleLinear()
-          .range([0, width - 5])
+          .domain([-1, MAX_WIDTH + 1])
+          .range([0, MAX_WIDTH - 5])
           ;
   
   var yscale = d3.scaleLinear()
-          .range([height - 5, 0])
+          .domain([-1, MAX_HEIGHT + 1])
+          .range([MAX_HEIGHT - 5, 0])
           ;
   
+  // .tickSize and ticks create the grid
   var x_axis = d3.axisBottom(xscale)
-          .tickSize(height - 5)
+          .tickSize(MAX_HEIGHT - 5)
           .ticks(40)
           ;
   
   var y_axis = d3.axisLeft(yscale)
-          .tickSize(-width + 5)
+          .tickSize(-MAX_WIDTH + 5)
           .ticks(40)
           ;
 
-  // var zoom = d3.zoom()
-  //   .scaleExtent([1, 40])
-  //   .translateExtent([[-100, -100], [width + 90, height + 100]])
-  //   .on("zoom", zoomed);
-
-  // function zoomed() {
-  //   svg.attr("transform", d3.event.transform);
-  //   svg.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
-  //   svg.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
-  // }
-
+  // create svg canvas
   var svg = d3.select("#main")
               .select("#allocation-container")
               .append("svg")
               .attr("id", "allocation")
-              .attr("width", width)
-              .attr("height", height)
+              .attr("width", MAX_WIDTH)
+              .attr("height", MAX_HEIGHT)
+              // .append("g")
+    
               ;
 
+  // var zoom_rect = svg.append("g")
+  //                     .append("rect")
+  //                     .attr("id", "zoom-rect")
+  //                     .attr("width", MAX_WIDTH)
+  //                     .attr("height", MAX_HEIGHT)
+  //                     .attr("fill", "none")
+  //                     ;
+
+ 
+            
+  // var svg_zoom = svg.append("g");
+
+  // include zoom and drag functionality
+  var zoom = d3.zoom()
+    .scaleExtent([1, 2])
+    // .translateExtent([
+    //   [MIN_TRANSLATE_X, MIN_TRANSLATE_Y],
+    //   [MAX_TRANSLATE_X, MAX_TRANSLATE_Y]
+    // ])
+    .translateExtent([
+      [0, 0],
+      [MAX_WIDTH, MAX_HEIGHT]
+    ])
+    // .constrain(function (transform, extent, translateExtent) {
+    //   var cx = transform.invertX((extent[1][0] - extent[0][0]) / 2),
+    //     cy = transform.invertY((extent[1][1] - extent[0][1]) / 2),
+    //     dcx0 = Math.min(0, cx - translateExtent[0][0]),
+    //     dcx1 = Math.max(0, cx - translateExtent[1][0]),
+    //     dcy0 = Math.min(0, cy - translateExtent[0][1]),
+    //     dcy1 = Math.max(0, cy - translateExtent[1][1]);
+    //   return transform.translate(
+    //     Math.min(0, dcx0) || Math.max(0, dcx1),
+    //     Math.min(0, dcy0) || Math.max(0, dcy1)
+    //   );
+    // })
+    .on("zoom", zoomed)
+
+  function zoomed() {
+          // svg.attr("transform", d3.event.transform);
+      gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
+      gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
+      image.attr("transform", d3.event.transform);
+      booth.attr("transform", d3.event.transform);
+      text.attr("transform", d3.event.transform);
+      refresh();
+  }
+
+  svg.call(zoom);
+
+//  include drag booth functionality
+  function dragstarted(d) {
+    d3.select(this).attr("stroke", "black");
+  }
+
+  function dragged(d) {
+    d3.select(this).raise().attr("x", d.x = d3.event.x).attr("y", d.y = d3.event.y);
+  }
+
+  function dragended(d) {
+    d3.select(this).attr("stroke", null);
+  }
+
+  var drag = d3.drag()
+      .on("start", dragstarted)
+      .on("drag", dragged)
+      .on("end", dragended);;
+
   var image = svg.append('image')
-                .attr('width', width - 5)
-                .attr('height', height - 5)
+                // .attr('width', MAX_WIDTH - 5)
+                // .attr('height', MAX_HEIGHT - 5)
                 .attr('x', 0)
                 .attr('y', 0)
                 .attr("href", "{% static 'images/scratch.jpg' %}")
                 ;
-  
-    svg.append("g")
+
+  console.log(image.clientWidth);
+
+  var gX =  svg.append("g")
         .attr("id", "x-axis")
         .call(x_axis)
         ;
 
-    svg.append("g")
+  var gY = svg.append("g")
         .attr("id", "y-axis")
         .call(y_axis)
         ;
 
-  // function dragstarted(d) {
-  //   d3.select(this).attr("stroke", "black");
-  // }
-
-  // function dragged(d) {
-  //   d3.select(this).raise().attr("x", d.x = d3.event.x).attr("y", d.y = d3.event.y);
-  // }
-
-  // function dragended(d) {
-  //   d3.select(this).attr("stroke", null);
-  // }
-
-  // var drag = d3.drag()
-  //     .on("start", dragstarted)
-  //     .on("drag", dragged)
-  //     .on("end", dragended);;
-
-  var booth = svg.selectAll(".dot")
+  var booth = svg.selectAll('.dot')
                 .data(data)
                 .enter()
                 .append("g")
@@ -186,10 +255,12 @@
                   return 'group' + d.group;
                 })
                 .attr("x", function(d){
-                  return d.x * ratiox;
+                  // d.x = xscale(d.x);
+                  return (d.x) * ratiox;
                 })
                 .attr("y", function(d){
-                  return d.y * ratioy;
+                  // d.y = yscale(d.y);
+                  return (d.y) * ratioy;
                 })
                 .attr("height", function(d){
                   return d.height * ratioy;
@@ -198,12 +269,11 @@
                   return d.width * ratiox;
                 })
                 // .attr("transform", "translate(0," + height + ")")
-                .attr("transform", function(d){
-                  return "rotate(" + d.rotate + ")";
-                })
-                // .call(drag)
+                // .attr("transform", function(d){
+                //   return "rotate(" + d.rotate + ")";
+                // })
+                .call(drag)
                 .on("click", function(d){
-                  console.log(d.group);
                   $("#selected-booth-name").text(d.group);
                 })
                 ;
@@ -218,19 +288,47 @@
                   .attr('text-anchor', 'middle')
                   .style("font-size", "14px")
                   .attr("x", function(d){
+                    // d.x = xscale(d.x);
                     return (d.x + d.width / 2) * ratiox;
                   })
                   .attr("y", function(d){
+                    // d.y = yscale(d.y);
                     return (d.y + d.height / 2) * ratioy;
                   })
-                  .attr("transform", function(d){
-                    return "rotate(" + d.rotate + ")";
-                  })
+                  // .attr("transform", function(d){
+                  //   return "rotate(" + d.rotate + ")";
+                  // })
                   .text(function(d){
                     return d.group;
                   })
                   ;
 
+
+
     svg.call(d3.zoom().on("zoom", zoomed));
+        
+    function refresh(){
+      // svg.selectAll("text")
+      //             .attr("x", function(d){
+      //               // d.x = xscale(d.x);
+      //               // return d.x;
+      //               return (d.x + d.width / 2) * ratiox;
+      //             })
+      //             .attr("y", function(d){
+      //               // d.y = yscale(d.y);
+      //               // return d.y;
+      //               return (d.y + d.height / 2) * ratioy;
+      //             })
+      //             // .attr("transform", function(d){
+      //             //   return "rotate(" + d.rotate + ")";
+      //             // })
+      //             .text(function(d){
+      //               return d.group;
+      //             })
+      //             ;
+    }
+    // window.onload(){
+
+    // }
         
 </script>

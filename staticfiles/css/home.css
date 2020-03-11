@@ -163,19 +163,19 @@ input[type=checkbox]{
 }
 
 #allocation{
-  width: 100%;
+  /* width: 100%; */
   padding-right: 15px;
   padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
+  /* margin-right: auto;
+  margin-left: auto; */
 }
 
-#allocation image{
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
-}
+/* #allocation image{ */
+  /* padding-right: 15px;
+  padding-left: 15px; */
+  /* margin-right: auto;
+  margin-left: auto; */
+/* } */
 
 #y-axis{
   width: 100%;
@@ -198,9 +198,11 @@ input[type=checkbox]{
 }
 
 .booth{
-  fill: white;
-  stroke-width: 2px;
+  fill: GREY;
+  stroke-width: 1px;
   stroke: black;
+  clip-path: url(#clip);
+  fill-opacity: 20%;
 }
 
 #tools{
@@ -214,4 +216,12 @@ input[type=checkbox]{
   stroke: black;
   border-style: solid;
   border-color: black;
+}
+
+.name{
+  clip-path: url(#clip);
+}
+
+#map-layout{
+  clip-path: url(#clip);
 }

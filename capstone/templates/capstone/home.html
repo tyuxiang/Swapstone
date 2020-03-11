@@ -7,6 +7,32 @@
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+      /* .name{
+        clip-path: url(#clip);
+      }
+
+      #map-layout{
+        clip-path: url(#clip);
+      } */
+
+      /* .booth{
+        clip-path: url(#clip);
+      } */
+      /* #dragbooth-button {
+        color: black;
+        background-color: red;
+      } */
+
+      #tools .active{
+        /* color: white;
+        background-color: black;
+        stroke: blue;
+        outline-color: blue; */
+        border-width: 2pt;
+        border-color: lightblue;
+      }
+    </style>
   </head>
 
   <link href="{% static 'css/home.css' %}" rel="stylesheet">
@@ -61,13 +87,19 @@
     <main role="main" class="col-md-8 ml-sm-auto col-lg-10 px-0">
       <div class = "map" id = "main">
         <div id = "tools">
-          <input type="checkbox" id="editorMode"><span class="checkboxtext font-size:1pt">Editor Mode</span></input>
+          <button type="button" id="dragbooth-button" onclick = "dragBoothButtonHandler()">Drag Booth</button>
+          <button type="button" id="zoom-button" onclick = "zoomButtonHandler()">Zoom </button>
+          <button type="button" id="undo-button" onclick = "undoButtonHandler()">Undo</button>
         </div>
         <div id = "allocation-container">
         </div>
         <div id = "selection-container">
           <h2>Selected Booth:</h2>
           <p id = "selected-booth-name"></p>
+          <span>X : </span><input type = "text" id = "input-x">
+          <span>Y : </span><input type = "text" id = "input-y">
+          <span>Height : </span><input type = "text" id = "input-height">
+          <span>Width : </span><input type = "text" id = "input-width">
         </div>
       </div>
     </main>
@@ -91,9 +123,12 @@
 </html>
 <script src="http://d3js.org/d3.v5.js"></script>
 <script>
- // initialize constant
- const MAX_WIDTH = 830;
-  const MAX_HEIGHT = 637;
+  // initialize constant
+  var img = new Image();
+  img.src = "{% static 'images/scratch.jpg' %}"
+
+  const MAX_WIDTH = img.width;
+  const MAX_HEIGHT = img.height;
   
   const ratiox = MAX_WIDTH / 1000;
   const ratioy = MAX_HEIGHT / 1000;
@@ -106,43 +141,45 @@
   
   // dummy data
   // maybe data = function() -> import data -> json preferred
-  const data = [{ "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :0},
-  { "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 0},
-  { "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 0},
-  { "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 0},
-  { "x" : 400, "y" : 450, "width" : 40, "height" : 40, "group" : "C4", "rotate" : 0},
-  { "x" : 400, "y" : 490, "width" : 40, "height" : 40, "group" : "C28", "rotate" : 0}];
+  const data = [{"id" :  0, "x" : 182, "y" : 438, "width" : 80, "height" : 80, "group" : "C2", "rotate" :45},
+  {"id" :  1, "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 0},
+  {"id" :  2, "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 0},
+  {"id" :  3, "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 0},
+  {"id" :  4, "x" : 400, "y" : 450, "width" : 40, "height" : 40, "group" : "C4", "rotate" : 0},
+  {"id" :  5, "x" : 400, "y" : 490, "width" : 40, "height" : 40, "group" : "C28", "rotate" : 0}];
 
+  var canDragBooth;
+  var curBoothID;
 
-  var img = new Image();
-
-  img.onload = function (){
-    var h = img.height;
-    var w = img.width;
-
-    console.log(h, w);
+  function initialize(){
+    data.forEach(function(booth){
+      booth.x = booth.x * ratiox;
+      booth.y = booth.y * ratioy;
+      booth.height = booth.height * ratioy;
+      booth.width = booth.width * ratiox;
+    })
   }
 
-  img.src = "{% static 'images/scratch.jpg' %}"
+  initialize();
   // inititalizing the axis and scale
   var xscale = d3.scaleLinear()
-          .domain([-1, MAX_WIDTH + 1])
-          .range([0, MAX_WIDTH - 5])
+          .domain([-1, MAX_WIDTH])  // The domain is the complete set of values
+          .range([0, MAX_WIDTH])    // The range is the set of resulting function
           ;
   
   var yscale = d3.scaleLinear()
-          .domain([-1, MAX_HEIGHT + 1])
-          .range([MAX_HEIGHT - 5, 0])
+          .domain([-1, MAX_HEIGHT])
+          .range([MAX_HEIGHT, 0])
           ;
   
   // .tickSize and ticks create the grid
   var x_axis = d3.axisBottom(xscale)
-          .tickSize(MAX_HEIGHT - 5)
+          .tickSize(MAX_HEIGHT)
           .ticks(40)
           ;
   
   var y_axis = d3.axisLeft(yscale)
-          .tickSize(-MAX_WIDTH + 5)
+          .tickSize(-MAX_WIDTH)
           .ticks(40)
           ;
 
@@ -153,86 +190,149 @@
               .attr("id", "allocation")
               .attr("width", MAX_WIDTH)
               .attr("height", MAX_HEIGHT)
-              // .append("g")
-    
+              .append("g")
               ;
 
-  // var zoom_rect = svg.append("g")
-  //                     .append("rect")
-  //                     .attr("id", "zoom-rect")
-  //                     .attr("width", MAX_WIDTH)
-  //                     .attr("height", MAX_HEIGHT)
-  //                     .attr("fill", "none")
-  //                     ;
-
- 
-            
-  // var svg_zoom = svg.append("g");
+  svg.append("defs")
+      .append("clipPath")
+      .attr("id", "clip")
+      .append("rect")
+      .attr("height", MAX_HEIGHT)
+      .attr("width", MAX_WIDTH)
+      .attr("fill", "none")
+      ;
 
   // include zoom and drag functionality
   var zoom = d3.zoom()
-    .scaleExtent([1, 2])
-    // .translateExtent([
-    //   [MIN_TRANSLATE_X, MIN_TRANSLATE_Y],
-    //   [MAX_TRANSLATE_X, MAX_TRANSLATE_Y]
-    // ])
-    .translateExtent([
-      [0, 0],
-      [MAX_WIDTH, MAX_HEIGHT]
-    ])
-    // .constrain(function (transform, extent, translateExtent) {
-    //   var cx = transform.invertX((extent[1][0] - extent[0][0]) / 2),
-    //     cy = transform.invertY((extent[1][1] - extent[0][1]) / 2),
-    //     dcx0 = Math.min(0, cx - translateExtent[0][0]),
-    //     dcx1 = Math.max(0, cx - translateExtent[1][0]),
-    //     dcy0 = Math.min(0, cy - translateExtent[0][1]),
-    //     dcy1 = Math.max(0, cy - translateExtent[1][1]);
-    //   return transform.translate(
-    //     Math.min(0, dcx0) || Math.max(0, dcx1),
-    //     Math.min(0, dcy0) || Math.max(0, dcy1)
-    //   );
-    // })
-    .on("zoom", zoomed)
-
-  function zoomed() {
-          // svg.attr("transform", d3.event.transform);
-      gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
-      gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
-      image.attr("transform", d3.event.transform);
-      booth.attr("transform", d3.event.transform);
-      text.attr("transform", d3.event.transform);
-      refresh();
-  }
-
-  svg.call(zoom);
+      .scaleExtent([1, 2])
+      .translateExtent([
+        [0, 0],
+        [MAX_WIDTH, MAX_HEIGHT]
+      ])
+      .on("zoom", function(d){
+        gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
+        gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
+        image.attr("transform", d3.event.transform)
+        // .attr("clip-path","url(#clip)");
+        booth.attr("transform", d3.event.transform)
+        // .attr("clip-path","url(#clip)");
+        text.attr("transform", d3.event.transform)
+        // .attr("clip-path","url(#clip)");
+      })
+      ;
 
 //  include drag booth functionality
-  function dragstarted(d) {
-    d3.select(this).attr("stroke", "black");
-  }
-
-  function dragged(d) {
-    d3.select(this).raise().attr("x", d.x = d3.event.x).attr("y", d.y = d3.event.y);
-  }
-
-  function dragended(d) {
-    d3.select(this).attr("stroke", null);
-  }
-
   var drag = d3.drag()
-      .on("start", dragstarted)
-      .on("drag", dragged)
-      .on("end", dragended);;
+      .on("start", function(){
+        d3.select(this).attr("stroke", "red");
+      })
+      .on("drag", function(d){
+        d3.select(this).raise()
+          .attr("transform", function(d){
+            // console.log("rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height) / 2 +")")
+            return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
+          })
+          .attr("x", d.x = d3.event.x)
+          .attr("y", d.y = d3.event.y);
+          
+          $("#selected-booth-name").text(d.group);
+          $("#input-x").val(Math.round(d.x));
+          $("#input-y").val(Math.round(d.y));
+          $("#input-width").val(Math.round(d.width));
+          $("#input-height").val(Math.round(d.height));
+
+          svg.select("#booth-text-id-"+ d.id)
+              .attr("transform", function(d){
+                // console.log("rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height) / 2 +")")
+                return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
+              })
+              .attr("x", function(d){
+                return d.x + (d.width / 2);
+              })
+              .attr("y", function(d){
+                return d.y + (d.height / 2);
+              });
+      })
+      .on("end", function(d){
+        d3.select(this).attr("stroke", null);
+        curBoothID = d.id;
+      });
+
+  function dragBoothButtonHandler(){
+    $("#dragbooth-button").toggleClass("active");
+    canDragBooth = true;
+  }
+
+  function zoomButtonHandler(){
+    $("#zoom-button").toggleClass("active");
+  }
+
+  function undButtonHandler(){
+    $("#undo-button").toggleClass("active");
+  }
+
+  $("#input-x").keyup(function(){
+    var value = $(this).val();
+    svg.select("#booth-id-" + curBoothID)
+        .attr("x", function(d){
+          d.x = parseInt(value);
+          return d.x;
+        });
+    svg.select("#booth-text-id-" + curBoothID)
+        .attr("x", function(d){
+          return d.x + d.width / 2;
+        });
+  }).keyup();
+
+  $("#input-y").keyup(function(){
+    var value = $(this).val();
+    svg.select("#booth-id-" + curBoothID)
+        .attr("y", function(d){
+          d.y = parseInt(value);
+          return d.y;
+        });
+    svg.select("#booth-text-id-" + curBoothID)
+        .attr("y", function(d){
+          return d.y + d.height / 2;
+        });
+  }).keyup();
+
+  $("#input-height").keyup(function(){
+    var value = $(this).val();
+    svg.select("#booth-id-" + curBoothID)
+        .attr("height", function(d){
+          d.height = parseInt(value);
+          return d.height;
+        });
+    svg.select("#booth-text-id-" + curBoothID)
+        .attr("y", function(d){
+          return d.y + d.height / 2;
+        });
+  }).keyup();
+
+  $("#input-width").keyup(function(){
+    var value = $(this).val();
+    svg.select("#booth-id-" + curBoothID)
+        .attr("width", function(d){
+          d.width = parseInt(value);
+          return d.width;
+        });
+    svg.select("#booth-text-id-" + curBoothID)
+        .attr("x", function(d){
+          return d.x + d.width / 2;
+        });
+  }).keyup();
 
   var image = svg.append('image')
                 // .attr('width', MAX_WIDTH - 5)
                 // .attr('height', MAX_HEIGHT - 5)
+                .attr("id", "map-layout")
+                .attr("clip-path","url(#clip)")
                 .attr('x', 0)
                 .attr('y', 0)
                 .attr("href", "{% static 'images/scratch.jpg' %}")
                 ;
-
-  console.log(image.clientWidth);
+  
 
   var gX =  svg.append("g")
         .attr("id", "x-axis")
@@ -244,91 +344,99 @@
         .call(y_axis)
         ;
 
+  var text = svg.selectAll(".dot")
+            .data(data)
+            .enter()
+            .append("text")
+            .attr("class", "name")
+            .attr("id", function(d){
+              return "booth-text-id-" + d.id;
+            })
+            .attr('text-anchor', 'middle')
+            .style("font-size", "14px")
+            .attr("x", function(d){
+              // d.x = xscale(d.x);
+              return d.x + (d.width / 2);
+            })
+            .attr("y", function(d){
+              // d.y = yscale(d.y);
+              return d.y + (d.height / 2);
+            })
+            .attr("transform", function(d){
+            // console.log("rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height) / 2 +")")
+              return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
+            })
+            .text(function(d){
+              return d.group;
+            })
+            ;
+
   var booth = svg.selectAll('.dot')
                 .data(data)
                 .enter()
                 .append("g")
-                
-            booth.append("rect")
-                .attr("class", "booth")
-                .attr("id", function(d){
-                  return 'group' + d.group;
-                })
-                .attr("x", function(d){
-                  // d.x = xscale(d.x);
-                  return (d.x) * ratiox;
-                })
-                .attr("y", function(d){
-                  // d.y = yscale(d.y);
-                  return (d.y) * ratioy;
-                })
-                .attr("height", function(d){
-                  return d.height * ratioy;
-                })
-                .attr("width", function(d){
-                  return d.width * ratiox;
-                })
-                // .attr("transform", "translate(0," + height + ")")
-                // .attr("transform", function(d){
-                //   return "rotate(" + d.rotate + ")";
-                // })
-                .call(drag)
-                .on("click", function(d){
-                  $("#selected-booth-name").text(d.group);
-                })
-                ;
-                
+          //       .attr("transform", function(d){
+          //   console.log("rotate(" + d.rotate + ")");
+          //   return "translate(0, 0), rotate(" + d.rotate + ")"
+          // })
 
+      booth.append("rect")
+          .attr("class", "booth")
+          .attr("id", function(d){
+            return 'booth-id-' + d.id;
+          })
+          .attr("x", function(d){
+            return d.x;
+          })
+          .attr("y", function(d){
+            return d.y;
+          })
+          .attr("height", function(d){
+            return d.height;
+          })
+          .attr("width", function(d){
+            return d.width;
+          })
+          .attr("clip-path","url(#clip)")
+          // .attr("transform", function(d){
+          //   console.log("rotate(" + d.rotate + ")");
+          //   return "rotate(20)"
+          // // , skewx(" + d.rotate + ")"
+          // })
 
-    var text = svg.selectAll(".dot")
-                  .data(data)
-                  .enter()
-                  .append("text")
-                  .attr("class", "name")
-                  .attr('text-anchor', 'middle')
-                  .style("font-size", "14px")
-                  .attr("x", function(d){
-                    // d.x = xscale(d.x);
-                    return (d.x + d.width / 2) * ratiox;
-                  })
-                  .attr("y", function(d){
-                    // d.y = yscale(d.y);
-                    return (d.y + d.height / 2) * ratioy;
-                  })
-                  // .attr("transform", function(d){
-                  //   return "rotate(" + d.rotate + ")";
-                  // })
-                  .text(function(d){
-                    return d.group;
-                  })
-                  ;
+          .attr("transform", function(d){
+            // console.log("rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height) / 2 +")")
+            return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
+          })
+          // .attr("dy", ".35em")
 
+          // .attr("transform", "rotate(45)")
+          // .attr("transform-origin", function(d){
+          //   return "(50% 50%)"
+          // })
+          .call(drag)
+          .on("click", function(d){
+            curBoothID = d.id;
+            // curBoothNameID =
+            $("#selected-booth-name").text(d.group);
+            $("#input-x").val(Math.round(d.x));
+            $("#input-y").val(Math.round(d.y));
+            $("#input-width").val(Math.round(d.width));
+            $("#input-height").val(Math.round(d.height));
+          })
+          ;
+                 
+    // clip over-sized image
+    // svg.append('rect')
+          // .attr("x", MAX_WIDTH - 4)
+          // .attr("y", 0)
+          // .attr("height", MAX_HEIGHT)
+          // .attr("width", 800)
+          // .attr("fill", "white")
+          // ;
+            
+    svg.call(zoom);
 
+    
 
-    svg.call(d3.zoom().on("zoom", zoomed));
-        
-    function refresh(){
-      // svg.selectAll("text")
-      //             .attr("x", function(d){
-      //               // d.x = xscale(d.x);
-      //               // return d.x;
-      //               return (d.x + d.width / 2) * ratiox;
-      //             })
-      //             .attr("y", function(d){
-      //               // d.y = yscale(d.y);
-      //               // return d.y;
-      //               return (d.y + d.height / 2) * ratioy;
-      //             })
-      //             // .attr("transform", function(d){
-      //             //   return "rotate(" + d.rotate + ")";
-      //             // })
-      //             .text(function(d){
-      //               return d.group;
-      //             })
-      //             ;
-    }
-    // window.onload(){
-
-    // }
-        
 </script>

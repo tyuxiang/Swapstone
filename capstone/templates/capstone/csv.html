@@ -8,11 +8,52 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  	<link href="{% static 'css/home.css' %}" rel="stylesheet">
-  	<title>Main Page</title>
+  	<link href="{% static 'css/csv.css' %}" rel="stylesheet">
+  	<title>Upload csv</title>
   </head>
   <body>
-  	<h1>Load csv page</h1>
+    <nav class="navbar fixed-top flex-md-nowrap p-0 shadow">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{% url 'home' %}">Swapstone</a>
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="{% url 'logout' %}">Log out</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="h-100 container-fluid">
+      <div class="h-100 row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">
+                  <span data-feather="home"></span>
+                  Home
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="{% url 'csv' %}">
+                  <span data-feather="file"></span>
+                  Load CSV File <span class="sr-only">(current)</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+        <main role="main" class="h-100 col-md-8 ml-sm-auto col-lg-10 px-0">
+          <div class="h-100 row align-items-center text-center form-unit">
+            <div class="col form-subunit">
+              <form method="post" enctype="multipart/form-data" class="upload-form">
+                {% csrf_token %}
+                <input type="file" name="input">
+                <button type="submit">Upload file</button>
+              </form>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
   	<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.js"></script>
   	<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
   	<script src="{% static 'js/bootstrap.min.js' %}"></script>

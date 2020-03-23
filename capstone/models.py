@@ -12,6 +12,6 @@ class Booth(models.Model):
     # saved_map = models.ForeignKey(Map,on_delete=models.CASCADE)
 
 
-class Map(models.Model):
-    name = models.CharField(max_length = 100)
+# class Map(models.Model):
+#     name = models.CharField(max_length = 100)
 

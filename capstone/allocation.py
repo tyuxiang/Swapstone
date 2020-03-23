@@ -1,5 +1,6 @@
 from capstone.models import Booth
 import math
+from copy import deepcopy
 
 class Group:
     def __init__(self,shape,start=(0,0),end=(0,0),radius=0,centre=(0,0)):
@@ -52,6 +53,7 @@ def allocate():
     i = 0
     check = 0
     print("Starting allocation algorithm")
+    #booths = deepcopy(final_booths)
     for industry in industries:
         for booth in booths:
             print("Choosing booth")

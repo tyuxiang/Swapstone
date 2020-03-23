@@ -105,7 +105,7 @@
     </main>
     <nav class="col-md-2 d-none d-md-block bg-light rightbar">
       <div class="rightbar-sticky">
-        <ul class="list-of-booths flex-column">
+        <ul class="list-of-booths flex-column" id = "booth-list">
           <li class="booth-item">
             <a class="booth-link">Booth #1</a>
           </li>
@@ -141,7 +141,7 @@
   
   // dummy data
   // maybe data = function() -> import data -> json preferred
-  const data = [{"id" :  0, "x" : 182, "y" : 438, "width" : 80, "height" : 80, "group" : "C2", "rotate" :45},
+  const data = [{"id" :  0, "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :0},
   {"id" :  1, "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 0},
   {"id" :  2, "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 0},
   {"id" :  3, "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 0},
@@ -408,6 +408,11 @@
             // console.log("rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height) / 2 +")")
             return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
           })
+          // .attr("transform", function(d){
+          //   var translateX = d.width * (1 + (d.rotate / 180))
+          //   var translateY = d.height * (1 + (d.rotate / 180))
+          //   return "translate(" + translateX + " " + translateY + ")"
+          // })
           // .attr("dy", ".35em")
 
           // .attr("transform", "rotate(45)")
@@ -437,6 +442,15 @@
             
     svg.call(zoom);
 
-    
+
+    // <ul class="list-of-booths flex-column" id = "booth-list">
+    //       <li class="booth-item">
+    //         <a class="booth-link">Booth #1</a>
+
+
+    // $("#menu").append('<li><a href="#">New list item</a></li>');
+    for (var i = 0; i < data.length; i++){
+      $("#booth-list").append('<li><a class = booth-link> Booth #' + data[i].group + " </a></li>");
+    }
 
 </script>

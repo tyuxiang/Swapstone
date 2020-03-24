@@ -1,10 +1,11 @@
 from capstone.models import Booth
 import math
+from decimal import Decimal
 from copy import deepcopy
 
 
 class Group:
-    def __init__(self,shape,start=(0,0),end=(0,0),radius=0,centre=(0,0)):
+    def __init__(self,shape,start=(0,0),end=(0,0),radius=0,centre=(0,0),downward_sloping = False):
         self.start = start
         self.end = end
         self.radius = radius
@@ -12,6 +13,13 @@ class Group:
         self.shape = shape
         if shape == 'square':
             self.point = list(start)
+        elif shape=='line':
+            self.point = list(start)
+            if downward_sloping:
+                self.angle = math.tan((start[1]-end[1])/(start[0]-end[0]))
+            else:
+                self.angle= math.tan((end[1]-start[1])/(end[0]-start[0]))
+
 
     def add(self, booth):
         if self.shape == "square":
@@ -19,13 +27,28 @@ class Group:
             print("Adding to square space")
             if(self.point[0]+booth.length_pixel <=self.end[0]):
                 booth.position_x = self.point[0]
-                booth.position_y = self.point[1]
+                booth.position_y = self.point[1] + booth.width_pixel
                 self.point[0] = self.point[0] + booth.length_pixel
                 booth.save()
                 print("Booth updated")
                 return True
             else:
                 return False
+        elif self.shape == "line":
+            print("Adding to line space")
+            theta = 90 - self.angle
+            x =booth.length_pixel*Decimal(math.sin(theta))
+            if(self.point[0]+x<=self.end[0]):
+                booth.position_x = self.point[0] + booth.width_pixel*Decimal(math.sin(theta))   
+                booth.position_y = self.point[1] + booth.width_pixel*Decimal(math.cos(theta))
+                booth.rotation = self.angle
+                self.point[0] = self.point[0] + booth.length_pixel
+                booth.save()
+                print("Booth updated")
+                return True
+            else:
+                return False
+
         # elif self.shape =="circle":
         #     # do we need to check for width?
         #     angle = 2*math.asin((booth.length_pixel/self.radius)/2)
@@ -46,7 +69,9 @@ class Group:
 
 def allocate(booths):
     groups = [Group(shape="square",start = (280,225),end = (480,225)),
-    Group(shape="square",start = (220,400),end = (540,400))]
+    Group(shape="square",start = (220,400),end = (540,400)),
+    Group(shape="line",start=(125,380),end= (240,500),downward_sloping = True),
+    Group(shape="line",start = (525,480),end=(675,340),downward_sloping =False)]
     # Group(centre = (680,237),start = (570,280),end = (760,170),radius = 110, shape = "circle"),
     # Group(centre= (80,250),start = (30,160),end = (100,340),radius = 110,shape = "circle")]
     industries = [str(1),str(2)]

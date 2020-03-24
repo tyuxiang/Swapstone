@@ -12,15 +12,15 @@ from django.contrib.auth.models import User
 @login_required
 def home(request):
 	
-	# user = request.user
-	# maps = Map.objects.filter(user=user)
-	# booth = Booth.objects.filter(saved_map = maps.get(id=5))
-	# json_serializer = serializers.get_serializer("json")()
-	# booths = json_serializer.serialize(booth , ensure_ascii = False)
-	# booths = Booth.objects.all()
+	user = request.user
+	maps = Map.objects.filter(user=user)
+	x = len(maps)-1
+	booth = Booth.objects.filter(saved_map = maps[x])
+	json_serializer = serializers.get_serializer("json")()
+	booths = json_serializer.serialize(booth , ensure_ascii = False)
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
-	# return render(request,'capstone/home.html',{'booth':booths})
-	return render(request,'capstone/home.html')
+	return render(request,'capstone/home.html',{'booth':booths})
+	#return render(request,'capstone/home.html')
 
 @login_required
 def csv(request):
@@ -34,8 +34,6 @@ def csv(request):
 		allocate(booths)
 		return render(request, 'capstone/home.html')
 	return render(request, 'capstone/csv.html')
-<<<<<<< HEAD
-=======
 
 def create_account(request):
 	if request.method == 'POST':
@@ -60,5 +58,4 @@ def reset_password(request):
 		# Reset Password
 		print("not done yet")
 	return render(request,'registration/reset_password.html')
->>>>>>> 48d6ea4982e610bcd09fcba7b4e6b6150b46dd10
 

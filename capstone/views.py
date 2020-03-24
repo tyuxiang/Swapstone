@@ -10,17 +10,19 @@ from django.contrib.auth.models import User
 
 # Create your views here.
 @login_required
-def home(request):
-	
-	# user = request.user
-	# maps = Map.objects.filter(user=user)
-	# booth = Booth.objects.filter(saved_map = maps.get(id=5))
-	# json_serializer = serializers.get_serializer("json")()
-	# booths = json_serializer.serialize(booth , ensure_ascii = False)
-	# booths = Booth.objects.all()
+def home(request,map=None):
+	if not map:
+		user = request.user
+		maps = Map.objects.filter(user=user)
+		x = len(maps)-1
+		booth = Booth.objects.filter(saved_map = maps[x])
+	else:
+		booth = Booth.objects.filter(saved_map = map)
+	json_serializer = serializers.get_serializer("json")()
+	booths = json_serializer.serialize(booth , ensure_ascii = False)
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
-	# return render(request,'capstone/home.html',{'booth':booths})
-	return render(request,'capstone/home.html')
+	return render(request,'capstone/home.html',{'booth':booths})
+	#return render(request,'capstone/home.html')
 
 @login_required
 def csv(request):
@@ -32,7 +34,7 @@ def csv(request):
 		map = load_csv_data(uploaded_file_url,request)
 		booths = Booth.objects.filter(saved_map = map)
 		allocate(booths)
-		return render(request, 'capstone/csv.html')
+		return home(request,map)
 	return render(request, 'capstone/csv.html')
 
 def create_account(request):

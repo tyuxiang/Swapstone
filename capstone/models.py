@@ -14,10 +14,9 @@ class Booth(models.Model):
     position_x =models.DecimalField(decimal_places=2,max_digits=10,max_length=100,default = -1)
     position_y =models.DecimalField(decimal_places=2,max_digits=10,max_length=100,default =-1)
     in_campus_centre =models.BooleanField()
-    
-    # saved_map = models.ForeignKey(Map,on_delete=models.CASCADE)
+    saved_map = models.ForeignKey('Map',on_delete=models.CASCADE)
 
 
-# class Map(models.Model):
-#     name = models.CharField(max_length = 100)
+class Map(models.Model):
+    name = models.CharField(max_length = 100)
 

@@ -142,15 +142,37 @@
   const MAX_TRANSLATE_Y = MAX_HEIGHT / 2;
   const MIN_TRANSLATE_Y = -MAX_TRANSLATE_Y;
   
+  var data = [];
+  var dumdum = [];
+  // {% for i in booth %}
+  //   <p> {{booth.position_x}} </p>
+  //   console.log(i);
+  // {% endfor %}
+
+  var preData = ( "{{ booth|escapejs }}" );
+  var parseData = JSON.parse(preData)
+  for (var i = 0; i < parseData.length ; i++){
+    dumdum.push(preData[i].fields)
+    data.push({"id" : parseData[i]["fields"]["project_id"],
+                "x" : parseData[i]["fields"]["position_x"],
+                "y" : parseData[i]["fields"]["position_y"],
+                "height" : parseData[i]["fields"]["length_pixel"],
+                "width" : parseData[i]["fields"]["width_pixel"],
+                "group" : parseData[i]["fields"]["project_name"],
+                "rotate" : parseData[i]["fields"]["rotation"],
+                })
+  }
+  console.log(parseData);
+  console.log(preData.slice(0,4));
   // maybe data = function() -> import data -> json preferred
-  const data = [{"id" :  0, "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :90},
-  {"id" :  1, "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 45},
-  {"id" :  2, "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 0},
-  {"id" :  3, "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 0},
-  {"id" :  4, "x" : 400, "y" : 450, "width" : 40, "height" : 40, "group" : "C4", "rotate" : 0},
-  {"id" :  5, "x" : 400, "y" : 490, "width" : 40, "height" : 40, "group" : "C28", "rotate" : 0},
-  {"id" :  6, "x" : -1, "y" : -1, "width" : 80, "height" : 70, "group" : "C14", "rotate" : 0},
-  {"id" :  7, "x" : -1, "y" : -1, "width" : 80, "height" : 80, "group" : "C21", "rotate" : 0}];
+  // var data = [{"id" :  0, "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :90},
+  // {"id" :  1, "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 45},
+  // {"id" :  2, "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 0},
+  // {"id" :  3, "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 0},
+  // {"id" :  4, "x" : 400, "y" : 450, "width" : 40, "height" : 40, "group" : "C4", "rotate" : 0},
+  // {"id" :  5, "x" : 400, "y" : 490, "width" : 40, "height" : 40, "group" : "C28", "rotate" : 0},
+  // {"id" :  6, "x" : -1, "y" : -1, "width" : 80, "height" : 70, "group" : "C14", "rotate" : 0},
+  // {"id" :  7, "x" : -1, "y" : -1, "width" : 80, "height" : 80, "group" : "C21", "rotate" : 0}];
 
   var canDragBooth;
   var curBoothID;
@@ -351,7 +373,6 @@
   $("#remove-button").click(function(){
     booth.select('#booth-id-' + curBoothID)
         .attr("visibility", "hidden");
-
         booth.select('#booth-text-id-' + curBoothID)
         .attr("visibility", "hidden");
       $("#booth-list").append('<li id = "booth-item-' + curBoothID + '"><a class = "booth-link">Booth #' + curBoothID + '</a></li>');

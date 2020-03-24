@@ -5,6 +5,7 @@ from .allocation import allocate
 from django.contrib.auth.decorators import login_required
 from .models import Booth, Map
 from django.core import serializers
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -20,12 +21,7 @@ def home(request):
 	#return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
 	return render(request,'capstone/home.html',{'booth':booths})
 
-def login(request):
-	return render(request, 'capstone/login_page.html')
-
-def logout(request):
-	return render(request, 'capstone/logout.html')
-
+@login_required
 def csv(request):
 	if request.method == 'POST' and request.FILES['input']:
 		myfile = request.FILES['input']
@@ -37,5 +33,28 @@ def csv(request):
 		allocate(booths)
 		return render(request, 'capstone/csv.html')
 	return render(request, 'capstone/csv.html')
-	#return render(request, 'capstone/csv.html')
+
+def create_account(request):
+	if request.method == 'POST':
+		# Create user and save to the database
+		user = User.objects.create_user('myusername', 'myemail@crazymail.com', 'mypassword')
+
+		# Update fields and then save again
+		user.first_name = 'John'
+		user.last_name = 'Citizen'
+		user.save()
+	return render(request,'registration/create_account.html')
+
+@login_required
+def change_password(request):
+	if request.method == 'POST':
+		# Change password
+		print("not done yet")
+	return render(request,'registration/change_password.html')
+
+def reset_password(request):
+	if request.method == 'POST':
+		# Reset Password
+		print("not done yet")
+	return render(request,'registration/reset_password.html')
 

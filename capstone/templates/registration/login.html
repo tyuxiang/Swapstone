@@ -1,0 +1,37 @@
+{% extends "registration/base_login.html" %}
+
+{% block content %}
+  
+    <form method="post" action="{% url 'login' %}" class="form-signin">
+      {% csrf_token %}
+      <h6 class="welcome-message">Welcome!</h6>
+      <div class="container2">
+        <h7 class="login-message">Login here to start allocating booths to campus centre</h7>
+      </div>
+      <label for="id_username" class="sr-only">Email address</label>
+      <input type="text" name="username" maxlength="150" id="id_username" class="form-control" autocomplete="username" placeholder="Username" required autofocus>
+      <label for="id_password" class="sr-only">Password</label>
+      <input type="password" name="password" class="form-control" autocomplete="current-password" placeholder="Password" required id="id_password">
+      {% if form.errors %}
+        <p>Your username and password didn't match. Please try again.</p>
+      {% endif %}
+    
+      {% if next %}
+        {% if user.is_authenticated %}
+          <p>Your account doesn't have access to this page. To proceed,
+          please login with an account that has access.</p>
+        {% endif %}
+      {% endif %}
+      <div class="button login-button">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <input type="hidden" name="next" value="{{ next }}" />
+      </div>
+      <div class="change_password">
+        <a href="/accounts/password_change" class="link">Forgot Username/Password</a>
+      </div>
+      <div class="create_account">
+        <label for="create_account">Not a member?</label>
+        <a href="/accounts/create_account" class="link" id="create_account">Sign up</a>
+      </div>
+    </form>
+{% endblock %}

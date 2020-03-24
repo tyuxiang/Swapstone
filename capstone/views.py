@@ -2,9 +2,11 @@ from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from .load_csv_data import load_csv_data
 from .allocation import allocate
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
+@login_required
 def home(request):
     return render(request, 'capstone/home.html')
 def login(request):

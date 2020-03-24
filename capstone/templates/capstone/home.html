@@ -8,22 +8,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <style>
-      /* .name{
-        clip-path: url(#clip);
-      }
-
-      #map-layout{
-        clip-path: url(#clip);
-      } */
-
-      /* .booth{
-        clip-path: url(#clip);
-      } */
-      /* #dragbooth-button {
-        color: black;
-        background-color: red;
-      } */
-
       #tools .active{
         /* color: white;
         background-color: black;
@@ -32,12 +16,29 @@
         border-width: 2pt;
         border-color: lightblue;
       }
+
+      .booth-item-containers form{
+        display: table;
+      }
+
+      .booth-item-containers p{
+        display: table-row;
+      }
+
+      .booth-item-containers label{
+        display: table-cell;
+      }
+
+      .booth-item-containers input{
+        display: table-cell;
+      }
+
     </style>
   </head>
 
   <link href="{% static 'css/home.css' %}" rel="stylesheet">
   <title>Main Page</title>
-      <body>
+      <body> 
     <nav class="navbar fixed-top flex-md-nowrap p-0 shadow">
   <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{% url 'home' %}">Swapstone</a>
   <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
@@ -94,21 +95,23 @@
         <div id = "allocation-container">
         </div>
         <div id = "selection-container">
-          <h2>Selected Booth:</h2>
-          <p id = "selected-booth-name"></p>
-          <span>X : </span><input type = "text" id = "input-x">
-          <span>Y : </span><input type = "text" id = "input-y">
-          <span>Height : </span><input type = "text" id = "input-height">
-          <span>Width : </span><input type = "text" id = "input-width">
+          <h2 id = "selected-booth-name">Selected Booth: </h2>
+          <p>
+            <label>X : </label><input type = "text" id = "input-x">
+            <label>Y : </label><input type = "text" id = "input-y">
+            <label>Height : </label><input type = "text" id = "input-height">
+            <label>Width : </label><input type = "text" id = "input-width">  
+          </p>
+          <button id = "remove-button">Remove</button>
         </div>
       </div>
     </main>
     <nav class="col-md-2 d-none d-md-block bg-light rightbar">
       <div class="rightbar-sticky">
         <ul class="list-of-booths flex-column" id = "booth-list">
-          <li class="booth-item">
+          <!-- <li class="booth-item">
             <a class="booth-link">Booth #1</a>
-          </li>
+          </li> -->
         </ul>
         <button class="allocate-btn btn-lg btn-dark btn-block">Allocate</button>
       </div>
@@ -139,17 +142,20 @@
   const MAX_TRANSLATE_Y = MAX_HEIGHT / 2;
   const MIN_TRANSLATE_Y = -MAX_TRANSLATE_Y;
   
-  // dummy data
   // maybe data = function() -> import data -> json preferred
-  const data = [{"id" :  0, "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :0},
-  {"id" :  1, "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 0},
+  const data = [{"id" :  0, "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :90},
+  {"id" :  1, "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 45},
   {"id" :  2, "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 0},
   {"id" :  3, "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 0},
   {"id" :  4, "x" : 400, "y" : 450, "width" : 40, "height" : 40, "group" : "C4", "rotate" : 0},
-  {"id" :  5, "x" : 400, "y" : 490, "width" : 40, "height" : 40, "group" : "C28", "rotate" : 0}];
+  {"id" :  5, "x" : 400, "y" : 490, "width" : 40, "height" : 40, "group" : "C28", "rotate" : 0},
+  {"id" :  6, "x" : -1, "y" : -1, "width" : 80, "height" : 70, "group" : "C14", "rotate" : 0},
+  {"id" :  7, "x" : -1, "y" : -1, "width" : 80, "height" : 80, "group" : "C21", "rotate" : 0}];
 
   var canDragBooth;
   var curBoothID;
+  
+  var currentZoomScale;
 
   function initialize(){
     data.forEach(function(booth){
@@ -160,7 +166,18 @@
     })
   }
 
+  function checkValidXY(i){
+    if (data[i].x < 0){
+      return false;
+    }
+    if (data[i].y < 0){
+      return false;
+    }
+    return true;
+  }
+
   initialize();
+
   // inititalizing the axis and scale
   var xscale = d3.scaleLinear()
           .domain([-1, MAX_WIDTH])  // The domain is the complete set of values
@@ -174,13 +191,13 @@
   
   // .tickSize and ticks create the grid
   var x_axis = d3.axisBottom(xscale)
-          .tickSize(MAX_HEIGHT)
-          .ticks(40)
+          // .tickSize(MAX_HEIGHT)
+          // .ticks(40)
           ;
   
   var y_axis = d3.axisLeft(yscale)
-          .tickSize(-MAX_WIDTH)
-          .ticks(40)
+          // .tickSize(-MAX_WIDTH)
+          // .ticks(40)
           ;
 
   // create svg canvas
@@ -190,7 +207,7 @@
               .attr("id", "allocation")
               .attr("width", MAX_WIDTH)
               .attr("height", MAX_HEIGHT)
-              .append("g")
+              // .append("g")
               ;
 
   svg.append("defs")
@@ -210,17 +227,19 @@
         [MAX_WIDTH, MAX_HEIGHT]
       ])
       .on("zoom", function(d){
-        gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
-        gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
-        image.attr("transform", d3.event.transform)
+        // gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
+        // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
+        image.attr("transform", d3.event.transform);
         // .attr("clip-path","url(#clip)");
-        booth.attr("transform", d3.event.transform)
+        booth.attr("transform", d3.event.transform);
         // .attr("clip-path","url(#clip)");
-        text.attr("transform", d3.event.transform)
         // .attr("clip-path","url(#clip)");
       })
       ;
+  
+  function onDrag(d){
 
+  }
 //  include drag booth functionality
   var drag = d3.drag()
       .on("start", function(){
@@ -229,13 +248,18 @@
       .on("drag", function(d){
         d3.select(this).raise()
           .attr("transform", function(d){
-            // console.log("rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height) / 2 +")")
             return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
           })
-          .attr("x", d.x = d3.event.x)
-          .attr("y", d.y = d3.event.y);
+          .attr("x", function(d){
+              d.x = Math.max(0, Math.min(MAX_WIDTH - d.width, d3.event.x));
+              return d.x;
+            })
+          .attr("y", function(d){
+              d.y = Math.max(0, Math.min(MAX_HEIGHT - d.height, d3.event.y));
+              return d.y;
+            });
           
-          $("#selected-booth-name").text(d.group);
+          $("#selected-booth-name").text("Selected Booth: " + d.group);
           $("#input-x").val(Math.round(d.x));
           $("#input-y").val(Math.round(d.y));
           $("#input-width").val(Math.round(d.width));
@@ -243,7 +267,6 @@
 
           svg.select("#booth-text-id-"+ d.id)
               .attr("transform", function(d){
-                // console.log("rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height) / 2 +")")
                 return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
               })
               .attr("x", function(d){
@@ -251,7 +274,8 @@
               })
               .attr("y", function(d){
                 return d.y + (d.height / 2);
-              });
+              })
+              ;
       })
       .on("end", function(d){
         d3.select(this).attr("stroke", null);
@@ -267,10 +291,11 @@
     $("#zoom-button").toggleClass("active");
   }
 
-  function undButtonHandler(){
+  function undoButtonHandler(){
     $("#undo-button").toggleClass("active");
   }
 
+  // change booth attributes by keying the value
   $("#input-x").keyup(function(){
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
@@ -323,6 +348,36 @@
         });
   }).keyup();
 
+  $("#remove-button").click(function(){
+    booth.select('#booth-id-' + curBoothID)
+        .attr("visibility", "hidden");
+
+        booth.select('#booth-text-id-' + curBoothID)
+        .attr("visibility", "hidden");
+      $("#booth-list").append('<li id = "booth-item-' + curBoothID + '"><a class = "booth-link">Booth #' + curBoothID + '</a></li>');
+      $("#booth-list").append('<form id = "booth-item-container-' + curBoothID + '" class = "booth-item-containers">  </form>');
+
+      $('#booth-item-container-' + curBoothID).append('<button type = "button" id = "booth-item-button-' + curBoothID + '"> Add Booth </button>');
+      $('#booth-item-button-' + curBoothID).click(function(){
+        // var thisID = $(this).attr("id").slice(18);
+        booth.select('#booth-id-' + curBoothID)
+        .attr("visibility", "visible");
+
+        booth.select('#booth-text-id-' + curBoothID)
+        .attr("visibility", "visible");
+        
+        $('#booth-item-container-'+ curBoothID).remove();
+        $('#booth-item-'+ curBoothID).remove();
+      })
+
+      $('#booth-item-container-' + curBoothID).hide();
+      $('#booth-item-'+ curBoothID).click(function(i) {
+        // var thisID = $(this).attr("id");
+        $('#booth-item-container-' + curBoothID).toggle();
+      })
+  })
+
+  // image
   var image = svg.append('image')
                 // .attr('width', MAX_WIDTH - 5)
                 // .attr('height', MAX_HEIGHT - 5)
@@ -333,7 +388,7 @@
                 .attr("href", "{% static 'images/scratch.jpg' %}")
                 ;
   
-
+  // axis handler
   var gX =  svg.append("g")
         .attr("id", "x-axis")
         .call(x_axis)
@@ -344,52 +399,59 @@
         .call(y_axis)
         ;
 
-  var text = svg.selectAll(".dot")
-            .data(data)
-            .enter()
-            .append("text")
+  var booth = svg.selectAll('.booth')
+                .data(data)
+                .enter()
+                .append("g")
+                .attr("class", function(d){
+                  return "booth-containers";
+                })
+                .attr("id", function(d){
+                  return "booth-container-id-" + d.id;
+                })
+
+    booth.append("text")
             .attr("class", "name")
             .attr("id", function(d){
               return "booth-text-id-" + d.id;
             })
             .attr('text-anchor', 'middle')
-            .style("font-size", "14px")
+            .style("font-size", function(){
+              return "11px";
+            })
             .attr("x", function(d){
-              // d.x = xscale(d.x);
               return d.x + (d.width / 2);
             })
             .attr("y", function(d){
-              // d.y = yscale(d.y);
               return d.y + (d.height / 2);
             })
             .attr("transform", function(d){
-            // console.log("rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height) / 2 +")")
               return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
             })
             .text(function(d){
               return d.group;
             })
-            ;
-
-  var booth = svg.selectAll('.dot')
-                .data(data)
-                .enter()
-                .append("g")
-          //       .attr("transform", function(d){
-          //   console.log("rotate(" + d.rotate + ")");
-          //   return "translate(0, 0), rotate(" + d.rotate + ")"
-          // })
-
-      booth.append("rect")
+            .attr("visibility", function(d){
+              if (d.x < 0){
+                return "hidden"
+              }
+            })
+            ;        
+            
+    booth.append("rect")
           .attr("class", "booth")
           .attr("id", function(d){
             return 'booth-id-' + d.id;
           })
-          .attr("x", function(d){
-            return d.x;
+          .attr("x", function(d, i){
+            if(d.x > 0){
+              return d.x;
+            }
           })
           .attr("y", function(d){
-            return d.y;
+            if(d.y > 0){
+              return d.y;
+            }
           })
           .attr("height", function(d){
             return d.height;
@@ -398,48 +460,26 @@
             return d.width;
           })
           .attr("clip-path","url(#clip)")
-          // .attr("transform", function(d){
-          //   console.log("rotate(" + d.rotate + ")");
-          //   return "rotate(20)"
-          // // , skewx(" + d.rotate + ")"
-          // })
-
           .attr("transform", function(d){
-            // console.log("rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height) / 2 +")")
             return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
           })
-          // .attr("transform", function(d){
-          //   var translateX = d.width * (1 + (d.rotate / 180))
-          //   var translateY = d.height * (1 + (d.rotate / 180))
-          //   return "translate(" + translateX + " " + translateY + ")"
-          // })
-          // .attr("dy", ".35em")
-
-          // .attr("transform", "rotate(45)")
-          // .attr("transform-origin", function(d){
-          //   return "(50% 50%)"
-          // })
+          .attr("visibility", function(d){
+            if (d.x < 0){
+              return "hidden"
+            }
+          })
           .call(drag)
           .on("click", function(d){
             curBoothID = d.id;
             // curBoothNameID =
-            $("#selected-booth-name").text(d.group);
+            $("#selected-booth-name").text("Selected Booth: " + d.group);
             $("#input-x").val(Math.round(d.x));
             $("#input-y").val(Math.round(d.y));
             $("#input-width").val(Math.round(d.width));
             $("#input-height").val(Math.round(d.height));
           })
           ;
-                 
-    // clip over-sized image
-    // svg.append('rect')
-          // .attr("x", MAX_WIDTH - 4)
-          // .attr("y", 0)
-          // .attr("height", MAX_HEIGHT)
-          // .attr("width", 800)
-          // .attr("fill", "white")
-          // ;
-            
+
     svg.call(zoom);
 
 
@@ -448,6 +488,61 @@
     //         <a class="booth-link">Booth #1</a>
 
 
+    // can change this with angular / react / vue components
     // $("#menu").append('<li><a href="#">New list item</a></li>');
+    for (var i = 0; i < data.length; i++){
+      if (!checkValidXY(i)){
+        // $("#booth-container-id-" + data[i].id).hide()
+        // $("#booth-text-id-" + data[i].id).hide()
+      //  null || data[i].y == null || data[i].height == null || data[i].width == null){
+        $("#booth-list").append('<li id = "booth-item-' + data[i].id + '"><a class = "booth-link">Booth #' + data[i].group + '</a></li>');
+        $("#booth-list").append('<form id = "booth-item-container-' + data[i].id + '" class = "booth-item-containers">  </form>');
 
+        // $('#booth-item-container-' + data[i].id).append('<p><label>X : </label><input type = "text" id = "booth-item-input-x-' + data[i].id + '"></p>');
+        // $('#booth-item-input-x-' + data[i].id).val(-1); 
+        // console.log($('#booth-item-input-x-' + data[i].id).val());
+
+        // $('#booth-item-container-' + data[i].id).append('<p><label>Y : </label><input type = "text" id = "booth-item-input-y-' + data[i].id + '"></p>');
+        // $('#booth-item-input-y-' + data[i].id).val(-1); 
+
+        // $('#booth-item-container-' + data[i].id).append('<p><label>Height : </label><input type = "text" id = "booth-item-input-height-' + data[i].id + '"></p>');
+        // $('#booth-item-input-height-' + data[i].id).val(Math.round(data[i].height)); 
+
+        // $('#booth-item-container-' + data[i].id).append('<p><label>Width : </label><input type = "text" id = "booth-item-input-width-' + data[i].id + '"></p>');
+        // $('#booth-item-input-width-' + data[i].id).val(Math.round(data[i].width)); 
+        
+        $('#booth-item-container-' + data[i].id).append('<button type = "button" id = "booth-item-button-' + data[i].id + '"> Add Booth </button>');
+        $('#booth-item-button-' + data[i].id).click(function(){
+          var thisID = $(this).attr("id").slice(18);
+          // data[thisID].x =  parseInt($('#booth-item-input-x-' + data[thisID].id).val());
+          // data[thisID].y =  parseInt($('#booth-item-input-y-' + data[thisID].id).val());
+          // data[thisID].height =  parseInt($('#booth-item-input-height-' + data[thisID].id).val());
+          // data[thisID].width =  parseInt($('#booth-item-input-width-' + data[thisID].id).val());
+          // $('#booth-container-id-' + thisID).append('<rect x = "100" y = "100" height = "100" width= "100" class = "booth" id = booth-id-' + thisID + '></rect>');
+          booth.select('#booth-id-' + thisID)
+          // .attr("x", data[thisID].x)
+          // .attr("y", data[thisID].y)
+          // .attr("height", data[thisID].height)
+          // .attr("width", data[thisID].width)
+          .attr("visibility", "visible");
+
+          booth.select('#booth-text-id-' + thisID)
+          .attr("visibility", "visible");
+         
+          $('#booth-item-container-'+ thisID).remove();
+          $('#booth-item-'+ thisID).remove();
+        })
+
+        $(".booth-item-containers").hide();
+        $('#booth-item-'+ data[i].id).click(function(i) {
+          var thisID = $(this).attr("id");
+          $('#booth-item-container-' + thisID.slice(11)).toggle();
+        })
+
+      }
+    }
+
+
+
+    console.log(data);
 </script>

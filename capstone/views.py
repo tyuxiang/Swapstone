@@ -25,7 +25,7 @@ def csv(request):
 		fs = FileSystemStorage()
 		filename = fs.save(myfile.name, myfile)
 		uploaded_file_url =filename
-		load_csv_data(uploaded_file_url)
+		load_csv_data(uploaded_file_url,request)
 		allocate()
 		return render(request, 'capstone/csv.html')
 	return render(request, 'capstone/csv.html')

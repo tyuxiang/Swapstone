@@ -2,12 +2,13 @@ import csv
 import pandas as pd
 from capstone.models import Booth, Map
 
-def load_csv_data(file_name):
+def load_csv_data(file_name,request):
     read_file = pd.read_excel ("./"+file_name)
     read_file.to_csv ("./data.csv", index = None, header=True)
     map = Map()
     map.name= file_name
     map.user= request.user
+    map.save()
     with open("./data.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             print("Data loaded successfully")

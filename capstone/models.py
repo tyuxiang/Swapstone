@@ -1,6 +1,13 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
+
+class Map(models.Model):
+    name = models.CharField(max_length = 100)
+    user = models.ForeignKey(User, related_name='maps',on_delete=models.CASCADE)
+    
+
 class Booth(models.Model):
     project_id = models.CharField(max_length=20)
     length =  models.DecimalField(decimal_places=2,max_digits=10,max_length=5)
@@ -14,9 +21,7 @@ class Booth(models.Model):
     position_x =models.DecimalField(decimal_places=2,max_digits=10,max_length=100,default = -1)
     position_y =models.DecimalField(decimal_places=2,max_digits=10,max_length=100,default =-1)
     in_campus_centre =models.BooleanField()
-    saved_map = models.ForeignKey('Map',on_delete=models.CASCADE)
+    saved_map = models.ForeignKey(Map,on_delete=models.CASCADE)    
 
 
-class Map(models.Model):
-    name = models.CharField(max_length = 100)
 

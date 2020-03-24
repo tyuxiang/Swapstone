@@ -2,6 +2,7 @@ from capstone.models import Booth
 import math
 from copy import deepcopy
 
+
 class Group:
     def __init__(self,shape,start=(0,0),end=(0,0),radius=0,centre=(0,0)):
         self.start = start
@@ -43,8 +44,7 @@ class Group:
 
 
 
-def allocate():
-    booths = Booth.objects.all()
+def allocate(booths):
     groups = [Group(shape="square",start = (280,225),end = (480,225)),
     Group(shape="square",start = (220,400),end = (540,400))]
     # Group(centre = (680,237),start = (570,280),end = (760,170),radius = 110, shape = "circle"),

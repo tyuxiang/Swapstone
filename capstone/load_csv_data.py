@@ -28,4 +28,5 @@ def load_csv_data(file_name,request):
                 booth.industry = row["Industry"]
                 booth.saved_map = map
                 booth.save()
+    return map
             

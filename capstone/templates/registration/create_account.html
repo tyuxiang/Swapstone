@@ -1,17 +1,14 @@
 {% extends "registration/base_login.html" %}
-
 {% block content %}
-  
-    <form method="post" action="{% url 'login' %}" class="form-signin">
+  <form method="post" action="{% url 'create_account' %}" class="form-signin" oninput='password.setCustomValidity(password.value != first_password.value ? "Passwords do not match." : "")'>
       {% csrf_token %}
-      <h6 class="welcome-message">Welcome!</h6>
-      <div class="container2">
-        <h7 class="login-message">Login here to start allocating booths to campus centre</h7>
-      </div>
+      <h6 class="welcome-message">Create Account Here!</h6>
       <label for="id_username" class="sr-only">Email address</label>
       <input type="text" name="username" maxlength="150" id="id_username" class="form-control" autocomplete="username" placeholder="Username" required autofocus>
       <label for="id_password" class="sr-only">Password</label>
-      <input type="password" name="password" class="form-control" autocomplete="current-password" placeholder="Password" required id="id_password">
+      <input type="password" name="first_password" class="form-control" autocomplete="current-password" placeholder="Password" required id="id_password">
+      <label for="id_password" class="sr-only">Re-enter Password</label>
+      <input type="password" name="password" class="form-control" autocomplete="current-password" placeholder="Re-enter Password" required id="id_password">
       {% if form.errors %}
         <p>Your username and password didn't match. Please try again.</p>
       {% endif %}
@@ -23,15 +20,11 @@
         {% endif %}
       {% endif %}
       <div class="button login-button">
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
         <input type="hidden" name="next" value="{{ next }}" />
       </div>
-      <div class="change_password">
-        <a href="/accounts/password_reset" class="link">Forgot Username/Password</a>
-      </div>
-      <div class="create_account">
-        <label for="create_account">Not a member?</label>
-        <a href="/accounts/create_account" class="link" id="create_account">Sign up</a>
+      <div class="login">
+        <a href="/accounts/login" class="link">Back to login</a>
       </div>
     </form>
 {% endblock %}

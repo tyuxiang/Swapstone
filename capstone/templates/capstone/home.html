@@ -143,33 +143,39 @@
   const MIN_TRANSLATE_Y = -MAX_TRANSLATE_Y;
   
   var data = [];
-  var dumdum = [];
-  // {% for i in booth %}
-  //   <p> {{booth.position_x}} </p>
-  //   console.log(i);
-  // {% endfor %}
 
   var preData = ( "{{ booth|escapejs }}" );
   var parseData = JSON.parse(preData)
   for (var i = 0; i < parseData.length ; i++){
-    dumdum.push(preData[i].fields)
-    data.push({"id" : parseData[i]["fields"]["project_id"],
-                "x" : parseData[i]["fields"]["position_x"],
-                "y" : parseData[i]["fields"]["position_y"],
-                "height" : parseData[i]["fields"]["length_pixel"],
-                "width" : parseData[i]["fields"]["width_pixel"],
-                "group" : parseData[i]["fields"]["project_name"],
-                "rotate" : parseData[i]["fields"]["rotation"],
-                })
+    parseData[i].fields.position_x = parseFloat(parseData[i].fields.position_x)
+    parseData[i].fields.position_y = parseFloat(parseData[i].fields.position_y)
+    parseData[i].fields.length_pixel = parseFloat(parseData[i].fields.length_pixel)
+    parseData[i].fields.width_pixel = parseFloat(parseData[i].fields.width_pixel)
+    parseData[i].fields.rotation = parseFloat(parseData[i].fields.rotation)
+    parseData[i].fields.length = parseFloat(parseData[i].fields.length)
+    parseData[i].fields.width = parseFloat(parseData[i].fields.width)
+    parseData[i].fields.area = parseFloat(parseData[i].fields.area)
+    data.push(parseData[i].fields)
+
+    console.log(parseData[i].fields.width)
+    // data.push(preData[i].fields)
+    // data.push({"project_id" : parseData[i]["fields"]["project_id"],
+    //             "position_x" : parseInt(parseData[i]["fields"]["position_x"]),
+    //             "position_y" : parseInt(parseData[i]["fields"]["position_y"]),
+    //             "height" : parseInt(parseData[i]["fields"]["length_pixel"]),
+    //             "width" : parseInt(parseData[i]["fields"]["width_pixel"]),
+    //             "group" : parseData[i]["fields"]["project_name"],
+    //             "rotate" : parseInt(parseData[i]["fields"]["rotation"]),
+    //             })
   }
-  console.log(parseData);
-  console.log(preData.slice(0,4));
+  console.log(data);
+
   // maybe data = function() -> import data -> json preferred
   // var data = [{"id" :  0, "x" : 360, "y" : 360, "width" : 80, "height" : 80, "group" : "C2", "rotate" :90},
-  // {"id" :  1, "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 45},
-  // {"id" :  2, "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 0},
-  // {"id" :  3, "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 0},
-  // {"id" :  4, "x" : 400, "y" : 450, "width" : 40, "height" : 40, "group" : "C4", "rotate" : 0},
+  // {"id" :  1, "x" : 440, "y" : 400, "width" : 40, "height" : 40, "group": "C1", "rotate" : 20},
+  // {"id" :  2, "x" : 480, "y" : 400, "width" : 40, "height" : 40, "group" : "C10", "rotate" : 30},
+  // {"id" :  3, "x" : 520, "y" : 400, "width" : 40, "height" : 40, "group" : "C3", "rotate" : 40},
+  // {"id" :  4, "x" : 400, "y" : 450, "width" : 40, "height" : 40, "group" : "C4", "rotate" : 50},
   // {"id" :  5, "x" : 400, "y" : 490, "width" : 40, "height" : 40, "group" : "C28", "rotate" : 0},
   // {"id" :  6, "x" : -1, "y" : -1, "width" : 80, "height" : 70, "group" : "C14", "rotate" : 0},
   // {"id" :  7, "x" : -1, "y" : -1, "width" : 80, "height" : 80, "group" : "C21", "rotate" : 0}];
@@ -179,26 +185,28 @@
   
   var currentZoomScale;
 
-  function initialize(){
-    data.forEach(function(booth){
-      booth.x = booth.x * ratiox;
-      booth.y = booth.y * ratioy;
-      booth.height = booth.height * ratioy;
-      booth.width = booth.width * ratiox;
-    })
-  }
+  // function initialize(){
+  //   // c
+  //   data.forEach(function(booth){
+  //     booth.position_x = booth.position_x * ratiox;
+  //     booth.position_y = booth.position_y * ratioy;
+  //     booth.length_pixel = booth.length_pixel * ratioy;
+  //     booth.width_pixel = booth.width_pixel * ratiox;
+
+  //   })
+  // }
 
   function checkValidXY(i){
-    if (data[i].x < 0){
+    if (data[i].position_x < 0){
       return false;
     }
-    if (data[i].y < 0){
+    if (data[i].position_y < 0){
       return false;
     }
     return true;
   }
 
-  initialize();
+  // initialize();
 
   // inititalizing the axis and scale
   var xscale = d3.scaleLinear()
@@ -259,9 +267,6 @@
       })
       ;
   
-  function onDrag(d){
-
-  }
 //  include drag booth functionality
   var drag = d3.drag()
       .on("start", function(){
@@ -270,38 +275,40 @@
       .on("drag", function(d){
         d3.select(this).raise()
           .attr("transform", function(d){
-            return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
+            return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
           })
           .attr("x", function(d){
-              d.x = Math.max(0, Math.min(MAX_WIDTH - d.width, d3.event.x));
-              return d.x;
+              console.log(d.position_x, d3.event.x)
+              d.position_x = Math.max(0, Math.min(MAX_WIDTH - d.width_pixel, d3.event.x));
+              // return d.position_x;
+              return d.position_x;
             })
           .attr("y", function(d){
-              d.y = Math.max(0, Math.min(MAX_HEIGHT - d.height, d3.event.y));
-              return d.y;
+              d.position_y = Math.max(0, Math.min(MAX_HEIGHT - d.length_pixel, d3.event.y));
+              return d.position_y;
             });
           
-          $("#selected-booth-name").text("Selected Booth: " + d.group);
-          $("#input-x").val(Math.round(d.x));
-          $("#input-y").val(Math.round(d.y));
-          $("#input-width").val(Math.round(d.width));
-          $("#input-height").val(Math.round(d.height));
+          $("#selected-booth-name").text("Selected Booth: " + d.project_name);
+          $("#input-x").val(Math.round(d.position_x));
+          $("#input-y").val(Math.round(d.position_y));
+          $("#input-width").val(Math.round(d.width_pixel));
+          $("#input-height").val(Math.round(d.length_pixel));
 
-          svg.select("#booth-text-id-"+ d.id)
+          svg.select("#booth-text-id-"+ d.project_id)
               .attr("transform", function(d){
-                return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
+                return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
               })
               .attr("x", function(d){
-                return d.x + (d.width / 2);
+                return d.position_x + (d.width_pixel / 2);
               })
               .attr("y", function(d){
-                return d.y + (d.height / 2);
+                return d.position_y + (d.length_pixel / 2);
               })
               ;
       })
       .on("end", function(d){
         d3.select(this).attr("stroke", null);
-        curBoothID = d.id;
+        curBoothID = d.project_id;
       });
 
   function dragBoothButtonHandler(){
@@ -322,12 +329,12 @@
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
         .attr("x", function(d){
-          d.x = parseInt(value);
-          return d.x;
+          d.position_x = parseFloat(value);
+          return d.position_x;
         });
     svg.select("#booth-text-id-" + curBoothID)
         .attr("x", function(d){
-          return d.x + d.width / 2;
+          return d.position_x + d.width_pixel / 2;
         });
   }).keyup();
 
@@ -335,12 +342,12 @@
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
         .attr("y", function(d){
-          d.y = parseInt(value);
-          return d.y;
+          d.position_y = parseFloat(value);
+          return d.position_y;
         });
     svg.select("#booth-text-id-" + curBoothID)
         .attr("y", function(d){
-          return d.y + d.height / 2;
+          return d.position_y + d.length_pixel / 2;
         });
   }).keyup();
 
@@ -348,12 +355,12 @@
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
         .attr("height", function(d){
-          d.height = parseInt(value);
-          return d.height;
+          d.length_pixel = parseInt(value);
+          return d.length_pixel;
         });
     svg.select("#booth-text-id-" + curBoothID)
         .attr("y", function(d){
-          return d.y + d.height / 2;
+          return d.position_y + d.length_pixel / 2;
         });
   }).keyup();
 
@@ -361,12 +368,12 @@
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
         .attr("width", function(d){
-          d.width = parseInt(value);
-          return d.width;
+          d.width_pixel = parseInt(value);
+          return d.width_pixel;
         });
     svg.select("#booth-text-id-" + curBoothID)
         .attr("x", function(d){
-          return d.x + d.width / 2;
+          return d.position_x + d.width_pixel / 2;
         });
   }).keyup();
 
@@ -428,32 +435,32 @@
                   return "booth-containers";
                 })
                 .attr("id", function(d){
-                  return "booth-container-id-" + d.id;
+                  return "booth-container-id-" + d.project_id;
                 })
 
     booth.append("text")
             .attr("class", "name")
             .attr("id", function(d){
-              return "booth-text-id-" + d.id;
+              return "booth-text-id-" + d.project_id;
             })
             .attr('text-anchor', 'middle')
             .style("font-size", function(){
               return "11px";
             })
             .attr("x", function(d){
-              return d.x + (d.width / 2);
+              return d.position_x + (d.width_pixel / 2);
             })
             .attr("y", function(d){
-              return d.y + (d.height / 2);
+              return d.position_y + (d.length_pixel / 2);
             })
             .attr("transform", function(d){
-              return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
+              return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
             })
             .text(function(d){
-              return d.group;
+              return d.project_name;
             })
             .attr("visibility", function(d){
-              if (d.x < 0){
+              if (d.position_x < 0){
                 return "hidden"
               }
             })
@@ -462,42 +469,42 @@
     booth.append("rect")
           .attr("class", "booth")
           .attr("id", function(d){
-            return 'booth-id-' + d.id;
+            return 'booth-id-' + d.project_id;
           })
           .attr("x", function(d, i){
-            if(d.x > 0){
-              return d.x;
+            if(d.position_x > 0){
+              return d.position_x;
             }
           })
           .attr("y", function(d){
-            if(d.y > 0){
-              return d.y;
+            if(d.position_y > 0){
+              return d.position_y;
             }
           })
           .attr("height", function(d){
-            return d.height;
+            return d.length_pixel;
           })
           .attr("width", function(d){
-            return d.width;
+            return d.width_pixel;
           })
           .attr("clip-path","url(#clip)")
           .attr("transform", function(d){
-            return "rotate(" + d.rotate + " " + (d.x  + d.width / 2) + " " + (d.y + d.height / 2) +")";
+            return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
           })
           .attr("visibility", function(d){
-            if (d.x < 0){
+            if (d.position_x < 0){
               return "hidden"
             }
           })
           .call(drag)
           .on("click", function(d){
-            curBoothID = d.id;
+            curBoothID = d.project_id;
             // curBoothNameID =
-            $("#selected-booth-name").text("Selected Booth: " + d.group);
-            $("#input-x").val(Math.round(d.x));
-            $("#input-y").val(Math.round(d.y));
-            $("#input-width").val(Math.round(d.width));
-            $("#input-height").val(Math.round(d.height));
+            $("#selected-booth-name").text("Selected Booth: " + d.project_name);
+            $("#input-x").val(Math.round(d.position_x));
+            $("#input-y").val(Math.round(d.position_y));
+            $("#input-width").val(Math.round(d.width_pixel));
+            $("#input-height").val(Math.round(d.length_pixel));
           })
           ;
 
@@ -516,8 +523,8 @@
         // $("#booth-container-id-" + data[i].id).hide()
         // $("#booth-text-id-" + data[i].id).hide()
       //  null || data[i].y == null || data[i].height == null || data[i].width == null){
-        $("#booth-list").append('<li id = "booth-item-' + data[i].id + '"><a class = "booth-link">Booth #' + data[i].group + '</a></li>');
-        $("#booth-list").append('<form id = "booth-item-container-' + data[i].id + '" class = "booth-item-containers">  </form>');
+        $("#booth-list").append('<li id = "booth-item-' + data[i].project_id + '"><a class = "booth-link">Booth #' + data[i].group + '</a></li>');
+        $("#booth-list").append('<form id = "booth-item-container-' + data[i].project_id + '" class = "booth-item-containers">  </form>');
 
         // $('#booth-item-container-' + data[i].id).append('<p><label>X : </label><input type = "text" id = "booth-item-input-x-' + data[i].id + '"></p>');
         // $('#booth-item-input-x-' + data[i].id).val(-1); 
@@ -532,8 +539,8 @@
         // $('#booth-item-container-' + data[i].id).append('<p><label>Width : </label><input type = "text" id = "booth-item-input-width-' + data[i].id + '"></p>');
         // $('#booth-item-input-width-' + data[i].id).val(Math.round(data[i].width)); 
         
-        $('#booth-item-container-' + data[i].id).append('<button type = "button" id = "booth-item-button-' + data[i].id + '"> Add Booth </button>');
-        $('#booth-item-button-' + data[i].id).click(function(){
+        $('#booth-item-container-' + data[i].project_id).append('<button type = "button" id = "booth-item-button-' + data[i].project_id + '"> Add Booth </button>');
+        $('#booth-item-button-' + data[i].project_id).click(function(){
           var thisID = $(this).attr("id").slice(18);
           // data[thisID].x =  parseInt($('#booth-item-input-x-' + data[thisID].id).val());
           // data[thisID].y =  parseInt($('#booth-item-input-y-' + data[thisID].id).val());
@@ -555,7 +562,7 @@
         })
 
         $(".booth-item-containers").hide();
-        $('#booth-item-'+ data[i].id).click(function(i) {
+        $('#booth-item-'+ data[i].project_id).click(function(i) {
           var thisID = $(this).attr("id");
           $('#booth-item-container-' + thisID.slice(11)).toggle();
         })

@@ -134,7 +134,14 @@ def find_position(booth_list,space_list):
     for n in range(0,len(positions)):
         if(positions[n]=="null"):
             result.pop(key[n])
-    return result
+	for i in range(0,len(result)):
+        point=positions[i]
+        x=point%col_num
+        y=math.ceil(point/col_num)
+        coodinate=[x,y]
+        coodinates[key[i]]=coodinate
+    return result,coodinates
+
 
 
 

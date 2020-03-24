@@ -150,7 +150,7 @@
   // {% endfor %}
 
   var preData = ( "{{ booth|escapejs }}" );
-  var parseData = JSON.parse(preData)
+  var parseData = JSON.parse(preData);
   for (var i = 0; i < parseData.length ; i++){
     dumdum.push(preData[i].fields)
     data.push({"id" : parseData[i]["fields"]["project_id"],

@@ -34,7 +34,7 @@ def csv(request):
 		map = load_csv_data(uploaded_file_url,request)
 		booths = Booth.objects.filter(saved_map = map)
 		allocate(booths)
-		return home(request,map)
+		# return home(request,map)
 	return render(request, 'capstone/csv.html')
 
 def create_account(request):

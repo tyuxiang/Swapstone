@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from .load_csv_data import load_csv_data
-from capstone.models import Booth
+from .allocation import allocate
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
+@login_required
 def home(request):
     return render(request, 'capstone/home.html')
 def login(request):
@@ -18,6 +21,7 @@ def csv(request):
 		filename = fs.save(myfile.name, myfile)
 		uploaded_file_url =filename
 		load_csv_data(uploaded_file_url)
+		allocate()
 		return render(request, 'capstone/csv.html')
 	return render(request, 'capstone/csv.html')
 	#return render(request, 'capstone/csv.html')

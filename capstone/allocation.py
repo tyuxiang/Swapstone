@@ -16,9 +16,9 @@ class Group:
         elif shape=='line':
             self.point = list(start)
             if downward_sloping:
-                self.angle = math.tan((start[1]-end[1])/(start[0]-end[0]))
+                self.angle = math.degrees(math.atan((start[1]-end[1])/(start[0]-end[0])))
             else:
-                self.angle= math.tan((end[1]-start[1])/(end[0]-start[0]))
+                self.angle= math.degrees(math.atan((end[1]-start[1])/(end[0]-start[0])))
 
 
     def add(self, booth):
@@ -39,10 +39,13 @@ class Group:
             theta = 90 - self.angle
             x =booth.length_pixel*Decimal(math.sin(theta))
             if(self.point[0]+x<=self.end[0]):
-                booth.position_x = self.point[0] + booth.width_pixel*Decimal(math.sin(theta))   
-                booth.position_y = self.point[1] + booth.width_pixel*Decimal(math.cos(theta))
+                if(self.start[0]==125):
+                    booth.project_name = "Left"
+                booth.position_x = self.point[0] + booth.width_pixel*Decimal(math.sin(math.radians(theta)))   
+                booth.position_y = self.point[1] + booth.width_pixel*Decimal(math.cos(math.radians(theta)))
                 booth.rotation = self.angle
-                self.point[0] = self.point[0] + booth.length_pixel
+                self.point[0] = self.point[0] + booth.length_pixel*Decimal(math.sin(math.radians(theta)))
+                self.point[1] = self.point[1] + booth.length_pixel*Decimal(math.cos(math.radians(theta)))
                 booth.save()
                 print("Booth updated")
                 return True

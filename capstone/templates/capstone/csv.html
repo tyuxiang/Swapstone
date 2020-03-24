@@ -44,7 +44,7 @@
         <main role="main" class="h-100 col-md-8 ml-sm-auto col-lg-10 px-0">
           <div class="h-100 row align-items-center text-center form-unit">
             <div class="col form-subunit">
-              <form method="post" enctype="multipart/form-data" class="upload-form">
+              <form method="post" action="{% url 'home' %}" enctype="multipart/form-data" class="upload-form">
                 {% csrf_token %}
                 <input type="file" name="input">
                 <button type="submit">Upload file</button>

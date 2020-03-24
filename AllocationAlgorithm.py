@@ -73,6 +73,7 @@ def find_position(booth_list,space_list):
     row_num=len(space_list)
     col_num=len(space_list[0])
     result={}
+    coodinates={}
     categories={}
     space_left=[]
     for l in range(1,row_num*col_num+1):
@@ -134,7 +135,7 @@ def find_position(booth_list,space_list):
     for n in range(0,len(positions)):
         if(positions[n]=="null"):
             result.pop(key[n])
-	for i in range(0,len(result)):
+    for i in range(0,len(result)):
         point=positions[i]
         x=point%col_num
         y=math.ceil(point/col_num)

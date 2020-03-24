@@ -12,14 +12,15 @@ from django.contrib.auth.models import User
 @login_required
 def home(request):
 	
-	user = request.user
-	maps = Map.objects.filter(user=user)
-	booth = Booth.objects.filter(saved_map = maps.get(id=5))
-	json_serializer = serializers.get_serializer("json")()
-	booths = json_serializer.serialize(booth , ensure_ascii = False)
+	# user = request.user
+	# maps = Map.objects.filter(user=user)
+	# booth = Booth.objects.filter(saved_map = maps.get(id=5))
+	# json_serializer = serializers.get_serializer("json")()
+	# booths = json_serializer.serialize(booth , ensure_ascii = False)
 	# booths = Booth.objects.all()
-	#return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
-	return render(request,'capstone/home.html',{'booth':booths})
+	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
+	# return render(request,'capstone/home.html',{'booth':booths})
+	return render(request,'capstone/home.html')
 
 @login_required
 def csv(request):
@@ -37,12 +38,12 @@ def csv(request):
 def create_account(request):
 	if request.method == 'POST':
 		# Create user and save to the database
-		user = User.objects.create_user('myusername', 'myemail@crazymail.com', 'mypassword')
+		user = User.objects.create_user(request.POST['username'], '', request.POST['password'])
 
 		# Update fields and then save again
-		user.first_name = 'John'
-		user.last_name = 'Citizen'
-		user.save()
+		# user.first_name = 'John'
+		# user.last_name = 'Citizen'
+		# user.save()
 	return render(request,'registration/create_account.html')
 
 @login_required

@@ -116,7 +116,7 @@
         </div>
         <div id = "selection-container">
           <h2 id = "selected-booth-name">Selected Booth: </h2>
-          <form>
+          <div>
             <p>
               <label>X : </label><input type = "text" id = "input-x">
            
@@ -142,7 +142,7 @@
               <label>Industry : </label><label id = "selected-booth-industry"></label>
             </p>
             <button id = "remove-button">Remove</button>
-          </form>          
+          </div>          
         </div>
       </div>
     </main>
@@ -273,8 +273,27 @@
       ;
 
   // include zoom and drag functionality
-  var zoom;
-  
+  var zoom = d3.zoom()
+      .scaleExtent([1, 2])
+      .translateExtent([
+        [0, 0],
+        [MAX_WIDTH, MAX_HEIGHT]
+      ])
+      .on("zoom", function(d){
+        if(canZoom){
+          // currentZoomScale = d3.event.transform.k;
+          // console.log(currentZoomScale)
+          // gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
+          // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
+          image.attr("transform", d3.event.transform);
+          // .attr("clip-path","url(#clip)");
+          booth.attr("transform", d3.event.transform);
+          // .attr("clip-path","url(#clip)");
+          // .attr("clip-path","url(#clip)");
+          
+        }
+      });
+
 //  include drag booth functionality
   var drag = d3.drag()
       .on("start", function(){
@@ -433,12 +452,13 @@
   }).keyup();
 
   $("#remove-button").click(function(){
-    booth.select('#booth-id-' + curBoothID)
-        .attr("visibility", "hidden");
-        booth.select('#booth-text-id-' + curBoothID)
-        .attr("visibility", "hidden");
+      console.log(curBoothID)
+      booth.select('#booth-id-' + curBoothID)
+        .attr("visibility", "hidden");  
+      booth.select('#booth-text-id-' + curBoothID)
+      .attr("visibility", "hidden");
       $("#booth-list").append('<li id = "booth-item-' + curBoothID + '"><a class = "booth-link">' + data[curBoothID - 1].project_name + '</a></li>');
-      $("#booth-list").append('<form id = "booth-item-container-' + curBoothID + '" class = "booth-item-containers">  </form>');
+      $("#booth-list").append('<div id = "booth-item-container-' + curBoothID + '" class = "booth-item-containers">  </div>');
 
       $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-length-' + curBoothID + '" ><label> Length </label><label> : ' + data[curBoothID - 1].length + '</label> </p>');
       $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-width-' + curBoothID + '" ><label> Width </label><label> : ' + data[curBoothID - 1].width + '</label> </p>');
@@ -575,6 +595,7 @@
           ;
 
     svg.call(zoom);
+    svg.on('.zoom', null);
 
 
     // <ul class="list-of-booths flex-column" id = "booth-list">

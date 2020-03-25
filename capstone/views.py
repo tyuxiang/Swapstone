@@ -17,9 +17,9 @@ def home(request,map=None):
 
 	print("loading stuff")
 	user = request.user
-	maps = Map.objects.filter(user=user)
-	x = len(maps)-1
-	booth = Booth.objects.filter(saved_map = maps[x])
+	maps = user.maps.all()
+	map = maps[len(maps)-1]
+	booth = map.booths.all()
 	allocate(booth)
 	
 	# if  not map:
@@ -39,7 +39,7 @@ def csv(request):
 		filename = fs.save(myfile.name, myfile)
 		uploaded_file_url =filename
 		map = load_csv_data(uploaded_file_url,request)
-		booths = Booth.objects.filter(saved_map = map)
+		booths = map.booths.all()
 		allocate(booths)
 		return home(request,map)
 	return render(request, 'capstone/csv.html')

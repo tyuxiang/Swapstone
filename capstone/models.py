@@ -6,7 +6,9 @@ from django.contrib.auth.models import User
 class Map(models.Model):
     name = models.CharField(max_length = 100)
     user = models.ForeignKey(User, related_name='maps',on_delete=models.CASCADE)
-    
+
+#class CurrentMap(model.Models):
+
 
 class Booth(models.Model):
     project_id = models.CharField(max_length=20)
@@ -21,7 +23,7 @@ class Booth(models.Model):
     position_x =models.DecimalField(decimal_places=2,max_digits=10,max_length=100,default = -1)
     position_y =models.DecimalField(decimal_places=2,max_digits=10,max_length=100,default =-1)
     in_campus_centre =models.BooleanField()
-    saved_map = models.ForeignKey(Map,on_delete=models.CASCADE)    
+    saved_map = models.ForeignKey(Map,related_name ="booths",on_delete=models.CASCADE)    
 
 
 

@@ -111,7 +111,7 @@ def allocate(booths):
     groups = [space_1,space_2,space_3,space_4,space_5,space_6,space_7,space_9]
 
   
-    industries = [str(1),str(2)]
+    industries = [str(i) for i in range(1,5)]
 
     print("Starting allocation algorithm")
     #booths = deepcopy(final_booths)

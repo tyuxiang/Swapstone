@@ -13,14 +13,15 @@ from django.contrib.auth.models import User
 def home(request,map=None):
 
 	print("loading stuff")
-
-	if  not map:
-		user = request.user
-		maps = Map.objects.filter(user=user)
-		x = len(maps)-1
-		booth = Booth.objects.filter(saved_map = maps[x])
-	else:
-		booth = Booth.objects.filter(saved_map = map)
+	user = request.user
+	maps = Map.objects.filter(user=user)
+	x = len(maps)-1
+	booth = Booth.objects.filter(saved_map = maps[x])
+	allocate(booth)
+	
+	# if  not map:
+	# else:
+	# 	booth = Booth.objects.filter(saved_map = map)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})

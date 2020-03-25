@@ -47,6 +47,7 @@ class Group:
                 booth.position_y = self.point[1] + booth.width_pixel
                 self.point[0] = self.point[0] + booth.length_pixel
                 booth.rotation=0
+                print("horizontal",booth.project_id,booth.position_x,booth.position_y)
                 booth.save()
                 return True
             else:
@@ -57,6 +58,7 @@ class Group:
                 booth.position_x = self.point[0]
                 booth.position_y = self.point[1] + booth.width_pixel
                 self.point[1] = self.point[1] + booth.length_pixel
+                print("vertical",booth.project_id,booth.position_x,booth.position_y)
                 booth.save()
                 return True
             else:
@@ -72,6 +74,7 @@ class Group:
                 booth.rotation = self.angle
                 self.point[0] = self.point[0] + booth.length_pixel*Decimal(math.sin(math.radians(theta)))
                 self.point[1] = self.point[1] + booth.length_pixel*Decimal(math.cos(math.radians(theta)))
+                print("slanted",booth.project_id,booth.position_x,booth.position_y)
                 booth.save()
                 return True
             else:
@@ -96,13 +99,16 @@ class Group:
 
 
 def allocate(booths):
-    groups = [Group(shape="horizontal",start = (270,240),end = (500,240)),
-    Group(shape="horizontal",start = (255,340),end = (540,340)),
-    Group(shape = "horizontal",start =(15,150),end =(175,150)),
-    Group(shape = "vertical",start =(175,150),end =(175,320)),
-    Group(shape = "horizontal",start =(15,320),end =(175,320)),
-    Group(shape="slanted",start=(80,380),end= (230,510),downward_sloping = True),
-    Group(shape="slanted",start = (500,515),end=(640,360),downward_sloping =False)]
+    space_1 = Group(shape="vertical",start = (85,120),end = (85,255))
+    space_2 = Group(shape="horizontal",start = (130,100),end = (275,100))
+    space_3 = Group(shape="vertical",start = (280,120),end = (280,255))
+    space_4 = Group(shape="slanted",downward_sloping = True,start = (140,320),end = (315,450))
+    space_5 = Group(shape="horizontal",start = (330,145),end = (580,145))
+    space_6 = Group(shape="horizontal",start = (330,280),end = (580,280))
+    space_7 = Group(shape="vertical",start = (590,125),end = (590,245))
+    #space_8 = Group(shape="horizontal",start = (330,280),end = (580,280))
+    space_9 = Group(shape="slanted",downward_sloping = False,start = (570,440),end = (740,300))
+    groups = [space_1,space_2,space_3,space_4,space_5,space_6,space_7,space_9]
 
   
     industries = [str(1),str(2)]
@@ -111,39 +117,54 @@ def allocate(booths):
     #booths = deepcopy(final_booths)
     #booths.objects.order_by('-area','industry')
     booths_byindustry =[]
+    booth_count = []
     for industry in industries:
         booth_temp =[]
         for booth in booths:
             if(booth.industry == industry):
+                booth.position_x =-1
+                booth.position_y =-1
+                booth.save()
                 booth_temp.append(booth)
+                print(industry,booth.project_id)
+        booth_count.append(len(booth_temp)-1)
         booths_byindustry.append(booth_temp)
 
     industry_count = 0
-    booth_count = 0
     overall_booth_count = 0
     group_count =0
     group_full = 0
     while (overall_booth_count < len(booths)):
-        overall_booth_count+=1
-        booth = booths_byindustry[industry_count][booth_count]
-        group_full = 0
-        while not groups[group_count].add(booth):
-            group_full +=1
-            if group_full>=len(groups):
-                return
-        group_count = (group_count+1)%len(groups)
-        industry_count +=1
-        if industry_count >= len(industries):
-            booth_count +=1
-            check = 0
-            industry_count = industry_count % len(industries)
-        while(booth_count>= len(booths_byindustry[industry_count])):
-            check +=1
-            industry_count+=1
-            industry_count =industry_count % len(industries)
-            if check>= len(industries):
-                return
+        if(booth_count[industry_count]>=0):
             
+            booth = booths_byindustry[industry_count][booth_count[industry_count]]
+            
+            
+            #adds booth to a group, if group is full, move on to the next one
+            #if all groups are full, return
+            group_full = 0
+            overall_booth_count+=1
+            while not groups[group_count].add(booth):
+                group_full +=1
+                group_count = (group_count+1)%len(groups)
+                if group_full>=len(groups):
+                    return  
+
+            #decrease the booth
+            booth_count[industry_count]=booth_count[industry_count]-1
+
+        #increment the industry
+        industry_count=(industry_count + 1)%len(industries)
+
+        # check = 0
+        # while(booth_count>= len(booths_byindustry[industry_count])):
+        #     print(booth.project_id,booth_count,industry_count,len(booths_byindustry[industry_count]))
+        #     check +=1
+        #     print(industry_count)
+        #     industry_count =(industry_count+1) % len(industries)
+        #     print(industry_count)
+        #     if check>= len(industries):
+        #         return
             
                 
             

@@ -29,8 +29,8 @@ def load_csv_data(file_name,request):
                 booth.project_name = row['Project Name']
                 booth.length = row['Length'] 
                 booth.width = row['Width']
-                booth.length_pixel = float(booth.length)/0.07
-                booth.width_pixel = float(booth.width)/0.07
+                booth.length_pixel = float(booth.length)*13.397
+                booth.width_pixel = float(booth.width)*13.397
                 booth.area = float(booth.length)*float(booth.width)
                 if(row['Project ID']=='Yes'):
                     booth.in_campus_centre = True

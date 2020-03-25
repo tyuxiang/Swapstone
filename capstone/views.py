@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-
+from django.http import JsonResponse
 
 # Create your views here.
 @login_required
@@ -23,6 +23,9 @@ def home(request):
 		allocate(booth)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
+
+
+
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
 	return render(request,'capstone/home.html',{'booth':booths})
 
@@ -31,9 +34,8 @@ def csv(request):
 	if request.method == 'POST' and request.FILES['input']:
 		myfile = request.FILES['input']
 		fs = FileSystemStorage()
-		filename = fs.save(myfile.name, myfile)
-		uploaded_file_url =filename
-		load_csv_data(uploaded_file_url,request)
+		filename = fs.save("data.xlsx", myfile)
+		load_csv_data(filename,request)
 		return redirect('/')
 	return render(request, 'capstone/csv.html')
 

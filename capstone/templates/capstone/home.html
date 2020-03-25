@@ -8,6 +8,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <style>
+
+      #map-layout{
+        stroke-width: 1px;
+        stroke: black;
+        clip-path: url(#clip);
+      }
+
       #tools .active{
         /* color: white;
         background-color: black;
@@ -109,7 +116,7 @@
       <div class = "map" id = "main">
         <div id = "tools">
           <button type="button" id="dragbooth-button" onclick = "dragBoothButtonHandler()">Drag Booth</button>
-          <button type="button" id="zoom-button" onclick = "zoomButtonHandler()">Zoom </button>
+          <button type="button" id="zoom-button" onclick = "zoomButtonHandler()">Zoom & Pan</button>
           <button type="button" id="undo-button" onclick = "undoButtonHandler()">Undo</button>
         </div>
         <div id = "allocation-container">
@@ -206,6 +213,13 @@
   }
   console.log(data);
 
+  const MAXUNDOCOUNT = 5;
+  var stateArray = []
+  var stateStartPointer;
+  var stateCurrentPointer = 0;
+  var stateEndPointer;
+  var undoCount = 0;
+
   // maybe data = function() -> import data -> json preferred
   // var data = [{"project_id" :  0, "position_x" : 360, "position_y" : 360, "width_pixel" : 80, "length_pixel" : 80, "project_name" : "C2", "rotation" :90},
   // {"project_id" :  1, "position_x" : 440, "position_y" : 400, "width_pixel" : 40, "length_pixel" : 40, "project_name": "C1", "rotation" : 20},
@@ -224,7 +238,7 @@
   var currentZoomScale = 1;
   var currentZoomTranslate = {'x' : 0, 'y' : 0};
 
-  function checkValidXY(i){
+  function checkAssigned(i){
     if (data[i].position_x < 0){
       return false;
     }
@@ -246,7 +260,7 @@
           ;
   
   // .tickSize and ticks create the grid
-  var x_axis = d3.axisBottom(xscale)
+  var x_axis = d3.axisTop(xscale)
           // .tickSize(MAX_HEIGHT)
           // .ticks(40)
           ;
@@ -261,8 +275,9 @@
               .select("#allocation-container")
               .append("svg")
               .attr("id", "allocation")
-              .attr("width", MAX_WIDTH)
-              .attr("height", MAX_HEIGHT)
+              .attr("width", MAX_WIDTH + 30) //account the padding total
+              .attr("height", MAX_HEIGHT + 30)
+              // .attr("stroke", "none")
               // .append("g")
               ;
 
@@ -273,6 +288,7 @@
       .attr("height", MAX_HEIGHT)
       .attr("width", MAX_WIDTH)
       .attr("fill", "none")
+      .attr("stroke", "none")
       ;
 
   // include zoom and drag functionality
@@ -283,9 +299,8 @@
         [MAX_WIDTH, MAX_HEIGHT]
       ])
       .on("zoom", function(d){
+        console.log(svg)
         if(canZoom){
-          // currentZoomScale = d3.event.transform.k;
-          // console.log(currentZoomScale)
           // gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
           // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
           image.attr("transform", d3.event.transform);
@@ -294,6 +309,7 @@
           // .attr("clip-path","url(#clip)");
           // .attr("clip-path","url(#clip)");
           
+        } else {
         }
       });
 
@@ -358,48 +374,37 @@
         if(canDragBooth){
           d3.select(this).attr("stroke", null);
           curBoothID = d.project_id;
+          if (stateArray.length < 5){
+            stateArray.push({'project_id' : d.project_id, 'position_x' : d.position_x, 'position_y' : d.position_y});
+            // console.log(stateArray, stateCurrentPointer % MAXUNDOCOUNT, stateStartPointer, stateEndPointer);
+            stateCurrentPointer += 1;
+            stateEndPointer = 0;
+            undoCount += 1;
+          } else {
+            stateArray[stateCurrentPointer % MAXUNDOCOUNT] = {'project_id' : d.project_id, 'position_x' : d.position_x, 'position_y' : d.position_y}
+            // console.log(stateArray, stateCurrentPointer % MAXUNDOCOUNT, stateStartPointer, stateEndPointer);
+            stateCurrentPointer += 1;
+            stateEndPointer = stateCurrentPointer % MAXUNDOCOUNT;
+          }
+          stateStartPointer = (stateCurrentPointer -  1) % MAXUNDOCOUNT;
+          console.log("start: " + stateStartPointer, "current: " + stateCurrentPointer, "end: " +stateEndPointer)
+
+          //POST TO DATABASE
+          var tobeSent = jQuery.param(data);
+          $.ajax({
+              url: '/accounts/change_allocation',
+              type: 'POST',
+              contentType: 'application/json; charset=utf-8',
+              data: tobeSent,
+              dataType: 'text',
+              success: function(result) {
+                  alert(result.Result);
+              }
+          });
+
+
         }
       });
-
-  function dragBoothButtonHandler(){
-    $("#dragbooth-button").toggleClass("active");
-    canDragBooth = !canDragBooth;
-  }
-
-  function zoomButtonHandler(){
-    $("#zoom-button").toggleClass("active");
-    canZoom = !canZoom;
-    if(canZoom){
-      zoom = d3.zoom()
-      .scaleExtent([1, 2])
-      .translateExtent([
-        [0, 0],
-        [MAX_WIDTH, MAX_HEIGHT]
-      ])
-      .on("zoom", function(d){
-        if(canZoom){
-          // currentZoomScale = d3.event.transform.k;
-          // console.log(currentZoomScale)
-          // gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
-          // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
-          image.attr("transform", d3.event.transform);
-          // .attr("clip-path","url(#clip)");
-          booth.attr("transform", d3.event.transform);
-          // .attr("clip-path","url(#clip)");
-          // .attr("clip-path","url(#clip)");
-          
-        }
-      })
-      ;
-      svg.call(zoom)
-    } else {
-      svg.on('.zoom', null);
-    }
-  }
-
-  function undoButtonHandler(){
-    $("#undo-button").toggleClass("active");
-  }
 
   // change booth attributes by keying the value
   $("#input-x").keyup(function(){
@@ -455,40 +460,45 @@
   }).keyup();
 
   $("#remove-button").click(function(){
-      console.log(curBoothID)
+      // console.log(curBoothID)
       booth.select('#booth-id-' + curBoothID)
         .attr("visibility", "hidden");  
       booth.select('#booth-text-id-' + curBoothID)
-      .attr("visibility", "hidden");
-      $("#booth-list").append('<li id = "booth-item-' + curBoothID + '"><a class = "booth-link">' + data[curBoothID - 1].project_name + '</a></li>');
-      $("#booth-list").append('<div id = "booth-item-container-' + curBoothID + '" class = "booth-item-containers">  </div>');
+        .attr("visibility", "hidden");
+      // $("#booth-list").append('<li id = "booth-item-' + curBoothID + '"><a class = "booth-link">' + data[curBoothID - 1].project_name + '</a></li>');
+      // $("#booth-list").append('<div id = "booth-item-container-' + curBoothID + '" class = "booth-item-containers">  </div>');
 
-      $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-length-' + curBoothID + '" ><label> Length </label><label> : ' + data[curBoothID - 1].length + '</label> </p>');
-      $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-width-' + curBoothID + '" ><label> Width </label><label> : ' + data[curBoothID - 1].width + '</label> </p>');
-      $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-area-' + curBoothID + '" ><label> Area </label><label> : ' + data[curBoothID - 1].area + '</label> </p>');
-      $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-project-name-' + curBoothID + '" ><label> Project Name </label><label> : ' + data[curBoothID - 1].project_name + '</label> </p>');
-      $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-project-id-' + curBoothID + '" ><label> Project ID </label><label> : ' + data[curBoothID - 1].project_id + '</label> </p>');
-      $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-industry-' + curBoothID + '" ><label> Industry </label><label> : ' + data[curBoothID - 1].industry + '</label> </p>');
-      $('#booth-item-container-' + curBoothID).append('<p ><button type = "button" id = "booth-item-button-' + curBoothID + '"> Add Booth </button></p>');
-      $('#booth-item-container-' + curBoothID).hide();
+      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-length-' + curBoothID + '" ><label> Length </label><label> : ' + data[curBoothID - 1].length + '</label> </p>');
+      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-width-' + curBoothID + '" ><label> Width </label><label> : ' + data[curBoothID - 1].width + '</label> </p>');
+      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-area-' + curBoothID + '" ><label> Area </label><label> : ' + data[curBoothID - 1].area + '</label> </p>');
+      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-project-name-' + curBoothID + '" ><label> Project Name </label><label> : ' + data[curBoothID - 1].project_name + '</label> </p>');
+      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-project-id-' + curBoothID + '" ><label> Project ID </label><label> : ' + data[curBoothID - 1].project_id + '</label> </p>');
+      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-industry-' + curBoothID + '" ><label> Industry </label><label> : ' + data[curBoothID - 1].industry + '</label> </p>');
+      // $('#booth-item-container-' + curBoothID).append('<p ><button type = "button" class = "booth-item-buttons" id = "booth-item-button-' + curBoothID + '"> Add Booth </button></p>');
+      // $('#booth-item-container-' + curBoothID).hide();
+      // $('#booth-item-button-' + curBoothID).click(function(id){
+      //   var thisID = $(this).attr("id");
+      //   console.log(thisID);
+      //   // var thisID = $(this).attr("id").slice(18);
+      //   booth.select('#booth-id-' + curBoothID)
+      //       .attr("visibility", "visible");
 
-      $('#booth-item-button-' + curBoothID).click(function(){
-        // var thisID = $(this).attr("id").slice(18);
-        booth.select('#booth-id-' + curBoothID)
-            .attr("visibility", "visible");
+      //   booth.select('#booth-text-id-' + curBoothID)
+      //        .attr("visibility", "visible");
+        $('#booth-item-'+ curBoothID).show();
+        // $('#booth-item-container-'+ curBoothID).remove();
+      // })
 
-        booth.select('#booth-text-id-' + curBoothID)
-             .attr("visibility", "visible");
-        
-        $('#booth-item-'+ curBoothID).remove();
-        $('#booth-item-container-'+ curBoothID).remove();
-      })
-
-      $('#booth-item-'+ curBoothID).click(function(i) {
-        $('#booth-item-container-' + curBoothID).toggle();
-      })
+      // $('#booth-item-'+ curBoothID).click(function(abcde) {
+      //   console.log($(this[0]))
+      //   $('#booth-item-container-' + curBoothID).toggle();
+      // })
 
       // curBoothID = null;
+  })
+
+  $(".booth-item-buttons").click(function(){
+    console.log("HIHIHIHIHI")
   })
 
   // image
@@ -508,10 +518,14 @@
         .call(x_axis)
         ;
 
+  $("#x-axis").hide()
+
   var gY = svg.append("g")
         .attr("id", "y-axis")
         .call(y_axis)
         ;
+
+  $("#y-axis").hide()
 
   var booth = svg.selectAll('.booth')
                 .data(data)
@@ -600,7 +614,6 @@
           ;
 
     svg.call(zoom);
-    svg.on('.zoom', null);
 
 
     // <ul class="list-of-booths flex-column" id = "booth-list">
@@ -611,7 +624,7 @@
     // can change this with angular / react / vue components
     // $("#menu").append('<li><a href="#">New list item</a></li>');
     for (var i = 0; i < data.length; i++){
-      if (!checkValidXY(i)){
+      // if (!checkValidXY(i)){
         // $("#booth-container-id-" + data[i].id).hide()
         // $("#booth-text-id-" + data[i].id).hide()
       //  null || data[i].y == null || data[i].height == null || data[i].width == null){
@@ -656,20 +669,56 @@
           booth.select('#booth-text-id-' + thisID)
           .attr("visibility", "visible");
          
-          $('#booth-item-container-'+ thisID).remove();
-          $('#booth-item-'+ thisID).remove();
+          $('#booth-item-container-'+ thisID).hide();
+          $('#booth-item-'+ thisID).hide();
         })
 
         $(".booth-item-containers").hide();
         $('#booth-item-'+ data[i].project_id).click(function(i) {
-          var thisID = $(this).attr("id");
-          $('#booth-item-container-' + thisID.slice(11)).toggle();
+        var thisID = $(this).attr("id").slice(11);
+        $('#booth-item-container-' + thisID).toggle();
         })
 
+      // }
+      if(checkAssigned(i)){
+        $('#booth-item-container-'+ data[i].project_id).hide();
+        $('#booth-item-'+ data[i].project_id).hide();
       }
     }
 
+    function dragBoothButtonHandler(){
+      $("#dragbooth-button").toggleClass("active");
+      canDragBooth = !canDragBooth;
+    }
 
+    svg.on(".zoom", null);
+
+    function zoomButtonHandler(){
+      $("#zoom-button").toggleClass("active");
+      canZoom = !canZoom;
+      if(canZoom){
+        svg.call(zoom)
+      } else {
+        svg.on(".zoom", null);
+      }
+    }
+
+    // console.log(stateArray);
+
+    function undoButtonHandler(){
+      // $("#undo-button").click("active");
+      var index = (stateCurrentPointer + 5 - 1 ) % MAXUNDOCOUNT;
+      stateCurrentPointer -= 1;
+      console.log("start: " + stateStartPointer, "current: " + index, "end: " + stateEndPointer);
+      if (stateCurrentPointer != stateEndPointer){
+        // console.log(stateCurrentPointer);
+        booth.select("#booth-id-"+ stateArray[index].project_id )
+              .attr("x", stateArray[index].position_x)
+              .attr("y", stateArray[index].position_y)
+        data[stateArray[index].project_id - 1].position_x = stateArray[index].position_x;
+        data[stateArray[index].project_id - 1].position_y = stateArray[index].position_y;
+      }  
+    }
 
     console.log(data);
 </script>

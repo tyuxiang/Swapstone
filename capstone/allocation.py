@@ -43,7 +43,7 @@ class Group:
             # do we need to check for width?
             if(self.point[0]+booth.length_pixel <=self.end[0]):
                 booth.position_x = self.point[0]
-                print(self.point[0])
+                # print(self.point[0])
                 booth.position_y = self.point[1] - booth.width_pixel
                 self.point[0] = self.point[0] + booth.length_pixel
                 booth.rotation=0
@@ -56,7 +56,7 @@ class Group:
             if(self.point[1]+booth.length_pixel <=self.end[1]):
                 booth.rotation = 0
                 booth.position_x = self.point[0]
-                booth.position_y = self.point[1] + booth.width_pixel
+                booth.position_y = self.point[1]
                 self.point[1] = self.point[1] + booth.length_pixel
                 print("vertical",booth.project_id,booth.position_x,booth.position_y)
                 booth.save()
@@ -113,7 +113,7 @@ def allocate(booths):
   
     industries = [str(i) for i in range(1,5)]
 
-    print("Starting allocation algorithm")
+    # print("Starting allocation algorithm")
     #booths = deepcopy(final_booths)
     #booths.objects.order_by('-area','industry')
     booths_byindustry =[]

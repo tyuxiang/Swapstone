@@ -38,16 +38,19 @@
 
   <link href="{% static 'css/home.css' %}" rel="stylesheet">
   <title>Main Page</title>
-      <body> 
-    <nav class="navbar fixed-top flex-md-nowrap p-0 shadow">
-  <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{% url 'home' %}">Swapstone</a>
-  <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
-  <ul class="navbar-nav px-3">
-    <li class="nav-item text-nowrap">
-      <a class="nav-link" href="{% url 'logout' %}">Log out</a>
-    </li>
-  </ul>
-</nav>
+  <body> 
+    <nav class="navbar fixed-top flex-md-nowrap p-0 shadow justify-content-between">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{% url 'home' %}">Swapstone</a>
+      <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
+      <div class="d-flex justify-content-end">
+        <a class="nav-link" href="{% url 'change_password' %}">Change password</a>
+        <ul class="navbar-nav px-3">
+          <li class="nav-item text-nowrap">
+            <a class="nav-link" href="{% url 'logout' %}">Log out</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
 <div class="container-fluid">
   <div class="row">

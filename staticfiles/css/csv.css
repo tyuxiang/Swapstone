@@ -91,3 +91,54 @@ body,html{
 .nav-link{
   color: #000000;
 }
+
+.password-form-subunit{
+  width: 100%;
+  max-width: 300px;
+  padding: 1px;
+  margin: auto;
+}
+.password-form-subunit .form-control {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+.password-form-subunit input[name="old_password"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.password-form-subunit input[name="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.password-form-subunit input[name="first_password"] {
+  margin-bottom: -1px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.password-form-subunit .label {
+  margin-bottom: 40px;
+}
+.helptext li {
+  list-style-type: none;
+  text-align: left;
+}
+.errorlist {
+    padding: 0;
+    list-style-type: none;
+}
+.helptext{
+  border: none;
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 12px;
+  margin-bottom: 20px;
+}

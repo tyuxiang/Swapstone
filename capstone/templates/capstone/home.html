@@ -197,15 +197,6 @@
     data.push(parseData[i].fields)
 
     console.log(parseData[i].fields.width)
-    // data.push(preData[i].fields)
-    // data.push({"project_id" : parseData[i]["fields"]["project_id"],
-    //             "position_x" : parseInt(parseData[i]["fields"]["position_x"]),
-    //             "position_y" : parseInt(parseData[i]["fields"]["position_y"]),
-    //             "height" : parseInt(parseData[i]["fields"]["length_pixel"]),
-    //             "width" : parseInt(parseData[i]["fields"]["width_pixel"]),
-    //             "group" : parseData[i]["fields"]["project_name"],
-    //             "rotate" : parseInt(parseData[i]["fields"]["rotation"]),
-    //             })
   }
   console.log(data);
 
@@ -227,17 +218,6 @@
   var currentZoomScale = 1;
   var currentZoomTranslate = {'x' : 0, 'y' : 0};
 
-  // function initialize(){
-  //   // c
-  //   data.forEach(function(booth){
-  //     booth.position_x = booth.position_x * ratiox;
-  //     booth.position_y = booth.position_y * ratioy;
-  //     booth.length_pixel = booth.length_pixel * ratioy;
-  //     booth.width_pixel = booth.width_pixel * ratiox;
-
-  //   })
-  // }
-
   function checkValidXY(i){
     if (data[i].position_x < 0){
       return false;
@@ -247,8 +227,6 @@
     }
     return true;
   }
-
-  // initialize();
 
   // inititalizing the axis and scale
   var xscale = d3.scaleLinear()
@@ -579,7 +557,6 @@
           .call(drag)
           .on("click", function(d){
             curBoothID = d.project_id;
-            // curBoothNameID =
             $("#selected-booth-name").text("Selected Booth: " + d.project_name);
             $("#input-x").val(Math.round(d.position_x));
             $("#input-y").val(Math.round(d.position_y));

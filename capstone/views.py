@@ -9,7 +9,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
+<<<<<<< HEAD
 from django.http import JsonResponse
+=======
+from django.views.decorators.csrf import csrf_exempt
+
+from django.http import JsonResponse, HttpResponse
+>>>>>>> a40a738dc77a680bd9b5b076036cba4847abacc4
 
 # Create your views here.
 @login_required
@@ -71,4 +77,13 @@ def reset_password(request):
 		# Reset Password
 		print("not done yet")
 	return render(request,'registration/reset_password.html')
+
+@csrf_exempt
+def change_allocation(request):
+	if request.method == "POST": #os request.GET()
+		get_value= request.body
+		# Do your logic here coz you got data in `get_value`
+		print(type(get_value))
+		print(get_value)
+		return JsonResponse({"success":True})
 

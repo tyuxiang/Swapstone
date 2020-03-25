@@ -81,7 +81,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'csv' %}">
+            <a class="nav-link" href="{% url 'csv'%}">
               <span data-feather="file"></span>
               Load CSV File
             </a>
@@ -153,7 +153,10 @@
             <a class="booth-link">Booth #1</a>
           </li> -->
         </ul>
-        <button class="allocate-btn btn-lg btn-dark btn-block">Allocate</button>
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+          {% csrf_token %}
+          <button type="submit" class="allocate-btn btn-lg btn-dark btn-block">Allocate</button>
+        </form>
       </div>
     </nav>
   </div>

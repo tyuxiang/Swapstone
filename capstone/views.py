@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.files.storage import FileSystemStorage
 from .load_csv_data import load_csv_data
 from .allocation import allocate
@@ -13,15 +13,16 @@ from django.contrib import messages
 
 # Create your views here.
 @login_required
-def home(request,map=None):
+def home(request):
 
 	print("loading stuff")
 	user = request.user
 	maps = Map.objects.filter(user=user)
 	x = len(maps)-1
 	booth = Booth.objects.filter(saved_map = maps[x])
-	allocate(booth)
-	
+	# allocate(booth)
+	if request.method == 'POST':
+		allocate(booth)
 	# if  not map:
 	# else:
 	# 	booth = Booth.objects.filter(saved_map = map)
@@ -38,10 +39,10 @@ def csv(request):
 		fs = FileSystemStorage()
 		filename = fs.save(myfile.name, myfile)
 		uploaded_file_url =filename
-		map = load_csv_data(uploaded_file_url,request)
-		booths = Booth.objects.filter(saved_map = map)
-		allocate(booths)
-		return home(request,map)
+		load_csv_data(uploaded_file_url,request)
+		# booths = Booth.objects.filter(saved_map = map)
+		# allocate(booths)
+		return redirect('/')
 	return render(request, 'capstone/csv.html')
 
 def create_account(request):

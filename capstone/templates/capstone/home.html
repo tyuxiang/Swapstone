@@ -387,17 +387,25 @@
           console.log("start: " + stateStartPointer, "current: " + stateCurrentPointer, "end: " +stateEndPointer)
 
           //POST TO DATABASE
-          var tobeSent = jQuery.param(data);
-          $.ajax({
-              url: '/accounts/change_allocation',
-              type: 'POST',
-              contentType: 'application/json; charset=utf-8',
-              data: tobeSent,
-              dataType: 'text',
-              success: function(result) {
-                  alert(result.Result);
-              }
-          });
+          var tobeSent = $.param(data);
+          var jsonString = JSON.stringify(data);
+          // console.log(jsonString)
+          console.log(data);
+          // console.log(cookies.crsftoken);
+          // $.ajax({
+          //     url: '/accounts/change_allocation',
+          //     type: 'POST',
+          //     contentType: 'application/json; charset=utf-8',
+          //     data: data,
+          //     dataType: 'text',
+          // });
+
+          $.post('accounts/change_allocation', jsonString) ;
+          // const xhr = new XMLHttpRequest();
+
+          // xhr.open("POST", "accounts/change_allocation");
+          // xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
+          // xhr.send("data");
 
 
         }

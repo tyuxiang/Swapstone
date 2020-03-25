@@ -130,23 +130,20 @@
               <label>Y : </label><input type = "text" id = "input-y">
             </p>
             <p>
-              <label>Pixel Height : </label><input type = "text" id = "input-height">
+              <label>Height : </label><input type = "text" id = "input-length">
             
-              <label>Pixel Width : </label><input type = "text" id = "input-width">  
+              <label>Width : </label><input type = "text" id = "input-width">  
             </p>
             <p>
-              <label>Actual Length : </label><label id = "selected-booth-actual-length"></label>
-            
-              <label>Actual Width : </label><label id = "selected-booth-actual-width"></label>
-            
-              <label>Actual Area : </label><label id = "selected-booth-actual-area" > </label>
-            </p>
-            <p>
+              <label>Area : </label><label id = "selected-booth-actual-area" > </label>
+
               <label>Project Name : </label><label id = "selected-booth-project-name"></label>
+            </p>
+            <p>
+              <label>Industry : </label><label id = "selected-booth-industry"></label>
 
               <label>Project ID : </label><label id = "selected-booth-project-id"></label>
 
-              <label>Industry : </label><label id = "selected-booth-industry"></label>
             </p>
             <button id = "remove-button">Remove</button>
           </div>          
@@ -185,6 +182,8 @@
   
   const ratiox = MAX_WIDTH / 1000;
   const ratioy = MAX_HEIGHT / 1000;
+
+  const mapRatio = 13.397; //pixel / meter
 
   //for zoom functionality
   const MAX_TRANSLATE_X = MAX_WIDTH / 2;
@@ -347,10 +346,8 @@
           $("#selected-booth-name").text("Selected Booth: " + d.project_name);
           $("#input-x").val(Math.round(d.position_x));
           $("#input-y").val(Math.round(d.position_y));
-          $("#input-width").val(Math.round(d.width_pixel));
-          $("#input-height").val(Math.round(d.length_pixel));
-          $("#selected-booth-actual-length").text(d.length);
-          $("#selected-booth-actual-width").text(d.width);
+          $("#input-width").val(Math.round(d.width));
+          $("#input-length").val(Math.round(d.length));
           $("#selected-booth-actual-area").text(d.area);
           $("#selected-booth-project-name").text(d.project_name);
           $("#selected-booth-project-id").text(d.project_id);
@@ -433,30 +430,34 @@
         });
   }).keyup();
 
-  $("#input-height").keyup(function(){
+  $("#input-length").keyup(function(){
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
         .attr("height", function(d){
-          d.length_pixel = parseInt(value);
+          d.length = parseFloat(value);
+          d.length_pixel = d.length * mapRatio;
           return d.length_pixel;
         });
     svg.select("#booth-text-id-" + curBoothID)
         .attr("y", function(d){
           return d.position_y + d.length_pixel / 2;
         });
+    // $('#selected-booth-actual-area').text(data[curBoothID].width * data[curBoothID].length);
   }).keyup();
 
   $("#input-width").keyup(function(){
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
         .attr("width", function(d){
-          d.width_pixel = parseInt(value);
+          d.width = parseFloat(value);
+          d.width_pixel = d.width * mapRatio;
           return d.width_pixel;
         });
     svg.select("#booth-text-id-" + curBoothID)
         .attr("x", function(d){
           return d.position_x + d.width_pixel / 2;
         });
+    // $('#selected-booth-actual-area').text(data[curBoothID].width * data[curBoothID].length);
   }).keyup();
 
   $("#remove-button").click(function(){
@@ -602,10 +603,8 @@
             $("#selected-booth-name").text("Selected Booth: " + d.project_name);
             $("#input-x").val(Math.round(d.position_x));
             $("#input-y").val(Math.round(d.position_y));
-            $("#input-width").val(Math.round(d.width_pixel));
-            $("#input-height").val(Math.round(d.length_pixel));
-            $("#selected-booth-actual-length").text(d.length);
-            $("#selected-booth-actual-width").text(d.width);
+            $("#input-width").val(Math.round(d.width));
+            $("#input-length").val(Math.round(d.length));
             $("#selected-booth-actual-area").text(d.area);
             $("#selected-booth-project-name").text(d.project_name);
             $("#selected-booth-project-id").text(d.project_id);
@@ -638,8 +637,8 @@
         // $('#booth-item-container-' + data[i].id).append('<p><label>Y : </label><input type = "text" id = "booth-item-input-y-' + data[i].id + '"></p>');
         // $('#booth-item-input-y-' + data[i].id).val(-1); 
 
-        // $('#booth-item-container-' + data[i].id).append('<p><label>Height : </label><input type = "text" id = "booth-item-input-height-' + data[i].id + '"></p>');
-        // $('#booth-item-input-height-' + data[i].id).val(Math.round(data[i].height)); 
+        // $('#booth-item-container-' + data[i].id).append('<p><label>Height : </label><input type = "text" id = "booth-item-input-length-' + data[i].id + '"></p>');
+        // $('#booth-item-input-length-' + data[i].id).val(Math.round(data[i].height)); 
 
         // $('#booth-item-container-' + data[i].id).append('<p><label>Width : </label><input type = "text" id = "booth-item-input-width-' + data[i].id + '"></p>');
         // $('#booth-item-input-width-' + data[i].id).val(Math.round(data[i].width)); 
@@ -656,7 +655,7 @@
           var thisID = $(this).attr("id").slice(18);
           // data[thisID].x =  parseInt($('#booth-item-input-x-' + data[thisID].id).val());
           // data[thisID].y =  parseInt($('#booth-item-input-y-' + data[thisID].id).val());
-          // data[thisID].height =  parseInt($('#booth-item-input-height-' + data[thisID].id).val());
+          // data[thisID].height =  parseInt($('#booth-item-input-length-' + data[thisID].id).val());
           // data[thisID].width =  parseInt($('#booth-item-input-width-' + data[thisID].id).val());
           // $('#booth-container-id-' + thisID).append('<rect x = "100" y = "100" height = "100" width= "100" class = "booth" id = booth-id-' + thisID + '></rect>');
           booth.select('#booth-id-' + thisID)

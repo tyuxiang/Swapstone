@@ -26,9 +26,9 @@ def home(request):
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
 
 
+	return render(request,'capstone/home.html',{'booth':booths})
 
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
-	return render(request,'capstone/home.html',{'booth':booths})
 
 @login_required
 def csv(request):

@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 from .models import Booth, Map
 from django.core import serializers
 from django.contrib.auth.models import User
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
 
 
 # Create your views here.
@@ -54,10 +57,16 @@ def create_account(request):
 
 @login_required
 def change_password(request):
+	form = PasswordChangeForm(request.user)
 	if request.method == 'POST':
-		# Change password
-		print("not done yet")
-	return render(request,'registration/change_password.html')
+		form = PasswordChangeForm(user=request.user, data=request.POST)
+		if form.is_valid():
+			form.save()
+			update_session_auth_hash(request, form.user)
+			messages.success(request, 'Your password was successfully updated!')
+		else:
+			messages.error(request, 'Please correct the error above')
+	return render(request,'registration/change_password.html',{'form':form})
 
 def reset_password(request):
 	if request.method == 'POST':

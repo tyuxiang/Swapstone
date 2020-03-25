@@ -7,7 +7,9 @@ class Map(models.Model):
     name = models.CharField(max_length = 100)
     user = models.ForeignKey(User, related_name='maps',on_delete=models.CASCADE)
 
-#class CurrentMap(model.Models):
+class CurrentMap(models.Model):
+    user = models.ForeignKey(User,related_name = 'curr_map',on_delete=models.CASCADE)
+    map_reference = models.ForeignKey(Map,on_delete=models.CASCADE)
 
 
 class Booth(models.Model):

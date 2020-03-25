@@ -1,8 +1,9 @@
 import csv
-import pandas as pd
+
 from capstone.models import Booth, Map
 
 def load_csv_data(file_name,request):
+    import pandas as pd
     read_file = pd.read_excel ("./"+file_name)
     read_file.to_csv ("./data.csv", index = None, header=True)
     map = Map()

@@ -116,7 +116,7 @@
         </div>
         <div id = "selection-container">
           <h2 id = "selected-booth-name">Selected Booth: </h2>
-          <form>
+          <div>
             <p>
               <label>X : </label><input type = "text" id = "input-x">
            
@@ -142,7 +142,7 @@
               <label>Industry : </label><label id = "selected-booth-industry"></label>
             </p>
             <button id = "remove-button">Remove</button>
-          </form>          
+          </div>          
         </div>
       </div>
     </main>
@@ -168,7 +168,7 @@
 <script>
   // initialize constant
   var img = new Image();
-  img.src = "{% static 'images/scratch.jpg' %}"
+  img.src = "{% static 'images/campuscentre-lvl1.jpg' %}"
 
   const MAX_WIDTH = img.width;
   const MAX_HEIGHT = img.height;
@@ -200,15 +200,6 @@
     data.push(parseData[i].fields)
 
     console.log(parseData[i].fields.width)
-    // data.push(preData[i].fields)
-    // data.push({"project_id" : parseData[i]["fields"]["project_id"],
-    //             "position_x" : parseInt(parseData[i]["fields"]["position_x"]),
-    //             "position_y" : parseInt(parseData[i]["fields"]["position_y"]),
-    //             "height" : parseInt(parseData[i]["fields"]["length_pixel"]),
-    //             "width" : parseInt(parseData[i]["fields"]["width_pixel"]),
-    //             "group" : parseData[i]["fields"]["project_name"],
-    //             "rotate" : parseInt(parseData[i]["fields"]["rotation"]),
-    //             })
   }
   console.log(data);
 
@@ -230,17 +221,6 @@
   var currentZoomScale = 1;
   var currentZoomTranslate = {'x' : 0, 'y' : 0};
 
-  // function initialize(){
-  //   // c
-  //   data.forEach(function(booth){
-  //     booth.position_x = booth.position_x * ratiox;
-  //     booth.position_y = booth.position_y * ratioy;
-  //     booth.length_pixel = booth.length_pixel * ratioy;
-  //     booth.width_pixel = booth.width_pixel * ratiox;
-
-  //   })
-  // }
-
   function checkValidXY(i){
     if (data[i].position_x < 0){
       return false;
@@ -250,8 +230,6 @@
     }
     return true;
   }
-
-  // initialize();
 
   // inititalizing the axis and scale
   var xscale = d3.scaleLinear()
@@ -295,8 +273,27 @@
       ;
 
   // include zoom and drag functionality
-  var zoom;
-  
+  var zoom = d3.zoom()
+      .scaleExtent([1, 2])
+      .translateExtent([
+        [0, 0],
+        [MAX_WIDTH, MAX_HEIGHT]
+      ])
+      .on("zoom", function(d){
+        if(canZoom){
+          // currentZoomScale = d3.event.transform.k;
+          // console.log(currentZoomScale)
+          // gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
+          // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
+          image.attr("transform", d3.event.transform);
+          // .attr("clip-path","url(#clip)");
+          booth.attr("transform", d3.event.transform);
+          // .attr("clip-path","url(#clip)");
+          // .attr("clip-path","url(#clip)");
+          
+        }
+      });
+
 //  include drag booth functionality
   var drag = d3.drag()
       .on("start", function(){
@@ -455,12 +452,13 @@
   }).keyup();
 
   $("#remove-button").click(function(){
-    booth.select('#booth-id-' + curBoothID)
-        .attr("visibility", "hidden");
-        booth.select('#booth-text-id-' + curBoothID)
-        .attr("visibility", "hidden");
+      console.log(curBoothID)
+      booth.select('#booth-id-' + curBoothID)
+        .attr("visibility", "hidden");  
+      booth.select('#booth-text-id-' + curBoothID)
+      .attr("visibility", "hidden");
       $("#booth-list").append('<li id = "booth-item-' + curBoothID + '"><a class = "booth-link">' + data[curBoothID - 1].project_name + '</a></li>');
-      $("#booth-list").append('<form id = "booth-item-container-' + curBoothID + '" class = "booth-item-containers">  </form>');
+      $("#booth-list").append('<div id = "booth-item-container-' + curBoothID + '" class = "booth-item-containers">  </div>');
 
       $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-length-' + curBoothID + '" ><label> Length </label><label> : ' + data[curBoothID - 1].length + '</label> </p>');
       $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-width-' + curBoothID + '" ><label> Width </label><label> : ' + data[curBoothID - 1].width + '</label> </p>');
@@ -486,6 +484,8 @@
       $('#booth-item-'+ curBoothID).click(function(i) {
         $('#booth-item-container-' + curBoothID).toggle();
       })
+
+      // curBoothID = null;
   })
 
   // image
@@ -496,7 +496,7 @@
                 .attr("clip-path","url(#clip)")
                 .attr('x', 0)
                 .attr('y', 0)
-                .attr("href", "{% static 'images/scratch.jpg' %}")
+                .attr("href", "{% static 'images/campuscentre-lvl1.jpg' %}")
                 ;
   
   // axis handler
@@ -582,7 +582,6 @@
           .call(drag)
           .on("click", function(d){
             curBoothID = d.project_id;
-            // curBoothNameID =
             $("#selected-booth-name").text("Selected Booth: " + d.project_name);
             $("#input-x").val(Math.round(d.position_x));
             $("#input-y").val(Math.round(d.position_y));
@@ -598,6 +597,7 @@
           ;
 
     svg.call(zoom);
+    svg.on('.zoom', null);
 
 
     // <ul class="list-of-booths flex-column" id = "booth-list">

@@ -43,7 +43,7 @@ class Group:
             # do we need to check for width?
             if(self.point[0]+booth.length_pixel <=self.end[0]):
                 booth.position_x = self.point[0]
-                print(self.point[0])
+                # print(self.point[0])
                 booth.position_y = self.point[1] + booth.width_pixel
                 self.point[0] = self.point[0] + booth.length_pixel
                 booth.rotation=0
@@ -107,7 +107,7 @@ def allocate(booths):
   
     industries = [str(1),str(2)]
 
-    print("Starting allocation algorithm")
+    # print("Starting allocation algorithm")
     #booths = deepcopy(final_booths)
     #booths.objects.order_by('-area','industry')
     booths_byindustry =[]

@@ -10,6 +10,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 
+from django.http import JsonResponse
 
 # Create your views here.
 @login_required
@@ -27,6 +28,9 @@ def home(request,map=None):
 	# 	booth = Booth.objects.filter(saved_map = map)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
+
+
+
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
 	return render(request,'capstone/home.html',{'booth':booths})
 	#return render(request,'capstone/home.html')

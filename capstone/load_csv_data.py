@@ -1,15 +1,25 @@
 import csv
-
+import pandas as pd
 from capstone.models import Booth, Map
 
 def load_csv_data(file_name,request):
-    import pandas as pd
+    
     read_file = pd.read_excel ("./"+file_name)
     read_file.to_csv ("./data.csv", index = None, header=True)
+
+    #creating new map for user
     map = Map()
     map.name= file_name
     map.user= request.user
     map.save()
+
+    #setting curr_map to this map
+    user_maps = Map.objects.filter(user=request.user)    
+    curr_map = user_maps[0]
+    booths = curr_map.booths
+    for booth in booths.all():
+        booth.delete()
+
     with open("./data.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             print("Data loaded successfully")
@@ -29,5 +39,10 @@ def load_csv_data(file_name,request):
                 booth.industry = row["Industry"]
                 booth.saved_map = map
                 booth.save()
+                curr_map_booth = booth
+                curr_map_booth.pk = None
+                curr_map_booth.saved_map = curr_map
+                curr_map_booth.save()
+                
     return map
             

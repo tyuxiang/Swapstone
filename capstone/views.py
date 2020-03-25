@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.files.storage import FileSystemStorage
 from .load_csv_data import load_csv_data
 from .allocation import allocate
@@ -13,23 +13,18 @@ from django.contrib import messages
 
 # Create your views here.
 @login_required
-def home(request,map=None):
-
+def home(request):
 	print("loading stuff")
 	user = request.user
-	maps = user.maps.all()
-	map = maps[len(maps)-1]
-	booth = map.booths.all()
-	allocate(booth)
-	
-	# if  not map:
-	# else:
-	# 	booth = Booth.objects.filter(saved_map = map)
+	user_maps = Map.objects.filter(user=request.user)    
+	curr_map = user_maps[0]
+	booth = curr_map.booths.all()
+	if request.method == 'POST':
+		allocate(booth)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
 	return render(request,'capstone/home.html',{'booth':booths})
-	#return render(request,'capstone/home.html')
 
 @login_required
 def csv(request):
@@ -38,17 +33,18 @@ def csv(request):
 		fs = FileSystemStorage()
 		filename = fs.save(myfile.name, myfile)
 		uploaded_file_url =filename
-		map = load_csv_data(uploaded_file_url,request)
-		booths = map.booths.all()
-		allocate(booths)
-		return home(request,map)
+		load_csv_data(uploaded_file_url,request)
+		return redirect('/')
 	return render(request, 'capstone/csv.html')
 
 def create_account(request):
 	if request.method == 'POST':
 		# Create user and save to the database
 		user = User.objects.create_user(request.POST['username'], '', request.POST['password'])
-
+		map = Map()
+		map.user = user
+		map.name = "current_map"
+		map.save()
 		# Update fields and then save again
 		# user.first_name = 'John'
 		# user.last_name = 'Citizen'

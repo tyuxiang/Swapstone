@@ -24,30 +24,27 @@ class Group:
     def add(self, booth):
         if self.shape == "square":
             # do we need to check for width?
-            print("Adding to square space")
             if(self.point[0]+booth.length_pixel <=self.end[0]):
                 booth.position_x = self.point[0]
+                print(self.point[0])
                 booth.position_y = self.point[1] + booth.width_pixel
                 self.point[0] = self.point[0] + booth.length_pixel
                 booth.save()
-                print("Booth updated")
                 return True
             else:
                 return False
         elif self.shape == "line":
-            print("Adding to line space")
             theta = 90 - self.angle
             x =booth.length_pixel*Decimal(math.sin(theta))
             if(self.point[0]+x<=self.end[0]):
                 if(self.start[0]==125):
                     booth.project_name = "Left"
                 booth.position_x = self.point[0] + booth.width_pixel*Decimal(math.sin(math.radians(theta)))   
-                booth.position_y = self.point[1] + booth.width_pixel*Decimal(math.cos(math.radians(theta)))
+                booth.position_y = self.point[1] - booth.width_pixel*Decimal(math.cos(math.radians(theta)))
                 booth.rotation = self.angle
                 self.point[0] = self.point[0] + booth.length_pixel*Decimal(math.sin(math.radians(theta)))
                 self.point[1] = self.point[1] + booth.length_pixel*Decimal(math.cos(math.radians(theta)))
                 booth.save()
-                print("Booth updated")
                 return True
             else:
                 return False
@@ -71,11 +68,11 @@ class Group:
 
 
 def allocate(booths):
-    groups = [Group(shape="square",start = (280,225),end = (480,225)),
-    Group(shape="square",start = (220,400),end = (540,400)),
-    Group(shape="line",start=(125,380),end= (240,500),downward_sloping = True),
-    Group(shape="line",start = (525,480),end=(675,340),downward_sloping =False)]
-    # Group(centre = (680,237),start = (570,280),end = (760,170),radius = 110, shape = "circle"),
+    groups = [Group(shape="square",start = (270,240),end = (500,240)),
+    Group(shape="square",start = (255,340),end = (540,340)),
+    Group(shape="line",start=(80,380),end= (230,510),downward_sloping = True),
+    Group(shape="line",start = (500,515),end=(640,360),downward_sloping =False)]
+    # Group(centre = (82,247),start = (80,130),end = (80,337),radius = 110, shape = "circle"),
     # Group(centre= (80,250),start = (30,160),end = (100,340),radius = 110,shape = "circle")]
     industries = [str(1),str(2)]
     i = 0
@@ -84,17 +81,11 @@ def allocate(booths):
     #booths = deepcopy(final_booths)
     for industry in industries:
         for booth in booths:
-            print("Choosing booth")
-            print(type(industry))
-            print(type(booth.industry))
-            print(booth.industry == industry)
             if booth.industry == industry:
-                print("Adding booth")
                 check = 0
                 while not groups[i].add(booth):
                     check+=1
                     if check>=len(groups):
-                        print("Not added")
                         break
                     i = (i+1) % len(groups)
                 i = (i+1) % len(groups)

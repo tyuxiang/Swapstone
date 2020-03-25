@@ -11,7 +11,10 @@ from django.contrib.auth.models import User
 # Create your views here.
 @login_required
 def home(request,map=None):
-	if not map:
+
+	print("loading stuff")
+
+	if  not map:
 		user = request.user
 		maps = Map.objects.filter(user=user)
 		x = len(maps)-1
@@ -34,7 +37,7 @@ def csv(request):
 		map = load_csv_data(uploaded_file_url,request)
 		booths = Booth.objects.filter(saved_map = map)
 		allocate(booths)
-		# return home(request,map)
+		return home(request,map)
 	return render(request, 'capstone/csv.html')
 
 def create_account(request):

@@ -6,18 +6,25 @@ from django.contrib.auth.decorators import login_required
 from .models import Booth, Map
 from django.core import serializers
 from django.contrib.auth.models import User
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
 
 
 # Create your views here.
 @login_required
 def home(request,map=None):
-	if not map:
-		user = request.user
-		maps = Map.objects.filter(user=user)
-		x = len(maps)-1
-		booth = Booth.objects.filter(saved_map = maps[x])
-	else:
-		booth = Booth.objects.filter(saved_map = map)
+
+	print("loading stuff")
+	user = request.user
+	maps = Map.objects.filter(user=user)
+	x = len(maps)-1
+	booth = Booth.objects.filter(saved_map = maps[x])
+	allocate(booth)
+	
+	# if  not map:
+	# else:
+	# 	booth = Booth.objects.filter(saved_map = map)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
@@ -34,7 +41,7 @@ def csv(request):
 		map = load_csv_data(uploaded_file_url,request)
 		booths = Booth.objects.filter(saved_map = map)
 		allocate(booths)
-		# return home(request,map)
+		return home(request,map)
 	return render(request, 'capstone/csv.html')
 
 def create_account(request):
@@ -50,10 +57,16 @@ def create_account(request):
 
 @login_required
 def change_password(request):
+	form = PasswordChangeForm(request.user)
 	if request.method == 'POST':
-		# Change password
-		print("not done yet")
-	return render(request,'registration/change_password.html')
+		form = PasswordChangeForm(user=request.user, data=request.POST)
+		if form.is_valid():
+			form.save()
+			update_session_auth_hash(request, form.user)
+			messages.success(request, 'Your password was successfully updated!')
+		else:
+			messages.error(request, 'Please correct the error above')
+	return render(request,'registration/change_password.html',{'form':form})
 
 def reset_password(request):
 	if request.method == 'POST':

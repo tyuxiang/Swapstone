@@ -136,6 +136,11 @@ body,html{
   color: #000000;
 }
 
+.change-password{
+  align-items: right;
+  color: #000000;
+}
+
 /*.navbar .form-control {
   padding: .75rem 1rem;
   border-width: 0;

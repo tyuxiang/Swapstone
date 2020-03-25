@@ -168,7 +168,7 @@
 <script>
   // initialize constant
   var img = new Image();
-  img.src = "{% static 'images/scratch.jpg' %}"
+  img.src = "{% static 'images/campuscentre-lvl1.jpg' %}"
 
   const MAX_WIDTH = img.width;
   const MAX_HEIGHT = img.height;
@@ -484,6 +484,8 @@
       $('#booth-item-'+ curBoothID).click(function(i) {
         $('#booth-item-container-' + curBoothID).toggle();
       })
+
+      // curBoothID = null;
   })
 
   // image
@@ -494,7 +496,7 @@
                 .attr("clip-path","url(#clip)")
                 .attr('x', 0)
                 .attr('y', 0)
-                .attr("href", "{% static 'images/scratch.jpg' %}")
+                .attr("href", "{% static 'images/campuscentre-lvl1.jpg' %}")
                 ;
   
   // axis handler

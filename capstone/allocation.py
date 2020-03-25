@@ -44,7 +44,7 @@ class Group:
             if(self.point[0]+booth.length_pixel <=self.end[0]):
                 booth.position_x = self.point[0]
                 # print(self.point[0])
-                booth.position_y = self.point[1] + booth.width_pixel
+                booth.position_y = self.point[1] - booth.width_pixel
                 self.point[0] = self.point[0] + booth.length_pixel
                 booth.rotation=0
                 print("horizontal",booth.project_id,booth.position_x,booth.position_y)
@@ -56,7 +56,7 @@ class Group:
             if(self.point[1]+booth.length_pixel <=self.end[1]):
                 booth.rotation = 0
                 booth.position_x = self.point[0]
-                booth.position_y = self.point[1] + booth.width_pixel
+                booth.position_y = self.point[1]
                 self.point[1] = self.point[1] + booth.length_pixel
                 print("vertical",booth.project_id,booth.position_x,booth.position_y)
                 booth.save()
@@ -111,7 +111,7 @@ def allocate(booths):
     groups = [space_1,space_2,space_3,space_4,space_5,space_6,space_7,space_9]
 
   
-    industries = [str(1),str(2)]
+    industries = [str(i) for i in range(1,5)]
 
     # print("Starting allocation algorithm")
     #booths = deepcopy(final_booths)

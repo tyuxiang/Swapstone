@@ -6,8 +6,8 @@ from django.contrib.auth.models import User
 # Create your tests here.
 
 
-class UploadTest(StaticLiveServerTestCase):
-    def setUpTestData(cls):
+class MySeleniumTests(StaticLiveServerTestCase):
+    def setUpClass(cls):
         super().setUpClass()
         cls.selenium = WebDriver()
         cls.selenium.implicitly_wait(10)

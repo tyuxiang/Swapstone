@@ -102,13 +102,14 @@ def allocate(booths):
     space_1 = Group(shape="vertical",start = (85,120),end = (85,255))
     space_2 = Group(shape="horizontal",start = (130,100),end = (275,100))
     space_3 = Group(shape="vertical",start = (280,120),end = (280,255))
-    space_4 = Group(shape="slanted",downward_sloping = True,start = (140,320),end = (315,450))
+    space_4 = Group(shape="slanted",downward_sloping = True,start = (140,300),end = (315,450))
     space_5 = Group(shape="horizontal",start = (330,145),end = (580,145))
     space_6 = Group(shape="horizontal",start = (330,280),end = (580,280))
     space_7 = Group(shape="vertical",start = (590,125),end = (590,245))
-    #space_8 = Group(shape="horizontal",start = (330,280),end = (580,280))
-    space_9 = Group(shape="slanted",downward_sloping = False,start = (570,440),end = (740,300))
-    groups = [space_1,space_2,space_3,space_4,space_5,space_6,space_7,space_9]
+    space_8 = Group(shape="slanted",start = (630,70),end = (730,50))
+    space_9 = Group(shape="slanted",downward_sloping = False,start = (540,430),end = (772,210))
+    space_10 = Group(shape="vertical",start = (804,110),end = (804,239))
+    groups = [space_1,space_2,space_3,space_4,space_5,space_6,space_7,space_8,space_9,space_10]
 
   
     industries = [str(i) for i in range(1,5)]

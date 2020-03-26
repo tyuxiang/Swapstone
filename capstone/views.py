@@ -74,17 +74,7 @@ def reset_password(request):
 		print("not done yet")
 	return render(request,'registration/reset_password.html')
 
-# @csrf_exempt
-# def change_allocation(request):
-# 	if request.method == "POST": #os request.GET()
-# 		print(type(request), request)
-# 		get_value = request.body
-# 		# myDict = dict(queryDict.iterlists())
-# 		# Do your logic here coz you got data in `get_value`
-# 		# print(type(get_value))
-# 		print(get_value)
-# 		# print("printing after receiving data:" + get_value)
-# 		# return JsonResponse({"success":True})
+# @csrf_exempt 
 # 	# return render(request,'accounts/change_allocation')
 
 # @api_view(['POST'])

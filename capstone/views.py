@@ -9,13 +9,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
-<<<<<<< HEAD
-from django.http import JsonResponse
-=======
 from django.views.decorators.csrf import csrf_exempt
 
 from django.http import JsonResponse, HttpResponse
->>>>>>> a40a738dc77a680bd9b5b076036cba4847abacc4
 
 # Create your views here.
 @login_required

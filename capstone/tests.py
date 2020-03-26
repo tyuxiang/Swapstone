@@ -27,8 +27,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
         second_password_input = self.selenium.find_element_by_name("password")
         second_password_input.send_keys('yeohje00')
         username_input = self.selenium.find_element_by_xpath("/html/body/div/form/div[1]/button").click()
-        print("hi")
-    
 
         self.selenium.get('%s%s' % (self.live_server_url, '/accounts/login/'))
         username_input = self.selenium.find_element_by_name("username")
@@ -62,8 +60,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
         second_password_input = self.selenium.find_element_by_name("password")
         second_password_input.send_keys('yeohje00')
         username_input = self.selenium.find_element_by_xpath("/html/body/div/form/div[1]/button").click()
-        print("hi")
-    
 
         self.selenium.get('%s%s' % (self.live_server_url, '/accounts/login/'))
         username_input = self.selenium.find_element_by_name("username")
@@ -77,7 +73,6 @@ class MySeleniumTests(StaticLiveServerTestCase):
         time.sleep(1)
         # Find upload button and upload file
         file_input = self.selenium.find_element_by_name("input")
-        # print(os.getcwd())
         file_input.send_keys(os.getcwd()+"/staticfiles/somedata.xlsx")
         self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/button').click()
         time.sleep(1)

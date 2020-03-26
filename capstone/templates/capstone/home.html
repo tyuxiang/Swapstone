@@ -520,7 +520,8 @@
                 .attr('y', 0)
                 .attr("href", "{% static 'images/campuscentre-lvl1.jpg' %}")
                 ;
-  
+  console.log(image);
+
   // axis handler
   var gX =  svg.append("g")
         .attr("id", "x-axis")
@@ -728,4 +729,6 @@
     }
 
     console.log(data);
+    
+   
 </script>

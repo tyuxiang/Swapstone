@@ -20,7 +20,9 @@ class MySeleniumTests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
     
-    def test_login(self):
+
+    def wrong_username(self):
+
         self.selenium.get('%s%s' % (self.live_server_url, '/accounts/login/'))
         # username_input = self.selenium.find_element_by_name("username")
         # username_input.send_keys('crystal')
@@ -42,15 +44,27 @@ class MySeleniumTests(StaticLiveServerTestCase):
         
         
 
+    
 
-    def wrong_username(self):
+    def test_login(self):
+        self.selenium.get('%s%s' % (self.live_server_url, '/'))
+        
+        username_input = self.selenium.find_element_by_xpath("/html/body/div/form/div[4]/a").click()
+        username_input = self.selenium.find_element_by_name("username")
+        username_input.send_keys('crystal')
+        password_input = self.selenium.find_element_by_name("first_password")
+        password_input.send_keys('yeohje00')
+        second_password_input = self.selenium.find_element_by_name("password")
+        second_password_input.send_keys('yeohje00')
+        username_input = self.selenium.find_element_by_xpath("/html/body/div/form/div[1]/button").click()
+        print("hi")
         self.selenium.get('%s%s' % (self.live_server_url, '/accounts/login/'))
         username_input = self.selenium.find_element_by_name("username")
         username_input.send_keys('crystal')
         password_input = self.selenium.find_element_by_name("password")
-        password_input.send_keys('yeohje11')
+        password_input.send_keys('yeohje00')
         self.selenium.find_element_by_xpath('/html/body/div/form/div[2]/button').click()
-        message = self.selenium.find_element_by_xpath('/html/body/div/form/p')
-        assert message =="Your username and password didn't match. Please try again."
-
-    
+        #self.selenium.find_element_by_xpath('/html/body/nav/a')
+        url = self.browser.current_url
+        
+        

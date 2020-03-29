@@ -139,5 +139,3 @@ class MySeleniumTests(StaticLiveServerTestCase):
         width_input.send_keys('4')
         width_offset = booth_test.get_attribute('width')
         self.assertEqual(width_offset, '53.588')
-
-# <rect class="booth" id="booth-id-1" x="465.14" y="484.56999999999994" height="28.57" width="28.57" clip-path="url(#clip)" transform="rotate(0 479.425 499.85499999999996)"></rect>

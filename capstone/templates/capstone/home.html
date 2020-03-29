@@ -298,7 +298,6 @@
         [MAX_WIDTH, MAX_HEIGHT]
       ])
       .on("zoom", function(d){
-        console.log(svg)
         if(canZoom){
           // gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
           // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
@@ -519,8 +518,10 @@
                 .attr('x', 0)
                 .attr('y', 0)
                 .attr("href", "{% static 'images/campuscentre-lvl1.jpg' %}")
+                .attr("transform", "translate(15,15) scale(1)")
                 ;
-  
+
+
   // axis handler
   var gX =  svg.append("g")
         .attr("id", "x-axis")
@@ -728,4 +729,6 @@
     }
 
     console.log(data);
+    
+   
 </script>

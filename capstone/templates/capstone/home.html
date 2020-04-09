@@ -255,10 +255,6 @@
   }
 
   // numberOfBooth
-<<<<<<< HEAD
-  // numberOfBooth
-=======
->>>>>>> 8f1d714924a147b9686804c54a9b7457eff24b40
   document.onreadystatechange = function () {
     if (document.readyState === "interactive") {
       var form_allocate = document.getElementById("allocate_btn");
@@ -646,7 +642,7 @@
 
       // }
       if(checkAssigned(i)){
-        numberOfAssignedBooth -= 1; 
+        var numberOfAssignedBooth = 1; 
         $('#booth-item-container-'+ data[i].project_id).hide();
         $('#booth-item-'+ data[i].project_id).hide();
       }

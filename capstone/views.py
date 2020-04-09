@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.files.storage import FileSystemStorage
 from .load_csv_data import load_csv_data
-from .allocation import allocate
+from .allocation import allocate,swap
 from django.contrib.auth.decorators import login_required
 from .models import Booth, Map
 from django.core import serializers
@@ -81,6 +81,7 @@ def reset_password(request):
 @csrf_exempt
 def change_allocation(request):
 	if request.method == "POST":
-		print(request.body)
+		print("change allocation data posted")
+		# print(request.body)
 
 	return JsonResponse({"success":True})

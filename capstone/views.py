@@ -26,6 +26,8 @@ def home(request):
 		allocate(booth)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
+	json_serializer = serializers.get_serializer("json")()
+	maps = json_serializer.serialize(user_maps, ensure_ascii = False)
 
 
 	return render(request,'capstone/home.html',{'booth':booths})

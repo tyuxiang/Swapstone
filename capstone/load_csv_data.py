@@ -4,7 +4,7 @@ from capstone.models import Booth, Map
 
 def load_csv_data(file_name,request):
     
-    read_file = pd.read_excel ("./"+file_name)
+    read_file = pd.read_excel ("./" + file_name)
     read_file.to_csv ("./data.csv", index = None, header=True)
 
     #creating new map for user

@@ -57,6 +57,8 @@
         display: table-cell;
       }
 
+
+
     </style>
   </head>
 
@@ -118,6 +120,7 @@
           <button type="button" id="dragbooth-button" onclick = "dragBoothButtonHandler()">Drag Booth</button>
           <button type="button" id="zoom-button" onclick = "zoomButtonHandler()">Zoom & Pan</button>
           <button type="button" id="undo-button" onclick = "undoButtonHandler()">Undo</button>
+          <button type="button" id="swap-button" onclick = "swapButtonHandler()">Swap</button>
         </div>
         <div id = "allocation-container">
         </div>
@@ -217,6 +220,9 @@
   var changesCount = 0;
   var changeLimitIndex;
 
+  var firstSelectedSwap, secondSelectedSwap;
+  var swapQueueCount = 0;
+
   // maybe data = function() -> import data -> json preferred
   // var data = [{"project_id" :  0, "position_x" : 360, "position_y" : 360, "width_pixel" : 80, "length_pixel" : 80, "project_name" : "C2", "rotation" :90},
   // {"project_id" :  1, "position_x" : 440, "position_y" : 400, "width_pixel" : 40, "length_pixel" : 40, "project_name": "C1", "rotation" : 20},
@@ -229,6 +235,7 @@
 
   var canDragBooth = false;
   var canZoom = false;
+  var canSwap = false;
 
   var curBoothID;
 
@@ -343,7 +350,6 @@
   var drag = d3.drag()
       .on("start", function(d){
         if(canDragBooth){
-          d3.select(this).attr("stroke", "red");
 
           changesCount += 1;
           undoArray[changesCount % 5] = {"project_id" : d.project_id, "x": d.position_x, "y": d.position_y, "width_pixel": d.width_pixel, "length_pixel": d.length_pixel}
@@ -394,7 +400,10 @@
       })
       .on("end", function(d){
         if(canDragBooth){
-                    
+          curBoothID = d.project_id;
+          firstSelectedSwap = curBoothID;
+          console.log("cur id is: " + curBoothID);
+
           // var stateStartPointer;
           // var stateCurrentPointer = 0;
           // var changeLimitIndex;
@@ -403,7 +412,20 @@
           
 
           //POST TO DATABASE
-          
+          // var tobeSent = $.param(data);
+          // var jsonString = JSON.stringify(data);
+          // // console.log(jsonString)
+          // // console.log(data);
+          // // console.log(cookies.crsftoken);
+          // // $.ajax({
+          // //     url: '/accounts/change_allocation',
+          // //     type: 'POST',
+          // //     contentType: 'application/json; charset=utf-8',
+          // //     data: data,
+          // //     dataType: 'text',
+          // // });
+
+          // $.post('accounts/change_allocation', jsonString) ;
           // const xhr = new XMLHttpRequest();
 
           // xhr.open("POST", "accounts/change_allocation");
@@ -578,7 +600,58 @@
           })
           .call(drag)
           .on("click", function(d){
-            curBoothID = d.project_id;
+            if (!canSwap){
+              curBoothID = d.project_id;
+              firstSelectedSwap = curBoothID;
+              console.log("cur id is: " + curBoothID);
+            } else {
+              secondSelectedSwap = d.project_id;
+              var tempPositionX = d.position_x;
+              var tempPositionY = d.position_y;
+
+              console.log(tempPositionX)
+              var result = data.filter(obj => {
+                return obj.project_id === curBoothID;
+              })
+
+              var idx = data.findIndex(obj => {
+                return obj.project_id === curBoothID;
+              })
+              result = result[0]
+
+              console.log("changing id: " + firstSelectedSwap + " with : " + secondSelectedSwap)
+              booth.select("#booth-id-" + d.project_id)             // swap the second selected with the first selected
+                .attr('x', result.position_x)    // potential bug
+                .attr('y', result.position_y)    // potential bug
+              booth.select("#booth-text-id-" + d.project_id)
+                .attr('x', result.position_x + d.width_pixel / 2)
+                .attr('y', result.position_y + d.length_pixel / 2)
+
+              d.position_x = result.position_x
+              d.position_y = result.position_y
+
+              booth.select("#booth-id-" + result.project_id)
+                .attr('x', tempPositionX)
+                .attr('y', tempPositionY)
+              booth.select("#booth-text-id-" + result.project_id)
+                .attr('x', tempPositionX + result.width_pixel / 2)
+                .attr('y', tempPositionY + result.length_pixel / 2)
+
+              d.position_x = result.position_x
+              d.position_y = result.position_y
+
+              console.log(data[idx], idx);
+              data[idx].position_x = tempPositionX;
+              data[idx].position_y = tempPositionY;
+
+              canSwap = !canSwap
+              $("#swap-button").toggleClass("active");
+
+
+              curBoothID = d.project_id;
+            }
+
+            
             setSelectedBoothInformation(d);
           })
           ;
@@ -643,13 +716,33 @@
 
       // }
       if(checkAssigned(i)){
-        var numberOfAssignedBooth = 1; 
+        numberOfAssignedBooth -= 1; 
         $('#booth-item-container-'+ data[i].project_id).hide();
         $('#booth-item-'+ data[i].project_id).hide();
       }
     }
 
+    function turnOffOtherTools(){
+      if(canDragBooth){
+        $("#dragbooth-button").toggleClass("active");
+        canDragBooth = !canDragBooth
+      }
+
+      if(canZoom){
+        $("#zoom-button").toggleClass("active");
+        canZoom = !canZoom
+      }
+
+      if(canSwap){
+        $("#swap-button").toggleClass("active");
+        canSwap = !canSwap
+      }
+    }
+
     function dragBoothButtonHandler(){
+      if (!canDragBooth){
+        turnOffOtherTools();
+      }
       $("#dragbooth-button").toggleClass("active");
       canDragBooth = !canDragBooth;
     }
@@ -657,6 +750,9 @@
     svg.on(".zoom", null);
 
     function zoomButtonHandler(){
+      if (!canZoom){
+        turnOffOtherTools();
+      }
       $("#zoom-button").toggleClass("active");
       canZoom = !canZoom;
       if(canZoom){
@@ -687,6 +783,20 @@
 
     }
 
+    function swapButtonHandler(){
+      if (!canSwap){
+        turnOffOtherTools();
+      }
+      canSwap = !canSwap;
+      console.log(canSwap)
+      $("#swap-button").toggleClass("active");
+      if (canSwap){
+        booth.select('#booth-id-' + curBoothID)
+            .attr('stroke-width' , '10px')
+            .attr('fill', 'red');
+      }
+    }
+
     function saveButtonHandler(){
       var tobeSent = $.param(data);
       var jsonString = JSON.stringify(data);
@@ -696,5 +806,30 @@
 //crystal I think u run the code on your  terminal, I dont think we can share the same localhost. 
     console.log(data);
     
+    // document.onkeydown = checkKey;
+
+    // function checkKey(e) {
+
+    // e = e || window.event;
+
+    // if (e.keyCode == '38') {
+    //     // up arrow
+    //     console.log('up')
+    // }
+    // else if (e.keyCode == '40') {
+    //     // down arrow
+    //     console.log('down')
+    // }
+    // else if (e.keyCode == '37') {
+    //    // left arrow
+    //    console.log('left')
+    // }
+    // else if (e.keyCode == '39') {
+    //    // right arrow
+    //    console.log('right')
+    // }
+    
+
+    // }
    
 </script>

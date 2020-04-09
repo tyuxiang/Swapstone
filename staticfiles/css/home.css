@@ -220,7 +220,7 @@ input[type=checkbox]{
 }
 
 .booth{
-  fill: GREY;
+  /* fill: GREY; */
   stroke-width: 1px;
   stroke: black;
   clip-path: url(#clip);

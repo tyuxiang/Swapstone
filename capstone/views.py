@@ -17,13 +17,15 @@ from django.http import JsonResponse, HttpResponse
 # Create your views here.
 @login_required
 def home(request):
-	print("loading stuff")
+
+	print(request.user)
 	user = request.user
 	user_maps = Map.objects.filter(user=request.user)    
 	curr_map = user_maps[0]
+	print(user_maps[0].booths.all())
 	booth = curr_map.booths.all()
-	if request.method == 'POST':
-		allocate(booth)
+	# if request.method == 'POST':
+	# 	allocate(booth)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
 
@@ -34,6 +36,7 @@ def home(request):
 
 @login_required
 def csv(request):
+	print("this iss called")
 	if request.method == 'POST' and request.FILES['input']:
 		myfile = request.FILES['input']
 		fs = FileSystemStorage()

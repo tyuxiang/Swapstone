@@ -1,0 +1,23 @@
+{% extends "registration/base_login.html" %}
+{% block content %}
+  <form method="post" action="{% url 'create_account' %}" class="form-signin" oninput='password.setCustomValidity(password.value != first_password.value ? "Passwords do not match." : "")'>
+      {% csrf_token %}
+      <h6 class="welcome-message">Create Account Here!</h6>
+      <label for="id_username" class="sr-only">Username</label>
+      <input type="text" name="username" maxlength="150" id="id_username" class="form-control" autocomplete="username" placeholder="Username" required autofocus>
+      <label for="id_password" class="sr-only">Password</label>
+      <input type="password" name="first_password" class="form-control" autocomplete="current-password" placeholder="Password" required id="id_password">
+      <label for="id_password" class="sr-only">Re-enter Password</label>
+      <input type="password" name="password" class="form-control" autocomplete="current-password" placeholder="Re-enter Password" required id="id_password">
+      {% if form.errors %}
+        <p>Something wrong happened. Please try again.</p>
+      {% endif %}
+      <div class="button login-button">
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+        <input type="hidden" name="next" value="{{ next }}" />
+      </div>
+      <div class="login">
+        <a href="/accounts/login" class="link">Back to login</a>
+      </div>
+    </form>
+{% endblock %}

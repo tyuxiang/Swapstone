@@ -19,8 +19,13 @@ from capstone import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', views.login, name='login'),
-    path('logout/', views.logout, name='logout'),
+    # path('login/', views.login, name='login'),
+    # path('logout/', views.logout, name='logout'),
     path('load_csv/', views.csv, name='csv'),
-    path('', views.home, name='home')
+    path('', views.home, name='home'),  
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/create_account', views.create_account, name='create_account'),
+    path('accounts/reset_password', views.reset_password, name='reset_password'),
+    path('accounts/change_password', views.change_password, name='change_password'),
+    path('accounts/change_allocation', views.change_allocation, name='change_allocation'),
 ]

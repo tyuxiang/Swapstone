@@ -11,6 +11,7 @@ class Booth:
         self.drone=drone
         self.position="null"
         self.assigned=False
+		self.id=int(name[-1])
     
     def get_length(self):
         a=self.length

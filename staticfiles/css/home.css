@@ -230,5 +230,7 @@ input[type=checkbox]{
 }
 
 #map-layout{
+  stroke-width: 1px;
+  stroke: black;
   clip-path: url(#clip);
 }

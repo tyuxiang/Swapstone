@@ -207,17 +207,15 @@
     // parseData[i].fields.x = parseFloat(parseData[i].fields.position_x)
     // parseData[i].fields.y = parseFloat(parseData[i].fields.position_y)
     data.push(parseData[i].fields)
-
-    console.log(parseData[i].fields.width)
   }
   console.log(data);
 
   const MAXUNDOCOUNT = 5;
-  var stateArray = []
-  var stateStartPointer;
-  var stateCurrentPointer = 0;
-  var stateEndPointer;
+  var undoArray = []
   var undoCount = 0;
+  var undoBooth;
+  var changesCount = 0;
+  var changeLimitIndex;
 
   // maybe data = function() -> import data -> json preferred
   // var data = [{"project_id" :  0, "position_x" : 360, "position_y" : 360, "width_pixel" : 80, "length_pixel" : 80, "project_name" : "C2", "rotation" :90},
@@ -233,9 +231,6 @@
   var canZoom = false;
 
   var curBoothID;
-  
-  var currentZoomScale = 1;
-  var currentZoomTranslate = {'x' : 0, 'y' : 0};
 
   function checkAssigned(i){
     if (data[i].position_x < 0){
@@ -245,6 +240,24 @@
       return false;
     }
     return true;
+  }
+
+  function setSelectedBoothInformation(d){
+      $("#selected-booth-name").text("Selected Booth: " + d.project_name);
+      $("#input-x").val(Math.round(d.position_x));
+      $("#input-y").val(Math.round(d.position_y));
+      $("#input-width").val(Math.round(d.width));
+      $("#input-length").val(Math.round(d.length));
+      $("#selected-booth-actual-area").text(d.area);
+      $("#selected-booth-project-name").text(d.project_name);
+      $("#selected-booth-project-id").text(d.project_id);
+      $("#selected-booth-industry").text(d.industry);
+  }
+
+  function updateData(d){
+    for (key in d){
+      data[parseInt(d.project_id) - 1][key] = d[key]
+    }
   }
 
   // inititalizing the axis and scale
@@ -276,8 +289,6 @@
               .attr("id", "allocation")
               .attr("width", MAX_WIDTH + 30) //account the padding total
               .attr("height", MAX_HEIGHT + 30)
-              // .attr("stroke", "none")
-              // .append("g")
               ;
 
   svg.append("defs")
@@ -298,7 +309,6 @@
         [MAX_WIDTH, MAX_HEIGHT]
       ])
       .on("zoom", function(d){
-        console.log(svg)
         if(canZoom){
           // gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
           // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
@@ -314,45 +324,43 @@
 
 //  include drag booth functionality
   var drag = d3.drag()
-      .on("start", function(){
+      .on("start", function(d){
         if(canDragBooth){
           d3.select(this).attr("stroke", "red");
+
+          changesCount += 1;
+          undoArray[changesCount % 5] = {"project_id" : d.project_id, "x": d.position_x, "y": d.position_y, "width_pixel": d.width_pixel, "length_pixel": d.length_pixel}
+
+          if (changesCount >= 5){
+            changeLimitIndex += 1;
+            changeLimitIndex %= 5;
+          }
+
+          if (undoCount < 5){
+            undoCount += 1
+          }
+
         }
       })
       .on("drag", function(d){
         if(canDragBooth){
           d3.select(this).raise()
           .attr("transform", function(d){
-            // console.log(this)
             return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
           })
           .attr("x", function(d){
-              // console.log(d.position_x, d3.event.x)
               d.position_x += d3.event.dx;
               d.position_x = Math.max(0, Math.min(MAX_WIDTH - d.width_pixel, d.position_x));
-              // console.log(d.position_x, d3.event.x)
-              // return d3.event.x;
               return d.position_x;
             })
           .attr("y", function(d){
               d.position_y += d3.event.dy;
-              // return d.position_y;
-              d.position_y = Math.max(0, Math.min(MAX_HEIGHT - d.length_pixel, d.position_y));
-              // return d.position_y;
-              
+              d.position_y = Math.max(0, Math.min(MAX_HEIGHT - d.length_pixel, d.position_y));              
               return d.position_y;
             })
           
-          $("#selected-booth-name").text("Selected Booth: " + d.project_name);
-          $("#input-x").val(Math.round(d.position_x));
-          $("#input-y").val(Math.round(d.position_y));
-          $("#input-width").val(Math.round(d.width));
-          $("#input-length").val(Math.round(d.length));
-          $("#selected-booth-actual-area").text(d.area);
-          $("#selected-booth-project-name").text(d.project_name);
-          $("#selected-booth-project-id").text(d.project_id);
-          $("#selected-booth-industry").text(d.industry);
-
+          setSelectedBoothInformation(d);
+          
 
           svg.select("#booth-text-id-"+ d.project_id)
               .attr("transform", function(d){
@@ -369,28 +377,19 @@
       })
       .on("end", function(d){
         if(canDragBooth){
-          d3.select(this).attr("stroke", null);
-          curBoothID = d.project_id;
-          if (stateArray.length < 5){
-            stateArray.push({'project_id' : d.project_id, 'position_x' : d.position_x, 'position_y' : d.position_y});
-            // console.log(stateArray, stateCurrentPointer % MAXUNDOCOUNT, stateStartPointer, stateEndPointer);
-            stateCurrentPointer += 1;
-            stateEndPointer = 0;
-            undoCount += 1;
-          } else {
-            stateArray[stateCurrentPointer % MAXUNDOCOUNT] = {'project_id' : d.project_id, 'position_x' : d.position_x, 'position_y' : d.position_y}
-            // console.log(stateArray, stateCurrentPointer % MAXUNDOCOUNT, stateStartPointer, stateEndPointer);
-            stateCurrentPointer += 1;
-            stateEndPointer = stateCurrentPointer % MAXUNDOCOUNT;
-          }
-          stateStartPointer = (stateCurrentPointer -  1) % MAXUNDOCOUNT;
-          console.log("start: " + stateStartPointer, "current: " + stateCurrentPointer, "end: " +stateEndPointer)
+                    
+          // var stateStartPointer;
+          // var stateCurrentPointer = 0;
+          // var changeLimitIndex;
+
+          // console.log(stateStartPointer) -- undefined
+          
 
           //POST TO DATABASE
           var tobeSent = $.param(data);
           var jsonString = JSON.stringify(data);
           // console.log(jsonString)
-          console.log(data);
+          // console.log(data);
           // console.log(cookies.crsftoken);
           // $.ajax({
           //     url: '/accounts/change_allocation',
@@ -406,8 +405,6 @@
           // xhr.open("POST", "accounts/change_allocation");
           // xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
           // xhr.send("data");
-
-
         }
       });
 
@@ -469,41 +466,11 @@
   }).keyup();
 
   $("#remove-button").click(function(){
-      // console.log(curBoothID)
-      booth.select('#booth-id-' + curBoothID)
-        .attr("visibility", "hidden");  
-      booth.select('#booth-text-id-' + curBoothID)
-        .attr("visibility", "hidden");
-      // $("#booth-list").append('<li id = "booth-item-' + curBoothID + '"><a class = "booth-link">' + data[curBoothID - 1].project_name + '</a></li>');
-      // $("#booth-list").append('<div id = "booth-item-container-' + curBoothID + '" class = "booth-item-containers">  </div>');
-
-      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-length-' + curBoothID + '" ><label> Length </label><label> : ' + data[curBoothID - 1].length + '</label> </p>');
-      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-width-' + curBoothID + '" ><label> Width </label><label> : ' + data[curBoothID - 1].width + '</label> </p>');
-      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-area-' + curBoothID + '" ><label> Area </label><label> : ' + data[curBoothID - 1].area + '</label> </p>');
-      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-project-name-' + curBoothID + '" ><label> Project Name </label><label> : ' + data[curBoothID - 1].project_name + '</label> </p>');
-      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-project-id-' + curBoothID + '" ><label> Project ID </label><label> : ' + data[curBoothID - 1].project_id + '</label> </p>');
-      // $('#booth-item-container-' + curBoothID).append('<p class = "booth-item-text" id = "booth-item-text-industry-' + curBoothID + '" ><label> Industry </label><label> : ' + data[curBoothID - 1].industry + '</label> </p>');
-      // $('#booth-item-container-' + curBoothID).append('<p ><button type = "button" class = "booth-item-buttons" id = "booth-item-button-' + curBoothID + '"> Add Booth </button></p>');
-      // $('#booth-item-container-' + curBoothID).hide();
-      // $('#booth-item-button-' + curBoothID).click(function(id){
-      //   var thisID = $(this).attr("id");
-      //   console.log(thisID);
-      //   // var thisID = $(this).attr("id").slice(18);
-      //   booth.select('#booth-id-' + curBoothID)
-      //       .attr("visibility", "visible");
-
-      //   booth.select('#booth-text-id-' + curBoothID)
-      //        .attr("visibility", "visible");
-        $('#booth-item-'+ curBoothID).show();
-        // $('#booth-item-container-'+ curBoothID).remove();
-      // })
-
-      // $('#booth-item-'+ curBoothID).click(function(abcde) {
-      //   console.log($(this[0]))
-      //   $('#booth-item-container-' + curBoothID).toggle();
-      // })
-
-      // curBoothID = null;
+    booth.select('#booth-id-' + curBoothID)
+      .attr("visibility", "hidden");  
+    booth.select('#booth-text-id-' + curBoothID)
+      .attr("visibility", "hidden");
+    $('#booth-item-'+ curBoothID).show();
   })
 
   $(".booth-item-buttons").click(function(){
@@ -512,15 +479,15 @@
 
   // image
   var image = svg.append('image')
-                // .attr('width', MAX_WIDTH - 5)
-                // .attr('height', MAX_HEIGHT - 5)
                 .attr("id", "map-layout")
                 .attr("clip-path","url(#clip)")
                 .attr('x', 0)
                 .attr('y', 0)
                 .attr("href", "{% static 'images/campuscentre-lvl1.jpg' %}")
+                .attr("transform", "translate(15,15) scale(1)")
                 ;
-  
+
+
   // axis handler
   var gX =  svg.append("g")
         .attr("id", "x-axis")
@@ -563,7 +530,7 @@
               return d.position_y + (d.length_pixel / 2);
             })
             .attr("transform", function(d){
-              // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+              return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
             })
             .text(function(d){
               return d.project_id;
@@ -608,28 +575,12 @@
           .call(drag)
           .on("click", function(d){
             curBoothID = d.project_id;
-            $("#selected-booth-name").text("Selected Booth: " + d.project_name);
-            $("#input-x").val(Math.round(d.position_x));
-            $("#input-y").val(Math.round(d.position_y));
-            $("#input-width").val(Math.round(d.width));
-            $("#input-length").val(Math.round(d.length));
-            $("#selected-booth-actual-area").text(d.area);
-            $("#selected-booth-project-name").text(d.project_name);
-            $("#selected-booth-project-id").text(d.project_id);
-            $("#selected-booth-industry").text(d.industry);
+            setSelectedBoothInformation(d);
           })
           ;
 
     svg.call(zoom);
 
-
-    // <ul class="list-of-booths flex-column" id = "booth-list">
-    //       <li class="booth-item">
-    //         <a class="booth-link">Booth #1</a>
-
-
-    // can change this with angular / react / vue components
-    // $("#menu").append('<li><a href="#">New list item</a></li>');
     for (var i = 0; i < data.length; i++){
       // if (!checkValidXY(i)){
         // $("#booth-container-id-" + data[i].id).hide()
@@ -710,22 +661,28 @@
       }
     }
 
-    // console.log(stateArray);
+    // console.log(undoArray);
 
     function undoButtonHandler(){
-      // $("#undo-button").click("active");
-      var index = (stateCurrentPointer + 5 - 1 ) % MAXUNDOCOUNT;
-      stateCurrentPointer -= 1;
-      console.log("start: " + stateStartPointer, "current: " + index, "end: " + stateEndPointer);
-      if (stateCurrentPointer != stateEndPointer){
-        // console.log(stateCurrentPointer);
-        booth.select("#booth-id-"+ stateArray[index].project_id )
-              .attr("x", stateArray[index].position_x)
-              .attr("y", stateArray[index].position_y)
-        data[stateArray[index].project_id - 1].position_x = stateArray[index].position_x;
-        data[stateArray[index].project_id - 1].position_y = stateArray[index].position_y;
-      }  
+
+      if (undoCount != 0 ){
+        undoBooth = undoArray[changesCount % 5]
+        if (changesCount % 5 != changeLimitIndex){
+          booth.select("#booth-id-" + undoBooth.project_id)
+                .attr('x', undoBooth.x)
+                .attr('y', undoBooth.y)
+          booth.select("#booth-text-id-" + undoBooth.project_id)
+                .attr('x', undoBooth.x + undoBooth.width_pixel / 2)
+                .attr('y', undoBooth.y + undoBooth.length_pixel / 2)
+          updateData(undoBooth)
+       }
+       undoCount -= 1;
+       changesCount -= 1;
+      }
+
     }
 
     console.log(data);
+    
+   
 </script>

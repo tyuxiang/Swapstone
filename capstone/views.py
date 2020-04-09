@@ -81,6 +81,7 @@ def reset_password(request):
 @csrf_exempt
 def change_allocation(request):
 	if request.method == "POST":
-		print(request.body)
+		print("change allocation data posted")
+		# print(request.body)
 
 	return JsonResponse({"success":True})

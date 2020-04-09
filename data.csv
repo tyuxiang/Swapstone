@@ -23,6 +23,7 @@ Project ID,Project Name,Length,Width,In Campus Centre?,Industry
 22,Dummy,2,2,Yes,2
 23,Dummy,2,2,Yes,2
 24,Dummy,2,2,Yes,2
+<<<<<<< HEAD
 25,Dummy,2,2,Yes,3
 26,Dummy,2,2,Yes,3
 27,Dummy,2,2,Yes,3
@@ -63,3 +64,5 @@ Project ID,Project Name,Length,Width,In Campus Centre?,Industry
 62,Dummy,3,3,Yes,4
 63,Dummy,3,3,Yes,4
 64,Dummy,3,3,Yes,4
+=======
+>>>>>>> f9ab140dab6ef5d8d98816a790a5f2a91bfed26b

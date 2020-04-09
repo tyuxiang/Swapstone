@@ -159,7 +159,7 @@
         </ul>
         <form method="post" enctype="multipart/form-data" class="upload-form">
           {% csrf_token %}
-          <button type="submit" class="allocate-btn btn-lg btn-dark btn-block">Allocate</button>
+          <button type="submit" class="allocate-btn btn-lg btn-dark btn-block" id="allocate_btn">Allocate</button>
         </form>
       </div>
     </nav>
@@ -252,6 +252,22 @@
       $("#selected-booth-project-name").text(d.project_name);
       $("#selected-booth-project-id").text(d.project_id);
       $("#selected-booth-industry").text(d.industry);
+  }
+
+  // numberOfBooth
+  document.onreadystatechange = function () {
+    if (document.readyState === "interactive") {
+      var form_allocate = document.getElementById("allocate_btn");
+      var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
+      var numberOfBooth = $("ul li:visible").length;
+
+      if (numberOfBooth>=30){
+        form_allocate.className += " allocate-relative";
+      }
+      else{
+        form_allocate.className = "allocate-btn btn-lg btn-dark btn-block";
+      }
+    }
   }
 
   function updateData(d){

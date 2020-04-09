@@ -24,10 +24,12 @@ def home(request):
 	curr_map = user_maps[0]
 	print(user_maps[0].booths.all())
 	booth = curr_map.booths.all()
-	# if request.method == 'POST':
-	# 	allocate(booth)
+	if request.method == 'POST':
+		allocate(booth)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
+	json_serializer = serializers.get_serializer("json")()
+	maps = json_serializer.serialize(user_maps, ensure_ascii = False)
 
 
 	return render(request,'capstone/home.html',{'booth':booths})

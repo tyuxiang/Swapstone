@@ -19,6 +19,8 @@ def load_csv_data(file_name,request):
     booths = curr_map.booths
     for booth in booths.all():
         booth.delete()
+    curr_map.curr_map_ref = map.id
+    curr_map.save()
 
     with open("./data.csv") as csvfile:
             reader = csv.DictReader(csvfile)

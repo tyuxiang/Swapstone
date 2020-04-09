@@ -111,7 +111,7 @@
             </a>
           </li>
         </ul>
-        <button class="save-btn btn-lg btn-success btn-block">Save</button>
+        <button class="save-btn btn-lg btn-success btn-block" onclick = "saveButtonHandler()">Save</button>
       </div>
     </nav>
     <main role="main" class="col-md-8 ml-sm-auto col-lg-10 px-0">
@@ -162,7 +162,7 @@
         </ul>
         <form method="post" enctype="multipart/form-data" class="upload-form">
           {% csrf_token %}
-          <button type="submit" class="allocate-btn btn-lg btn-dark btn-block">Allocate</button>
+          <button type="submit" class="allocate-btn btn-lg btn-dark btn-block" id="allocate_btn">Allocate</button>
         </form>
       </div>
     </nav>
@@ -259,6 +259,23 @@
       $("#selected-booth-project-name").text(d.project_name);
       $("#selected-booth-project-id").text(d.project_id);
       $("#selected-booth-industry").text(d.industry);
+  }
+
+  // numberOfBooth
+  document.onreadystatechange = function () {
+    if (document.readyState === "interactive") {
+      var form_allocate = document.getElementById("allocate_btn");
+      var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
+      var numberOfBooth = $("ul li:visible").length;
+
+      console.log(numberOfBooth);
+      if (numberOfBooth>=30){
+        form_allocate.className += " allocate-relative";
+      }
+      else{
+        form_allocate.className = "allocate-btn btn-lg btn-dark btn-block";
+      }
+    }
   }
 
   function updateData(d){
@@ -699,6 +716,7 @@
 
       // }
       if(checkAssigned(i)){
+        numberOfAssignedBooth -= 1; 
         $('#booth-item-container-'+ data[i].project_id).hide();
         $('#booth-item-'+ data[i].project_id).hide();
       }
@@ -779,6 +797,13 @@
       }
     }
 
+    function saveButtonHandler(){
+      var tobeSent = $.param(data);
+      var jsonString = JSON.stringify(data);
+    
+      $.post('accounts/change_allocation', jsonString) ;
+    }
+//crystal I think u run the code on your  terminal, I dont think we can share the same localhost. 
     console.log(data);
     
     // document.onkeydown = checkKey;

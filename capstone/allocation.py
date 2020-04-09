@@ -95,6 +95,19 @@ class Group:
         #         return False
 
 
+def swap(booth_1,booth_2):
+    x = booth_1.position_x
+    y = booth_1.position_y
+    rotation = booth_1.rotation
+    booth_1.position_x = booth_2.position_x
+    booth_1.position_y = booth_2.position_y
+    booth_1.rotation = booth_2.rotation
+    booth_2.position_x = x
+    booth_2.position_y = y
+    booth_2.rotation = rotation
+    booth_1.save()
+    booth_2.save()
+
 
 
 

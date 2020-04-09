@@ -261,6 +261,7 @@
       var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
       var numberOfBooth = $("ul li:visible").length;
 
+      console.log(numberOfBooth);
       if (numberOfBooth>=30){
         form_allocate.className += " allocate-relative";
       }

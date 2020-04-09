@@ -33,6 +33,19 @@ body,html{
   position: absolute;
   bottom: 10px;
 }
+<<<<<<< HEAD
+=======
+/*.container-fluid{
+  position:relative;
+}
+.row{
+  position:relative;
+}*/
+/*.upload-form{
+  position: absolute;
+  bottom: 10px;
+}*/
+>>>>>>> fd8c95077e5217dae5e956b186cf2702ec9a11e5
 .allocate-relative{
   position: relative;
   bottom: 10px;

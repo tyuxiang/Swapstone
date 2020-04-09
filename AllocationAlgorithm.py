@@ -2,7 +2,7 @@ import math
 import copy
 #initialise the data of the booths
 class Booth:
-    def __init__(self,length,width,name,category,drone):
+    def __init__(self,length,width,name,category,drone,id):
         self.length=length
         self.width=width
         self.area=length*width

@@ -33,6 +33,10 @@ body,html{
   position: absolute;
   bottom: 10px;
 }
+.allocate-relative{
+  position: relative;
+  bottom: 10px;
+}
 @supports ((position: -webkit-sticky) or (position: sticky)) {
   .rightbar-sticky {
     position: -webkit-sticky;

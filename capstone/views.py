@@ -10,6 +10,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
+import json
 
 from django.http import JsonResponse, HttpResponse
 
@@ -82,6 +83,32 @@ def reset_password(request):
 def change_allocation(request):
 	if request.method == "POST":
 		print("change allocation data posted")
-		# print(request.body)
+		output = json.loads(request.body) 
+		user_maps = Map.objects.filter(user=request.user)    
+		curr_map = user_maps[0]
+		edit_map = Map.objects.get(pk=curr_map.curr_map_ref)
+		booths = edit_map.booths
+		for booth in booths.all():
+   		     booth.delete()
+		for project in output:
+			booth = Booth()
+			booth.project_id = project.get('project_id')
+			booth.length = project.get('length')
+			booth.width = project.get('width')
+			booth.area = project.get('area')
+			booth.project_name = project.get('project_name')
+			booth.industry = project.get('industry')
+			booth.length_pixel = project.get('length_pixel')
+			booth.width_pixel = project.get('width_pixel')
+			booth.rotation = project.get('rotation')
+			booth.position_x = project.get('position_x')
+			booth.position_y = project.get('position_y')
+			booth.in_campus_centre = project.get('in_campus_centre')
+			booth.saved_map = edit_map
+			booth.save()
+
+
+
+
 
 	return JsonResponse({"success":True})

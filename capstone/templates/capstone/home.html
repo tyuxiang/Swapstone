@@ -279,6 +279,7 @@
   }
 
   function updateData(d){
+    console.log(d);
     for (key in d){
       data[parseInt(d.project_id) - 1][key] = d[key]
     }

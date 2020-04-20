@@ -105,13 +105,7 @@
             <span data-feather="plus-circle"></span>
           </a>
         </h6>
-        <ul class="nav flex-column mb-2">
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Saved Data 1
-            </a>
-          </li>
+        <ul class="nav flex-column mb-2" id = "map-list">
         </ul>
         <button class="save-btn btn-lg btn-success btn-block" onclick = "saveButtonHandler()">Save</button>
       </div>
@@ -203,6 +197,7 @@
 
   const stringKeys = ["industry", "project_name", "in_campus_centre", "project_id", "saved_map"];
   const data = [];
+  const map_data = [];
 
   parseData.forEach(boothData => {
     Object.keys(boothData.fields).forEach(function(key){
@@ -212,6 +207,13 @@
     })
     data.push(boothData.fields);
   });
+  // var preData = ( "{{ booth|escapejs }}" );
+  
+  for (var i = 0; i < mapData.length ; i++){
+    console.log(mapData[i].fields.name)
+    map_data.push(mapData[i].fields)
+  }
+  console.log(map_data[0])
 
   const MAXUNDOCOUNT = 5;
   var undoArray = []
@@ -675,6 +677,30 @@
 
     svg.call(zoom);
 
+     // <li class="nav-item">
+     //        <a class="nav-link" href="#">
+     //          <span data-feather="file-text"></span>
+     //          Saved Data 1
+     //        </a>
+     //      </li>
+
+     var form_allocate = document.getElementById("allocate_btn");
+      var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
+      var numberOfBooth = $("ul li:visible").length;
+
+      console.log(numberOfBooth);
+      if (numberOfBooth>=30){
+        form_allocate.className += " allocate-relative";
+      }
+
+    for (var i=1; i < map_data.length; i++){
+      var id = i+1
+      $("#map-list").append('<li class="nav-item"><a id = "map-item-' + map_data[i].name + '" class = "nav-link" href="/' + id + '"><span data-feather="file-text"></span>' + map_data[i].name + '</a></li>');
+    }
+    var ref_id = map_data[0].curr_map_ref - 1
+    var selected_map = document.getElementById("map-item-" + map_data[ref_id].name)
+    selected_map.className += " active";
+
     for (var i = 0; i < data.length; i++){
       // if (!checkValidXY(i)){
         // $("#booth-container-id-" + data[i].id).hide()
@@ -733,6 +759,10 @@
 
       // }
       if(checkAssigned(i)){
+<<<<<<< HEAD
+=======
+        var numberOfAssignedBooth = 1; 
+>>>>>>> c3b0c8f45bd1d80e38b3741d34fd330d89e51829
         $('#booth-item-container-'+ data[i].project_id).hide();
         $('#booth-item-'+ data[i].project_id).hide();
       }
@@ -815,7 +845,7 @@
       var tobeSent = $.param(data);
       var jsonString = JSON.stringify(data);
     
-      $.post('accounts/change_allocation', jsonString) ;
+      $.post('/accounts/change_allocation', jsonString) ;
     }
 //crystal I think u run the code on your  terminal, I dont think we can share the same localhost. 
     console.log(data);

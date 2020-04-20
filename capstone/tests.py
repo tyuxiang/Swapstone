@@ -141,9 +141,19 @@ class MySeleniumTests(StaticLiveServerTestCase):
     #     length_offset = booth_test.get_attribute('height')
     #     self.assertEqual(length_offset, '40.191')
 
+<<<<<<< HEAD
     # def test_width_input(self):
     #     booth_test = self.selenium.find_element_by_xpath('//*[@id="booth-id-1"]')
     #     width_input = self.selenium.find_element_by_name('input-width')
     #     width_input.send_keys('4')
     #     width_offset = booth_test.get_attribute('width')
     #     self.assertEqual(width_offset, '53.588')
+=======
+    def test_width_input(self):
+        booth_test = self.selenium.find_element_by_xpath('//*[@id="booth-id-1"]')
+        width_input = self.selenium.find_element_by_name('input-width')
+        width_input.send_keys('4')
+        width_offset = booth_test.get_attribute('width')
+        self.assertEqual(width_offset, '53.588')
+
+>>>>>>> c3b0c8f45bd1d80e38b3741d34fd330d89e51829

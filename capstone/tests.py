@@ -139,3 +139,4 @@ class MySeleniumTests(StaticLiveServerTestCase):
         width_input.send_keys('4')
         width_offset = booth_test.get_attribute('width')
         self.assertEqual(width_offset, '53.588')
+

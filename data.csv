@@ -1,4 +1,5 @@
 Project ID,Project Name,Length,Width,In Campus Centre?,Industry
+<<<<<<< HEAD
 1,Dummy,2,2,Yes,1
 2,Dummy,2,2,Yes,1
 3,Dummy,2,2,Yes,1
@@ -78,3 +79,38 @@ Project ID,Project Name,Length,Width,In Campus Centre?,Industry
 77,Dummy,2,2,Yes,1
 78,Dummy,2,2,Yes,1
 79,Dummy,2,2,Yes,1
+=======
+1,Proj 16 - Craft Matrix_Human Powered Land Vehicles,5.0,4.0,Yes,Finance
+2,Proj S11 - NHB_Spatial Autonomy,20.0,10.0,No,Finance
+3,Proj S16 - STEE_Floatsam,8.0,5.0,Yes,Finance
+4,Proj 12 - BCA_3D printed components,3.0,2.0,Yes,Finance
+5,Proj 54 - Samsung_REFARDEN,2.0,2.5,Yes,Finance
+6,Proj S17 - Sunflower_Nursery,5.0,5.0,Yes,Finance
+7,Proj S02 - Bandwagon_Music Royalty,3.0,3.0,Yes,Finance
+8,Proj 30 - MND_Minimizing Bird Nuisance,3.0,3.0,Yes,Finance
+9,Proj 09 - BCA_Mixed Mode Ventilation,2.0,2.0,Yes,Finance
+10,Proj 34 - My Nonna_Project CARE,2.0,2.0,Yes,Finance
+11,Proj S07 - Hope_Legged Robotic ,3.5,3.5,Yes,Finance
+12,Proj 69 - WHC_Public Wheelchair Management,3.5,2.0,Yes,Finance
+13,Proj 55 - Samsung_Shooshoe,3.0,3.0,Yes,Finance
+14,Proj S03 - Certis_Security  Robot,3.0,3.0,Yes,Finance
+15,Proj S15 - Flexi Systems_Recycling,3.0,2.0,Yes,Finance
+16,Proj S08-HOPE_Kommunal,3.2,2.0,Yes,Finance
+17,Proj S04-DSO_Counter-Terrorist Bot,3.0,3.0,Yes,Finance
+18,Proj E03 - BiFrost,3.0,3.0,Yes,Finance
+19,Proj S13 - Panasonic_P-Cube,2.0,2.0,Yes,Finance
+20,Proj 35 - NNI Chinese Predictive,2.0,2.0,Yes,Finance
+21,Proj 24 - Infineon_Chatbot Packing Assistant,2.0,2.0,Yes,Finance
+22,Proj 11 - BCA_Reengineering Road Construction,3.5,2.5,Yes,Finance
+23,Proj 59 - SERI_Predictive Data Analytics,2.0,2.0,Yes,Finance
+24,Proj 01 - Accenture_Digital Consultant,2.0,2.0,Yes,Finance
+25,Proj E01 - Myx Brewery,2.0,2.0,Yes,Finance
+26,Proj 07 - Bev Eat_F&B ordering & donated meal claims,2.0,2.0,Yes,Finance
+27,Proj 32 - MSF_Refurbishment of ROMM,2.0,2.0,Yes,Finance
+28,Proj S09 - Jublia_Sparse Datasets,2.0,2.0,Yes,Finance
+29,Proj 43-PA_Future of Service Delivery,5.0,4.0,Yes,Finance
+30,Proj 17 - DBS_Future of Banking Branch Design,3.0,2.0,Yes,Finance
+31,Proj 45 - PICO_Musical Engineering Installation,3.5,3.5,Yes,Finance
+32,Proj 50 - Queensway Sec Sch_Design for Reading,4.0,4.0,Yes,Finance
+33,Proj 10 - BCA_Net Zero Energy Buildings,5.0,4.0,Yes,Finance
+>>>>>>> d7ee7d9609c4ac6d1b38c79d35377b0acbda051b

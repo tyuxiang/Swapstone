@@ -22,7 +22,7 @@ def home(request):
 	user = request.user
 	user_maps = Map.objects.filter(user=request.user)    
 	curr_map = user_maps[0]
-	print(user_maps[0].booths.all())
+	# print(user_maps[0].booths.all())
 	booth = curr_map.booths.all()
 	if request.method == 'POST':
 		allocate(booth)

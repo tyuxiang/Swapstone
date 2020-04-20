@@ -57,7 +57,9 @@
         display: table-cell;
       }
 
-
+      .selected{
+        stroke: red;
+      }
 
     </style>
   </head>
@@ -194,24 +196,22 @@
   const MAX_TRANSLATE_Y = MAX_HEIGHT / 2;
   const MIN_TRANSLATE_Y = -MAX_TRANSLATE_Y;
   
+
+
+  // Converting the data received from the backend (from string to json)
+  var parseData = JSON.parse( "{{ booth|escapejs }}" );
+
+  const stringKeys = ["industry", "project_name", "in_campus_centre", "project_id", "saved_map"];
   const data = [];
 
-  var preData = ( "{{ booth|escapejs }}" );
-  var parseData = JSON.parse(preData);
-  for (var i = 0; i < parseData.length ; i++){
-    parseData[i].fields.position_x = parseFloat(parseData[i].fields.position_x)
-    parseData[i].fields.position_y = parseFloat(parseData[i].fields.position_y)
-    parseData[i].fields.length_pixel = parseFloat(parseData[i].fields.length_pixel)
-    parseData[i].fields.width_pixel = parseFloat(parseData[i].fields.width_pixel)
-    parseData[i].fields.rotation = parseFloat(parseData[i].fields.rotation)
-    parseData[i].fields.length = parseFloat(parseData[i].fields.length)
-    parseData[i].fields.width = parseFloat(parseData[i].fields.width)
-    parseData[i].fields.area = parseFloat(parseData[i].fields.area)
-    // parseData[i].fields.x = parseFloat(parseData[i].fields.position_x)
-    // parseData[i].fields.y = parseFloat(parseData[i].fields.position_y)
-    data.push(parseData[i].fields)
-  }
-  console.log(data);
+  parseData.forEach(boothData => {
+    Object.keys(boothData.fields).forEach(function(key){
+      if (!(stringKeys.includes(key))){
+        boothData.fields[key] = parseFloat(boothData.fields[key]);
+      }
+    })
+    data.push(boothData.fields);
+  });
 
   const MAXUNDOCOUNT = 5;
   var undoArray = []
@@ -268,7 +268,6 @@
       var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
       var numberOfBooth = $("ul li:visible").length;
 
-      console.log(numberOfBooth);
       if (numberOfBooth>=30){
         form_allocate.className += " allocate-relative";
       }
@@ -338,11 +337,7 @@
           // gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
           // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
           image.attr("transform", d3.event.transform);
-          // .attr("clip-path","url(#clip)");
           booth.attr("transform", d3.event.transform);
-          // .attr("clip-path","url(#clip)");
-          // .attr("clip-path","url(#clip)");
-          
         } else {
         }
       });
@@ -370,7 +365,12 @@
         if(canDragBooth){
           d3.select(this).raise()
           .attr("transform", function(d){
-            return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+            if (d.rotation > 0){
+              // return "translate (" + d.position_x + " " + d.position_y + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+            } else {
+              // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+            }
+
           })
           .attr("x", function(d){
               d.position_x += d3.event.dx;
@@ -388,7 +388,11 @@
 
           svg.select("#booth-text-id-"+ d.project_id)
               .attr("transform", function(d){
-                return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+                if (d.rotation > 0){
+                  // return "translate (" + d.position_x + (d.width_pixel / 2) + " " + d.position_y + (d.length_pixel / 2) + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+                } else {
+                  // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+                }
               })
               .attr("x", function(d){
                 return d.position_x + (d.width_pixel / 2);
@@ -403,7 +407,6 @@
         if(canDragBooth){
           curBoothID = d.project_id;
           firstSelectedSwap = curBoothID;
-          console.log("cur id is: " + curBoothID);
 
           // var stateStartPointer;
           // var stateCurrentPointer = 0;
@@ -557,7 +560,12 @@
               return d.position_y + (d.length_pixel / 2);
             })
             .attr("transform", function(d){
-              return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+              if (d.rotation > 0){
+                // return "translate (" + d.position_x + " " + d.position_y  + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+                return "translate (" + d.position_x  + " " + d.position_y + ") rotate(" + d.rotation + ")";
+              } else {
+                // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+              }
             })
             .text(function(d){
               return d.project_id;
@@ -575,14 +583,20 @@
             return 'booth-id-' + d.project_id;
           })
           .attr("x", function(d, i){
-            if(d.position_x > 0){
+            // if (d.rotation > 0){
+              return 0;
+            // }
+            // if(d.position_x > 0){
               return d.position_x;
-            }
+            // }
           })
           .attr("y", function(d){
-            if(d.position_y > 0){
+            // if (d.rotation > 0){
+              return 0;
+            // }
+            // if(d.position_y > 0){
               return d.position_y;
-            }
+            // }
           })
           .attr("height", function(d){
             return d.length_pixel;
@@ -592,7 +606,12 @@
           })
           .attr("clip-path","url(#clip)")
           .attr("transform", function(d){
-            return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+            // if (d.rotation > 0){
+              // return "translate (" + d.position_x  + " " + d.position_y  + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+              return "translate (" + d.position_x  + " " + d.position_y + ") rotate(" + d.rotation + ")";
+            // } else {
+              // return  "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")"
+            // }
           })
           .attr("visibility", function(d){
             if (d.position_x < 0){
@@ -604,13 +623,11 @@
             if (!canSwap){
               curBoothID = d.project_id;
               firstSelectedSwap = curBoothID;
-              console.log("cur id is: " + curBoothID);
             } else {
               secondSelectedSwap = d.project_id;
               var tempPositionX = d.position_x;
               var tempPositionY = d.position_y;
 
-              console.log(tempPositionX)
               var result = data.filter(obj => {
                 return obj.project_id === curBoothID;
               })
@@ -620,7 +637,6 @@
               })
               result = result[0]
 
-              console.log("changing id: " + firstSelectedSwap + " with : " + secondSelectedSwap)
               booth.select("#booth-id-" + d.project_id)             // swap the second selected with the first selected
                 .attr('x', result.position_x)    // potential bug
                 .attr('y', result.position_y)    // potential bug
@@ -717,7 +733,6 @@
 
       // }
       if(checkAssigned(i)){
-        numberOfAssignedBooth -= 1; 
         $('#booth-item-container-'+ data[i].project_id).hide();
         $('#booth-item-'+ data[i].project_id).hide();
       }
@@ -789,12 +804,10 @@
         turnOffOtherTools();
       }
       canSwap = !canSwap;
-      console.log(canSwap)
       $("#swap-button").toggleClass("active");
       if (canSwap){
         booth.select('#booth-id-' + curBoothID)
-            .attr('stroke-width' , '10px')
-            .attr('fill', 'red');
+            .attr('class', 'booth selected')
       }
     }
 

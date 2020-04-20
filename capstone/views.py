@@ -22,9 +22,11 @@ def home(request):
 	user = request.user
 	user_maps = Map.objects.filter(user=request.user)    
 	curr_map = user_maps[0]
-	print(user_maps[0].booths.all())
+	#print(user_maps[0].booths.all())
 	booth = curr_map.booths.all()
+	print("call allocate?")
 	if request.method == 'POST':
+		print("calling allocate")
 		allocate(booth)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)

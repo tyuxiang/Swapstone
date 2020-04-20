@@ -103,13 +103,7 @@
             <span data-feather="plus-circle"></span>
           </a>
         </h6>
-        <ul class="nav flex-column mb-2">
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Saved Data 1
-            </a>
-          </li>
+        <ul class="nav flex-column mb-2" id = "map-list">
         </ul>
         <button class="save-btn btn-lg btn-success btn-block" onclick = "saveButtonHandler()">Save</button>
       </div>
@@ -195,23 +189,35 @@
   const MIN_TRANSLATE_Y = -MAX_TRANSLATE_Y;
   
   const data = [];
+  const map_data = [];
 
-  var preData = ( "{{ booth|escapejs }}" );
+  // var preData = ( "{{ booth|escapejs }}" );
+  var preData = ( "{{ obj|escapejs }}" );
   var parseData = JSON.parse(preData);
-  for (var i = 0; i < parseData.length ; i++){
-    parseData[i].fields.position_x = parseFloat(parseData[i].fields.position_x)
-    parseData[i].fields.position_y = parseFloat(parseData[i].fields.position_y)
-    parseData[i].fields.length_pixel = parseFloat(parseData[i].fields.length_pixel)
-    parseData[i].fields.width_pixel = parseFloat(parseData[i].fields.width_pixel)
-    parseData[i].fields.rotation = parseFloat(parseData[i].fields.rotation)
-    parseData[i].fields.length = parseFloat(parseData[i].fields.length)
-    parseData[i].fields.width = parseFloat(parseData[i].fields.width)
-    parseData[i].fields.area = parseFloat(parseData[i].fields.area)
+  var booths = parseData['booths'];
+  var maps = parseData['maps'];
+  var boothData = JSON.parse(booths);
+  var mapData = JSON.parse(maps);
+  // console.log(parseData);
+  // var parseData = JSON.parse(preData);
+  for (var i = 0; i < boothData.length ; i++){
+    boothData[i].fields.position_x = parseFloat(boothData[i].fields.position_x)
+    boothData[i].fields.position_y = parseFloat(boothData[i].fields.position_y)
+    boothData[i].fields.length_pixel = parseFloat(boothData[i].fields.length_pixel)
+    boothData[i].fields.width_pixel = parseFloat(boothData[i].fields.width_pixel)
+    boothData[i].fields.rotation = parseFloat(boothData[i].fields.rotation)
+    boothData[i].fields.length = parseFloat(boothData[i].fields.length)
+    boothData[i].fields.width = parseFloat(boothData[i].fields.width)
+    boothData[i].fields.area = parseFloat(boothData[i].fields.area)
     // parseData[i].fields.x = parseFloat(parseData[i].fields.position_x)
     // parseData[i].fields.y = parseFloat(parseData[i].fields.position_y)
-    data.push(parseData[i].fields)
+    data.push(boothData[i].fields)
   }
-  console.log(data);
+  for (var i = 0; i < mapData.length ; i++){
+    console.log(mapData[i].fields.name)
+    map_data.push(mapData[i].fields)
+  }
+  console.log(map_data[0])
 
   const MAXUNDOCOUNT = 5;
   var undoArray = []
@@ -658,6 +664,30 @@
 
     svg.call(zoom);
 
+     // <li class="nav-item">
+     //        <a class="nav-link" href="#">
+     //          <span data-feather="file-text"></span>
+     //          Saved Data 1
+     //        </a>
+     //      </li>
+
+     var form_allocate = document.getElementById("allocate_btn");
+      var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
+      var numberOfBooth = $("ul li:visible").length;
+
+      console.log(numberOfBooth);
+      if (numberOfBooth>=30){
+        form_allocate.className += " allocate-relative";
+      }
+
+    for (var i=1; i < map_data.length; i++){
+      var id = i+1
+      $("#map-list").append('<li class="nav-item"><a id = "map-item-' + map_data[i].name + '" class = "nav-link" href="/' + id + '"><span data-feather="file-text"></span>' + map_data[i].name + '</a></li>');
+    }
+    var ref_id = map_data[0].curr_map_ref - 1
+    var selected_map = document.getElementById("map-item-" + map_data[ref_id].name)
+    selected_map.className += " active";
+
     for (var i = 0; i < data.length; i++){
       // if (!checkValidXY(i)){
         // $("#booth-container-id-" + data[i].id).hide()
@@ -716,7 +746,7 @@
 
       // }
       if(checkAssigned(i)){
-        numberOfAssignedBooth -= 1; 
+        var numberOfAssignedBooth = 1; 
         $('#booth-item-container-'+ data[i].project_id).hide();
         $('#booth-item-'+ data[i].project_id).hide();
       }
@@ -801,7 +831,7 @@
       var tobeSent = $.param(data);
       var jsonString = JSON.stringify(data);
     
-      $.post('accounts/change_allocation', jsonString) ;
+      $.post('/accounts/change_allocation', jsonString) ;
     }
 //crystal I think u run the code on your  terminal, I dont think we can share the same localhost. 
     console.log(data);

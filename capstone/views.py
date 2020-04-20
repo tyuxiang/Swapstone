@@ -16,23 +16,50 @@ from django.http import JsonResponse, HttpResponse
 
 # Create your views here.
 @login_required
-def home(request):
+def home(request, index=1):
 
-	print(request.user)
+	# print(request.user)
 	user = request.user
-	user_maps = Map.objects.filter(user=request.user)    
+	user_maps = Map.objects.filter(user=request.user)  
+	# print("this is: " + str(type(user_maps)))
 	curr_map = user_maps[0]
-	print(user_maps[0].booths.all())
+	if index!=1:
+		curr_map.curr_map_ref = index
+		curr_map.save()
+		ref_map = user_maps.get(pk=index)
+		for booth in curr_map.booths.all():
+   		     booth.delete()
+		for project in ref_map.booths.all():
+			booth = Booth()
+			booth.project_id = project.project_id
+			booth.length = project.length
+			booth.width = project.width
+			booth.area = project.area
+			booth.project_name = project.project_name
+			booth.industry = project.industry
+			booth.length_pixel = project.length_pixel
+			booth.width_pixel = project.width_pixel
+			booth.rotation = project.rotation
+			booth.position_x = project.position_x
+			booth.position_y = project.position_y
+			booth.in_campus_centre = project.in_campus_centre
+			booth.saved_map = curr_map
+			booth.save()
+	# print(user_maps[0].booths.all())
 	booth = curr_map.booths.all()
-	# if request.method == 'POST':
-	# 	allocate(booth)
+	if request.method == 'POST':
+		allocate(booth)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
-	json_serializer = serializers.get_serializer("json")()
-	maps = json_serializer.serialize(user_maps, ensure_ascii = False)
+	# maps = json_serializer.serialize(user_maps, ensure_ascii = False)
+	obj = {
+		'booths' : json_serializer.serialize(booth , ensure_ascii = False),
+		'maps' : json_serializer.serialize(user_maps, ensure_ascii = False)
+	}
+	obj_json = json.dumps(obj)
 
-
-	return render(request,'capstone/home.html',{'booth':booths})
+	# return render(request,'capstone/home.html',{'booth':booths})
+	return render(request,'capstone/home.html',{'obj':obj_json})
 
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
 

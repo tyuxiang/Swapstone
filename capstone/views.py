@@ -23,8 +23,6 @@ def home(request, index=1):
 	user_maps = Map.objects.filter(user=request.user)  
 	# print("this is: " + str(type(user_maps)))
 	curr_map = user_maps[0]
-<<<<<<< HEAD
-=======
 	if index!=1:
 		curr_map.curr_map_ref = index
 		curr_map.save()
@@ -47,20 +45,12 @@ def home(request, index=1):
 			booth.in_campus_centre = project.in_campus_centre
 			booth.saved_map = curr_map
 			booth.save()
->>>>>>> c3b0c8f45bd1d80e38b3741d34fd330d89e51829
 	# print(user_maps[0].booths.all())
 	booth = curr_map.booths.all()
 	if request.method == 'POST':
 		allocate(booth)
 	json_serializer = serializers.get_serializer("json")()
 	booths = json_serializer.serialize(booth , ensure_ascii = False)
-<<<<<<< HEAD
-	json_serializer = serializers.get_serializer("json")()
-	maps = json_serializer.serialize(user_maps, ensure_ascii = False)
-
-
-	return render(request,'capstone/home.html',{'booth':booths})
-=======
 	# maps = json_serializer.serialize(user_maps, ensure_ascii = False)
 	obj = {
 		'booths' : json_serializer.serialize(booth , ensure_ascii = False),
@@ -70,7 +60,6 @@ def home(request, index=1):
 
 	# return render(request,'capstone/home.html',{'booth':booths})
 	return render(request,'capstone/home.html',{'obj':obj_json})
->>>>>>> c3b0c8f45bd1d80e38b3741d34fd330d89e51829
 
 	# return render(request,'capstone/home.html',{'maps':maps},{'booth':booths})
 

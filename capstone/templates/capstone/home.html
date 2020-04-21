@@ -193,13 +193,18 @@
 
 
   // Converting the data received from the backend (from string to json)
-  var parseData = JSON.parse( "{{ booth|escapejs }}" );
+  const ALLDATA = JSON.parse("{{obj|escapejs}}");
+  const BOOTHDATA = JSON.parse(ALLDATA.booths);
+  const MAPDATA = JSON.parse(ALLDATA.maps);
+
+  console.log(BOOTHDATA);
+  console.log(MAPDATA);
 
   const stringKeys = ["industry", "project_name", "in_campus_centre", "project_id", "saved_map"];
   const data = [];
   const map_data = [];
 
-  parseData.forEach(boothData => {
+  BOOTHDATA.forEach(boothData => {
     Object.keys(boothData.fields).forEach(function(key){
       if (!(stringKeys.includes(key))){
         boothData.fields[key] = parseFloat(boothData.fields[key]);
@@ -207,13 +212,12 @@
     })
     data.push(boothData.fields);
   });
-  // var preData = ( "{{ booth|escapejs }}" );
   
-  for (var i = 0; i < mapData.length ; i++){
-    console.log(mapData[i].fields.name)
-    map_data.push(mapData[i].fields)
+  for (var i = 0; i < MAPDATA.length ; i++){
+    console.log(MAPDATA[i].fields.name)
+    map_data.push(MAPDATA[i].fields)
   }
-  console.log(map_data[0])
+  console.log(MAPDATA[0])
 
   const MAXUNDOCOUNT = 5;
   var undoArray = []
@@ -224,16 +228,6 @@
 
   var firstSelectedSwap, secondSelectedSwap;
   var swapQueueCount = 0;
-
-  // maybe data = function() -> import data -> json preferred
-  // var data = [{"project_id" :  0, "position_x" : 360, "position_y" : 360, "width_pixel" : 80, "length_pixel" : 80, "project_name" : "C2", "rotation" :90},
-  // {"project_id" :  1, "position_x" : 440, "position_y" : 400, "width_pixel" : 40, "length_pixel" : 40, "project_name": "C1", "rotation" : 20},
-  // {"project_id" :  2, "position_x" : 480, "position_y" : 400, "width_pixel" : 40, "length_pixel" : 40, "project_name" : "C10", "rotation" : 30},
-  // {"project_id" :  3, "position_x" : 520, "position_y" : 400, "width_pixel" : 40, "length_pixel" : 40, "project_name" : "C3", "rotation" : 40},
-  // {"project_id" :  4, "position_x" : 400, "position_y" : 450, "width_pixel" : 40, "length_pixel" : 40, "project_name" : "C4", "rotation" : 50},
-  // {"project_id" :  5, "position_x" : 400, "position_y" : 490, "width_pixel" : 40, "length_pixel" : 40, "project_name" : "C28", "rotation" : 0},
-  // {"project_id" :  6, "position_x" : -1, "position_y" : -1, "width_pixel" : 80, "length_pixel" : 70, "project_name" : "C14", "rotation" : 0},
-  // {"project_id" :  7, "position_x" : -1, "position_y" : -1, "width_pixel" : 80, "length_pixel" : 80, "project_name" : "C21", "rotation" : 0}];
 
   var canDragBooth = false;
   var canZoom = false;
@@ -251,6 +245,10 @@
     return true;
   }
 
+  // const selectedText = ["#selected-booth-name", "#selected-booth-actual-area", "#selected-booth-project-name", 
+  //                       "#selected-project-id", "#selected-booth-industry"]
+
+  // FIX
   function setSelectedBoothInformation(d){
       $("#selected-booth-name").text("Selected Booth: " + d.project_name);
       $("#input-x").val(Math.round(d.position_x));
@@ -313,8 +311,8 @@
               .select("#allocation-container")
               .append("svg")
               .attr("id", "allocation")
-              .attr("width", MAX_WIDTH + 30) //account the padding total
-              .attr("height", MAX_HEIGHT + 30)
+              .attr("width", MAX_WIDTH ) //account the padding total
+              .attr("height", MAX_HEIGHT )
               ;
 
   svg.append("defs")
@@ -344,9 +342,12 @@
         }
       });
 
-//  include drag booth functionality
+  /*
+      Include drag booth functionality.
+      var drag is the handler of the drag event. Specifies what would be done on start, on drag, on end of the event
+  */
   var drag = d3.drag()
-      .on("start", function(d){
+      .on("start", function(d){   //Handles the event of undo
         if(canDragBooth){
 
           changesCount += 1;
@@ -759,10 +760,7 @@
 
       // }
       if(checkAssigned(i)){
-<<<<<<< HEAD
-=======
         var numberOfAssignedBooth = 1; 
->>>>>>> c3b0c8f45bd1d80e38b3741d34fd330d89e51829
         $('#booth-item-container-'+ data[i].project_id).hide();
         $('#booth-item-'+ data[i].project_id).hide();
       }

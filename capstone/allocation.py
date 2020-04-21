@@ -147,7 +147,7 @@ def allocate(booths):
     group_count =0
     group_full = 0
     while (overall_booth_count < len(booths)):
-        print("allocating booths")
+        # print("allocating booths")
         if(booth_count[industry_count]>=0):
             
             booth = booths_byindustry[industry_count][booth_count[industry_count]]

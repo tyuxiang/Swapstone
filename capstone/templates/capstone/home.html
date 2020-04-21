@@ -57,6 +57,10 @@
         display: table-cell;
       }
 
+      .selected{
+        stroke: red;
+      }
+
     </style>
   </head>
 
@@ -101,15 +105,9 @@
             <span data-feather="plus-circle"></span>
           </a>
         </h6>
-        <ul class="nav flex-column mb-2">
-          <li class="nav-item">
-            <a class="nav-link" href="#">
-              <span data-feather="file-text"></span>
-              Saved Data 1
-            </a>
-          </li>
+        <ul class="nav flex-column mb-2" id = "map-list">
         </ul>
-        <button class="save-btn btn-lg btn-success btn-block">Save</button>
+        <button class="save-btn btn-lg btn-success btn-block" onclick = "saveButtonHandler()">Save</button>
       </div>
     </nav>
     <main role="main" class="col-md-8 ml-sm-auto col-lg-10 px-0">
@@ -118,6 +116,7 @@
           <button type="button" id="dragbooth-button" onclick = "dragBoothButtonHandler()">Drag Booth</button>
           <button type="button" id="zoom-button" onclick = "zoomButtonHandler()">Zoom & Pan</button>
           <button type="button" id="undo-button" onclick = "undoButtonHandler()">Undo</button>
+          <button type="button" id="swap-button" onclick = "swapButtonHandler()">Swap</button>
         </div>
         <div id = "allocation-container">
         </div>
@@ -159,7 +158,7 @@
         </ul>
         <form method="post" enctype="multipart/form-data" class="upload-form">
           {% csrf_token %}
-          <button type="submit" class="allocate-btn btn-lg btn-dark btn-block">Allocate</button>
+          <button type="submit" class="allocate-btn btn-lg btn-dark btn-block" id="allocate_btn">Allocate</button>
         </form>
       </div>
     </nav>
@@ -191,24 +190,34 @@
   const MAX_TRANSLATE_Y = MAX_HEIGHT / 2;
   const MIN_TRANSLATE_Y = -MAX_TRANSLATE_Y;
   
-  const data = [];
 
-  var preData = ( "{{ booth|escapejs }}" );
-  var parseData = JSON.parse(preData);
-  for (var i = 0; i < parseData.length ; i++){
-    parseData[i].fields.position_x = parseFloat(parseData[i].fields.position_x)
-    parseData[i].fields.position_y = parseFloat(parseData[i].fields.position_y)
-    parseData[i].fields.length_pixel = parseFloat(parseData[i].fields.length_pixel)
-    parseData[i].fields.width_pixel = parseFloat(parseData[i].fields.width_pixel)
-    parseData[i].fields.rotation = parseFloat(parseData[i].fields.rotation)
-    parseData[i].fields.length = parseFloat(parseData[i].fields.length)
-    parseData[i].fields.width = parseFloat(parseData[i].fields.width)
-    parseData[i].fields.area = parseFloat(parseData[i].fields.area)
-    // parseData[i].fields.x = parseFloat(parseData[i].fields.position_x)
-    // parseData[i].fields.y = parseFloat(parseData[i].fields.position_y)
-    data.push(parseData[i].fields)
+
+  // Converting the data received from the backend (from string to json)
+  const ALLDATA = JSON.parse("{{obj|escapejs}}");
+  const BOOTHDATA = JSON.parse(ALLDATA.booths);
+  const MAPDATA = JSON.parse(ALLDATA.maps);
+
+  console.log(BOOTHDATA);
+  console.log(MAPDATA);
+
+  const stringKeys = ["industry", "project_name", "in_campus_centre", "project_id", "saved_map"];
+  const data = [];
+  const map_data = [];
+
+  BOOTHDATA.forEach(boothData => {
+    Object.keys(boothData.fields).forEach(function(key){
+      if (!(stringKeys.includes(key))){
+        boothData.fields[key] = parseFloat(boothData.fields[key]);
+      }
+    })
+    data.push(boothData.fields);
+  });
+  
+  for (var i = 0; i < MAPDATA.length ; i++){
+    console.log(MAPDATA[i].fields.name)
+    map_data.push(MAPDATA[i].fields)
   }
-  console.log(data);
+  console.log(MAPDATA[0])
 
   const MAXUNDOCOUNT = 5;
   var undoArray = []
@@ -217,18 +226,12 @@
   var changesCount = 0;
   var changeLimitIndex;
 
-  // maybe data = function() -> import data -> json preferred
-  // var data = [{"project_id" :  0, "position_x" : 360, "position_y" : 360, "width_pixel" : 80, "length_pixel" : 80, "project_name" : "C2", "rotation" :90},
-  // {"project_id" :  1, "position_x" : 440, "position_y" : 400, "width_pixel" : 40, "length_pixel" : 40, "project_name": "C1", "rotation" : 20},
-  // {"project_id" :  2, "position_x" : 480, "position_y" : 400, "width_pixel" : 40, "length_pixel" : 40, "project_name" : "C10", "rotation" : 30},
-  // {"project_id" :  3, "position_x" : 520, "position_y" : 400, "width_pixel" : 40, "length_pixel" : 40, "project_name" : "C3", "rotation" : 40},
-  // {"project_id" :  4, "position_x" : 400, "position_y" : 450, "width_pixel" : 40, "length_pixel" : 40, "project_name" : "C4", "rotation" : 50},
-  // {"project_id" :  5, "position_x" : 400, "position_y" : 490, "width_pixel" : 40, "length_pixel" : 40, "project_name" : "C28", "rotation" : 0},
-  // {"project_id" :  6, "position_x" : -1, "position_y" : -1, "width_pixel" : 80, "length_pixel" : 70, "project_name" : "C14", "rotation" : 0},
-  // {"project_id" :  7, "position_x" : -1, "position_y" : -1, "width_pixel" : 80, "length_pixel" : 80, "project_name" : "C21", "rotation" : 0}];
+  var firstSelectedSwap, secondSelectedSwap;
+  var swapQueueCount = 0;
 
   var canDragBooth = false;
   var canZoom = false;
+  var canSwap = false;
 
   var curBoothID;
 
@@ -242,6 +245,10 @@
     return true;
   }
 
+  // const selectedText = ["#selected-booth-name", "#selected-booth-actual-area", "#selected-booth-project-name", 
+  //                       "#selected-project-id", "#selected-booth-industry"]
+
+  // FIX
   function setSelectedBoothInformation(d){
       $("#selected-booth-name").text("Selected Booth: " + d.project_name);
       $("#input-x").val(Math.round(d.position_x));
@@ -254,7 +261,24 @@
       $("#selected-booth-industry").text(d.industry);
   }
 
+  // numberOfBooth
+  document.onreadystatechange = function () {
+    if (document.readyState === "interactive") {
+      var form_allocate = document.getElementById("allocate_btn");
+      var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
+      var numberOfBooth = $("ul li:visible").length;
+
+      if (numberOfBooth>=30){
+        form_allocate.className += " allocate-relative";
+      }
+      else{
+        form_allocate.className = "allocate-btn btn-lg btn-dark btn-block";
+      }
+    }
+  }
+
   function updateData(d){
+    console.log(d);
     for (key in d){
       data[parseInt(d.project_id) - 1][key] = d[key]
     }
@@ -287,8 +311,8 @@
               .select("#allocation-container")
               .append("svg")
               .attr("id", "allocation")
-              .attr("width", MAX_WIDTH + 30) //account the padding total
-              .attr("height", MAX_HEIGHT + 30)
+              .attr("width", MAX_WIDTH ) //account the padding total
+              .attr("height", MAX_HEIGHT )
               ;
 
   svg.append("defs")
@@ -313,20 +337,18 @@
           // gX.call(x_axis.scale(d3.event.transform.rescaleX(xscale)));
           // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
           image.attr("transform", d3.event.transform);
-          // .attr("clip-path","url(#clip)");
           booth.attr("transform", d3.event.transform);
-          // .attr("clip-path","url(#clip)");
-          // .attr("clip-path","url(#clip)");
-          
         } else {
         }
       });
 
-//  include drag booth functionality
+  /*
+      Include drag booth functionality.
+      var drag is the handler of the drag event. Specifies what would be done on start, on drag, on end of the event
+  */
   var drag = d3.drag()
-      .on("start", function(d){
+      .on("start", function(d){   //Handles the event of undo
         if(canDragBooth){
-          d3.select(this).attr("stroke", "red");
 
           changesCount += 1;
           undoArray[changesCount % 5] = {"project_id" : d.project_id, "x": d.position_x, "y": d.position_y, "width_pixel": d.width_pixel, "length_pixel": d.length_pixel}
@@ -346,7 +368,12 @@
         if(canDragBooth){
           d3.select(this).raise()
           .attr("transform", function(d){
-            return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+            if (d.rotation > 0){
+              // return "translate (" + d.position_x + " " + d.position_y + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+            } else {
+              // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+            }
+
           })
           .attr("x", function(d){
               d.position_x += d3.event.dx;
@@ -364,7 +391,11 @@
 
           svg.select("#booth-text-id-"+ d.project_id)
               .attr("transform", function(d){
-                return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+                if (d.rotation > 0){
+                  // return "translate (" + d.position_x + (d.width_pixel / 2) + " " + d.position_y + (d.length_pixel / 2) + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+                } else {
+                  // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+                }
               })
               .attr("x", function(d){
                 return d.position_x + (d.width_pixel / 2);
@@ -377,7 +408,9 @@
       })
       .on("end", function(d){
         if(canDragBooth){
-                    
+          curBoothID = d.project_id;
+          firstSelectedSwap = curBoothID;
+
           // var stateStartPointer;
           // var stateCurrentPointer = 0;
           // var changeLimitIndex;
@@ -386,20 +419,20 @@
           
 
           //POST TO DATABASE
-          var tobeSent = $.param(data);
-          var jsonString = JSON.stringify(data);
-          // console.log(jsonString)
-          // console.log(data);
-          // console.log(cookies.crsftoken);
-          // $.ajax({
-          //     url: '/accounts/change_allocation',
-          //     type: 'POST',
-          //     contentType: 'application/json; charset=utf-8',
-          //     data: data,
-          //     dataType: 'text',
-          // });
+          // var tobeSent = $.param(data);
+          // var jsonString = JSON.stringify(data);
+          // // console.log(jsonString)
+          // // console.log(data);
+          // // console.log(cookies.crsftoken);
+          // // $.ajax({
+          // //     url: '/accounts/change_allocation',
+          // //     type: 'POST',
+          // //     contentType: 'application/json; charset=utf-8',
+          // //     data: data,
+          // //     dataType: 'text',
+          // // });
 
-          $.post('accounts/change_allocation', jsonString) ;
+          // $.post('accounts/change_allocation', jsonString) ;
           // const xhr = new XMLHttpRequest();
 
           // xhr.open("POST", "accounts/change_allocation");
@@ -530,7 +563,12 @@
               return d.position_y + (d.length_pixel / 2);
             })
             .attr("transform", function(d){
-              return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+              if (d.rotation > 0){
+                // return "translate (" + d.position_x + " " + d.position_y  + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+                return "translate (" + d.position_x  + " " + d.position_y + ") rotate(" + d.rotation + ")";
+              } else {
+                // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+              }
             })
             .text(function(d){
               return d.project_id;
@@ -548,14 +586,20 @@
             return 'booth-id-' + d.project_id;
           })
           .attr("x", function(d, i){
-            if(d.position_x > 0){
+            // if (d.rotation > 0){
+              return 0;
+            // }
+            // if(d.position_x > 0){
               return d.position_x;
-            }
+            // }
           })
           .attr("y", function(d){
-            if(d.position_y > 0){
+            // if (d.rotation > 0){
+              return 0;
+            // }
+            // if(d.position_y > 0){
               return d.position_y;
-            }
+            // }
           })
           .attr("height", function(d){
             return d.length_pixel;
@@ -565,7 +609,12 @@
           })
           .attr("clip-path","url(#clip)")
           .attr("transform", function(d){
-            return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+            // if (d.rotation > 0){
+              // return "translate (" + d.position_x  + " " + d.position_y  + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
+              return "translate (" + d.position_x  + " " + d.position_y + ") rotate(" + d.rotation + ")";
+            // } else {
+              // return  "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")"
+            // }
           })
           .attr("visibility", function(d){
             if (d.position_x < 0){
@@ -574,12 +623,84 @@
           })
           .call(drag)
           .on("click", function(d){
-            curBoothID = d.project_id;
+            if (!canSwap){
+              curBoothID = d.project_id;
+              firstSelectedSwap = curBoothID;
+            } else {
+              secondSelectedSwap = d.project_id;
+              var tempPositionX = d.position_x;
+              var tempPositionY = d.position_y;
+
+              var result = data.filter(obj => {
+                return obj.project_id === curBoothID;
+              })
+
+              var idx = data.findIndex(obj => {
+                return obj.project_id === curBoothID;
+              })
+              result = result[0]
+
+              booth.select("#booth-id-" + d.project_id)             // swap the second selected with the first selected
+                .attr('x', result.position_x)    // potential bug
+                .attr('y', result.position_y)    // potential bug
+              booth.select("#booth-text-id-" + d.project_id)
+                .attr('x', result.position_x + d.width_pixel / 2)
+                .attr('y', result.position_y + d.length_pixel / 2)
+
+              d.position_x = result.position_x
+              d.position_y = result.position_y
+
+              booth.select("#booth-id-" + result.project_id)
+                .attr('x', tempPositionX)
+                .attr('y', tempPositionY)
+              booth.select("#booth-text-id-" + result.project_id)
+                .attr('x', tempPositionX + result.width_pixel / 2)
+                .attr('y', tempPositionY + result.length_pixel / 2)
+
+              d.position_x = result.position_x
+              d.position_y = result.position_y
+
+              console.log(data[idx], idx);
+              data[idx].position_x = tempPositionX;
+              data[idx].position_y = tempPositionY;
+
+              canSwap = !canSwap
+              $("#swap-button").toggleClass("active");
+
+
+              curBoothID = d.project_id;
+            }
+
+            
             setSelectedBoothInformation(d);
           })
           ;
 
     svg.call(zoom);
+
+     // <li class="nav-item">
+     //        <a class="nav-link" href="#">
+     //          <span data-feather="file-text"></span>
+     //          Saved Data 1
+     //        </a>
+     //      </li>
+
+     var form_allocate = document.getElementById("allocate_btn");
+      var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
+      var numberOfBooth = $("ul li:visible").length;
+
+      console.log(numberOfBooth);
+      if (numberOfBooth>=30){
+        form_allocate.className += " allocate-relative";
+      }
+
+    for (var i=1; i < map_data.length; i++){
+      var id = i+1
+      $("#map-list").append('<li class="nav-item"><a id = "map-item-' + map_data[i].name + '" class = "nav-link" href="/' + id + '"><span data-feather="file-text"></span>' + map_data[i].name + '</a></li>');
+    }
+    var ref_id = map_data[0].curr_map_ref - 1
+    var selected_map = document.getElementById("map-item-" + map_data[ref_id].name)
+    selected_map.className += " active";
 
     for (var i = 0; i < data.length; i++){
       // if (!checkValidXY(i)){
@@ -639,12 +760,33 @@
 
       // }
       if(checkAssigned(i)){
+        var numberOfAssignedBooth = 1; 
         $('#booth-item-container-'+ data[i].project_id).hide();
         $('#booth-item-'+ data[i].project_id).hide();
       }
     }
 
+    function turnOffOtherTools(){
+      if(canDragBooth){
+        $("#dragbooth-button").toggleClass("active");
+        canDragBooth = !canDragBooth
+      }
+
+      if(canZoom){
+        $("#zoom-button").toggleClass("active");
+        canZoom = !canZoom
+      }
+
+      if(canSwap){
+        $("#swap-button").toggleClass("active");
+        canSwap = !canSwap
+      }
+    }
+
     function dragBoothButtonHandler(){
+      if (!canDragBooth){
+        turnOffOtherTools();
+      }
       $("#dragbooth-button").toggleClass("active");
       canDragBooth = !canDragBooth;
     }
@@ -652,6 +794,9 @@
     svg.on(".zoom", null);
 
     function zoomButtonHandler(){
+      if (!canZoom){
+        turnOffOtherTools();
+      }
       $("#zoom-button").toggleClass("active");
       canZoom = !canZoom;
       if(canZoom){
@@ -682,7 +827,51 @@
 
     }
 
+    function swapButtonHandler(){
+      if (!canSwap){
+        turnOffOtherTools();
+      }
+      canSwap = !canSwap;
+      $("#swap-button").toggleClass("active");
+      if (canSwap){
+        booth.select('#booth-id-' + curBoothID)
+            .attr('class', 'booth selected')
+      }
+    }
+
+    function saveButtonHandler(){
+      var tobeSent = $.param(data);
+      var jsonString = JSON.stringify(data);
+    
+      $.post('/accounts/change_allocation', jsonString) ;
+    }
+//crystal I think u run the code on your  terminal, I dont think we can share the same localhost. 
     console.log(data);
     
+    // document.onkeydown = checkKey;
+
+    // function checkKey(e) {
+
+    // e = e || window.event;
+
+    // if (e.keyCode == '38') {
+    //     // up arrow
+    //     console.log('up')
+    // }
+    // else if (e.keyCode == '40') {
+    //     // down arrow
+    //     console.log('down')
+    // }
+    // else if (e.keyCode == '37') {
+    //    // left arrow
+    //    console.log('left')
+    // }
+    // else if (e.keyCode == '39') {
+    //    // right arrow
+    //    console.log('right')
+    // }
+    
+
+    // }
    
 </script>

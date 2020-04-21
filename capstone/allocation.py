@@ -41,20 +41,19 @@ class Group:
     def add(self, booth):
         if self.shape == "horizontal":
             # do we need to check for width?
-            if(self.point[0]+booth.length_pixel <=self.end[0]):
+            if(self.point[0]+booth.length_pixel <=self.end[0]) and booth.width <= 4:
                 booth.position_x = self.point[0]
-                # print(self.point[0])
-                booth.position_y = self.point[1] - booth.width_pixel
-                self.point[0] = self.point[0] + booth.length_pixel
+                booth.position_y = self.point[1]
+                self.point[0] = self.point[0] + booth.width_pixel
                 booth.rotation=0
                 print("horizontal",booth.project_id,booth.position_x,booth.position_y)
                 booth.save()
                 return True
-            else:
+            else:       
                 return False
 
         elif self.shape == "vertical":
-            if(self.point[1]+booth.length_pixel <=self.end[1]):
+            if(self.point[1]+booth.length_pixel <=self.end[1] and booth.width <=4):
                 booth.rotation = 0
                 booth.position_x = self.point[0]
                 booth.position_y = self.point[1]
@@ -68,9 +67,8 @@ class Group:
         elif self.shape == "slanted":
             theta = 90 - self.angle
             x =booth.length_pixel*Decimal(math.sin(theta))
-            if(self.point[0]+x<=self.end[0]):
+            if(self.point[0]+x<=self.end[0] and booth.length <=5):
 
-                booth.project_name = "slanted"
                 booth.position_x = self.point[0] + booth.width_pixel*Decimal(math.sin(math.radians(theta)))   
                 booth.position_y = self.point[1] - booth.width_pixel*Decimal(math.cos(math.radians(theta)))
                 booth.rotation = self.angle
@@ -97,15 +95,29 @@ class Group:
         #         return False
 
 
+def swap(booth_1,booth_2):
+    x = booth_1.position_x
+    y = booth_1.position_y
+    rotation = booth_1.rotation
+    booth_1.position_x = booth_2.position_x
+    booth_1.position_y = booth_2.position_y
+    booth_1.rotation = booth_2.rotation
+    booth_2.position_x = x
+    booth_2.position_y = y
+    booth_2.rotation = rotation
+    booth_1.save()
+    booth_2.save()
+
 
 
 
 def allocate(booths):
+    print("allocate is called")
     space_1 = Group(shape="vertical",start = (85,120),end = (85,255))
     space_2 = Group(shape="horizontal",start = (130,100),end = (275,100))
     space_3 = Group(shape="vertical",start = (280,120),end = (280,255))
     space_4 = Group(shape="slanted",downward_sloping = True,start = (140,300),end = (315,450))
-    space_5 = Group(shape="horizontal",start = (330,145),end = (580,145))
+    space_5 = Group(shape="horizontal",start = (330,160),end = (580,160))
     space_6 = Group(shape="horizontal",start = (330,280),end = (580,280))
     space_7 = Group(shape="vertical",start = (590,125),end = (590,245))
     space_8 = Group(shape="slanted",start = (630,70),end = (730,50))
@@ -114,8 +126,7 @@ def allocate(booths):
     groups = [space_1,space_2,space_3,space_4,space_5,space_6,space_7,space_8,space_9,space_10]
 
   
-    industries = [str(i) for i in range(1,5)]
-
+    industries = ["Finance"]
     # print("Starting allocation algorithm")
     #booths = deepcopy(final_booths)
     #booths.objects.order_by('-area','industry')
@@ -138,6 +149,7 @@ def allocate(booths):
     group_count =0
     group_full = 0
     while (overall_booth_count < len(booths)):
+        # print("allocating booths")
         if(booth_count[industry_count]>=0):
             
             booth = booths_byindustry[industry_count][booth_count[industry_count]]

@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 class Map(models.Model):
     name = models.CharField(max_length = 100)
     user = models.ForeignKey(User, related_name='maps',on_delete=models.CASCADE)
+    curr_map_ref = models.IntegerField(null=True)
 
 # class CurrentMap(models.Model):
 #     user = models.ForeignKey(User,related_name = 'curr_map',on_delete=models.CASCADE)

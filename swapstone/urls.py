@@ -23,6 +23,7 @@ urlpatterns = [
     # path('logout/', views.logout, name='logout'),
     path('load_csv/', views.csv, name='csv'),
     path('', views.home, name='home'),  
+    path('<int:index>/', views.home, name='home_withIndex'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/create_account', views.create_account, name='create_account'),
     path('accounts/reset_password', views.reset_password, name='reset_password'),

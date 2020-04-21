@@ -52,6 +52,7 @@ class Group:
                 return True
             else:
                 return False
+
         elif self.shape == "vertical":
             if(self.point[1]+booth.length_pixel <=self.end[1]):
                 booth.rotation = 0
@@ -63,6 +64,7 @@ class Group:
                 return True
             else:
                 return False
+                
         elif self.shape == "slanted":
             theta = 90 - self.angle
             x =booth.length_pixel*Decimal(math.sin(theta))

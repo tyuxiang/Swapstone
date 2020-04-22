@@ -185,8 +185,8 @@ input[type=checkbox]{
 
 #allocation{
   /* width: 100%; */
-  /* padding-right: 15px;
-  padding-left: 15px; */
+  padding-top: 30px;
+  padding-left: 30px;
   /* stroke-width: 0px; */
   margin-right: auto;
   margin-left: auto;
@@ -220,7 +220,7 @@ input[type=checkbox]{
 }
 
 .booth{
-  /* fill: GREY; */
+  fill : grey;
   stroke-width: 1px;
   stroke: black;
   clip-path: url(#clip);
@@ -249,3 +249,4 @@ input[type=checkbox]{
   stroke: black;
   clip-path: url(#clip);
 }
+

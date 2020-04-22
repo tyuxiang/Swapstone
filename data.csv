@@ -1,5 +1,6 @@
 Project ID,Project Name,Length,Width,In Campus Centre?,Industry
 1,Dummy1,2,2,Yes,Finance
+<<<<<<< HEAD
 2,Dummy2,2,2,Yes,Finance
 3,Dummy3,2,2,Yes,Finance
 4,Dummy4,2,2,Yes,Finance
@@ -63,3 +64,5 @@ Project ID,Project Name,Length,Width,In Campus Centre?,Industry
 62,Dummy62,2,2,Yes,Finance
 63,Dummy63,2,2,Yes,Finance
 64,Dummy64,2,2,Yes,Finance
+=======
+>>>>>>> 4bf10c68d724b71a91542f708bcf8642b3e763c6

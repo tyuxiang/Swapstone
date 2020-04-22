@@ -3,7 +3,9 @@ from .load_csv_data import load_csv_data
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from django.contrib.auth.models import User
 import time
 import sys, os
@@ -284,7 +286,7 @@ class CSV_Tests(StaticLiveServerTestCase):
         time.sleep(1)    
         self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/button').click()
         print("Uploaded excel file")
-        time.sleep(1)
+        time.sleep(2)
 
     def test_normal_csv(self):
         time.sleep(2)
@@ -304,33 +306,49 @@ class CSV_Tests(StaticLiveServerTestCase):
         self.create_user()
         self.login()
         self.upload_csv(file)
-        try: self.selenium.find_element_by_id("map-item-Empty.xlsx")
-        except NoSuchElementException: self.fail("uploaded map cannot be found")
-    
-    def test_oversized_csv(self):
-        print("Testing uploading of oversized csv")
-        file = "Oversized.xlsx"
+        try:
+            WebDriverWait(self.selenium, 3).until(EC.alert_is_present(),
+                                   'Timed out waiting for PA creation ' +
+                                   'confirmation popup to appear.')
+            self.selenium.switch_to.alert.accept()
+        except TimeoutException:
+            self.fail("Alert did not show even though excel file is empty")
+
+    def test_1booth_csv(self):
+        time.sleep(2)
+        print("Testing uploading of correct csv with 1 booth")
+        file = "2by2_1.xlsx"
         self.selenium.refresh()
         self.create_user()
         self.login()
         self.upload_csv(file)
-        try: self.selenium.find_element_by_id("map-item-Oversized.xlsx")
-        except NoSuchElementException: self.fail("uploaded map cannot be found")
+        allBooths = self.selenium.find_elements_by_class_name("booth-link")
+        numOfBooths = len(allBooths)
+        self.assertEqual(numOfBooths,1)
 
-    # def test_small_csv(self):
-    #     print("Testing uploading of normal csv")
-    #     # booth_test = self.selenium.find_element_by_xpath('//*[@id="booth-id-1"]')
-    #     self.selenium.find_element_by_xpath("/html/body/div/div/nav[1]/div/ul[1]/li[2]/a").click()
-    #     time.sleep(3)
-    #     # self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/input[2]').click()
-    #     self.selenium.find_element_by_name('input').send_keys("C:\\Users\\Tan Yu Xiang\\Desktop\\SUTD\\Year 2\\Term 5\\Elements of Software Construction\\ESC Project\\Swapstone\\Excel Testing\\BlackBoard Testing\\2by2.xlsx")
-    #     time.sleep(2)    
-    #     self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/button').click()
-    #     time.sleep(2)    
-    #     self.selenium.find_element_by_xpath('/html/body/div/div/nav[2]/div/form/button').click()
-    #     time.sleep(5)
-    #     map_item = self.selenium.findElements(By.id("map-item-2by2.xlsx"))
-    #     print(type(map_item))
-    #     print(len(map_item))
-    #     self.assertEqual(len(map_item) != 0, True)
+    # def test_oversized_csv(self):
+    #     print("Testing uploading of oversized csv")
+    #     file = "Oversized.xlsx"
+    #     self.selenium.refresh()
+    #     self.create_user()
+    #     self.login()
+    #     self.upload_csv(file)
+    #     try: self.selenium.find_element_by_id("map-item-Oversized.xlsx")
+    #     except NoSuchElementException: self.fail("uploaded map cannot be found")
 
+    def test_999booth_csv(self):
+        time.sleep(2)
+        print("Testing uploading of correct csv with 1 booth")
+        file = "2by2_999.xlsx"
+        self.selenium.refresh()
+        self.create_user()
+        self.login()
+        self.upload_csv(file)
+        allBooths = self.selenium.find_elements_by_class_name("booth-link")
+        numOfBooths = len(allBooths)
+        self.assertEqual(numOfBooths,999)
+
+    # @classmethod
+    # def tearDownClass(cls):
+    #     cls.selenium.quit()
+    #     super().tearDownClass()

@@ -175,13 +175,16 @@
 
   // Get the image from the backend
   var img = new Image();
-  img.src = "{% static 'images/campuscentre-lvl1.jpg' %}"
+  img.src = "{% static 'images/campuscentre.jpg' %}"
+  // img.src = "{% static 'images/campuscentre-lvl1.jpg' %}"
 
-  const MAX_WIDTH = img.width;
-  const MAX_HEIGHT = img.height;
+  const MAX_WIDTH = 918;
+  const MAX_HEIGHT = 918 / img.width * img.height;
   
   const ratiox = MAX_WIDTH / 1000;
   const ratioy = MAX_HEIGHT / 1000;
+
+  console.log(ratiox, ratioy)
 
   const mapRatio = 13.397; //pixel / meter
   
@@ -207,6 +210,7 @@
     })
     data.push(boothData.fields);
   });
+  console.log(data)
   
   for (var i = 0; i < MAPDATA.length ; i++){
     console.log(MAPDATA[i].fields.name)
@@ -304,16 +308,12 @@
     var newX = Math.cos(-deg * Math.PI / 180) * x +  (-Math.sin(-deg * Math.PI  / 180)) * y
     var newY = Math.sin(-deg * Math.PI / 180) * x +  Math.cos(-deg * Math.PI  / 180) * y
 
-    console.log(newX, newY)
-    console.log(newX - x, newY- y)
+    // console.log(newX, newY)
+    // console.log(newX - x, newY- y)
 
     // return "translate (" + (x - newX) + " " + (y - newY) + ")";
     return "translate (" + (newX - x) + " " + (newY - y)  +")";
   }
-
-  data[0].position_x = 500
-  data[0].position_y = 100
-  data[0].rotation = 40
 
   // Initialize scale for SVG
   var xscale = d3.scaleLinear()
@@ -527,7 +527,9 @@
                 .attr("clip-path","url(#clip)")
                 .attr('x', 0)
                 .attr('y', 0)
-                .attr("href", "{% static 'images/campuscentre-lvl1.jpg' %}")
+                .attr('width', MAX_WIDTH)
+                .attr('height', MAX_HEIGHT)
+                .attr("href", "{% static 'images/campuscentre.jpg' %}")
                 .attr("transform", "translate(0,0) scale(1)")
                 ;
 
@@ -622,7 +624,7 @@
               curBoothID = d.project_id;
               firstSelectedSwap = curBoothID;
             } else {
-              secondSelectedSwap = d.project_id;
+
               var tempPositionX = d.position_x;
               var tempPositionY = d.position_y;
 
@@ -655,17 +657,14 @@
               d.position_x = result.position_x
               d.position_y = result.position_y
 
-              console.log(data[idx], idx);
               data[idx].position_x = tempPositionX;
               data[idx].position_y = tempPositionY;
 
               canSwap = !canSwap
               $("#swap-button").toggleClass("active");
 
-
               curBoothID = d.project_id;
             }
-
             
             setSelectedBoothInformation(d);
           });

@@ -3,6 +3,7 @@ from .load_csv_data import load_csv_data
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 from django.contrib.auth.models import User
 import time
 import sys, os
@@ -238,6 +239,8 @@ class MySeleniumTests(StaticLiveServerTestCase):
 
 class CSV_Tests(StaticLiveServerTestCase):
 
+    path = "C:\\Users\\Tan Yu Xiang\\Desktop\\SUTD\\Year 2\\Term 5\\Elements of Software Construction\\ESC Project\\Swapstone\\Excel Testing\\BlackBoard Testing\\"
+
     @classmethod
     def setUpClass(cls):
         print("Setting Up...")
@@ -245,39 +248,79 @@ class CSV_Tests(StaticLiveServerTestCase):
         cls.selenium = WebDriver()
         cls.selenium.implicitly_wait(10)
         cls.selenium.get('%s%s' % (cls.live_server_url, '/'))
-        
-        # Click on the create account button
-        cls.selenium.find_element_by_xpath("/html/body/div/form/div[4]/a").click()
-        
-        # Key in username, first password and key in the password agn
-        cls.selenium.find_element_by_name("username").send_keys(username)
-        cls.selenium.find_element_by_name("first_password").send_keys(password)
-        cls.selenium.find_element_by_name("password").send_keys(password)
 
-        # Click on the create account button and go back to login page
-        cls.selenium.find_element_by_xpath("/html/body/div/form/div[1]/button").click()
-        cls.selenium.find_element_by_xpath("/html/body/div/form/div[2]/a").click()
-
-        # Login
-        cls.selenium.find_element_by_name("username").send_keys(username)
-        cls.selenium.find_element_by_name("password").send_keys(password)
-        cls.selenium.find_element_by_xpath("/html/body/div/form/div[2]/button").click()
-
-        time.sleep(2)
+        time.sleep(1)
 
         print("Setting Up Done...")
 
-    def test_normal_csv(self):
-        print("Testing uploading of normal csv")
-        # booth_test = self.selenium.find_element_by_xpath('//*[@id="booth-id-1"]')
-        self.selenium.find_element_by_xpath("/html/body/div/div/nav[1]/div/ul[1]/li[2]/a").click()
-        time.sleep(3)
-        # self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/input[2]').click()
-        self.selenium.find_element_by_name('input').send_keys("C:\\Users\\Tan Yu Xiang\\Desktop\\SUTD\\Year 2\\Term 5\\Elements of Software Construction\\ESC Project\\Swapstone\\Excel Testing\\BlackBoard Testing\\2by2.xlsx")
-        time.sleep(2)    
-        self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/button').click()
-        time.sleep(2)    
-        self.selenium.find_element_by_xpath('/html/body/div/div/nav[2]/div/form/button').click()
-        time.sleep(10)
+    def create_user(self):
+        # Click on the create account button
+        self.selenium.find_element_by_xpath("/html/body/div/form/div[4]/a").click()
         
+        # Key in username, first password and key in the password agn
+        self.selenium.find_element_by_name("username").send_keys(username)
+        self.selenium.find_element_by_name("first_password").send_keys(password)
+        self.selenium.find_element_by_name("password").send_keys(password)
+
+        # Click on the create account button and go back to login page
+        self.selenium.find_element_by_xpath("/html/body/div/form/div[1]/button").click()
+        self.selenium.find_element_by_xpath("/html/body/div/form/div[2]/a").click()
+        print("Created account")
+        time.sleep(1)
+
+    def login(self):
+        # Login
+        self.selenium.find_element_by_name("username").send_keys(username)
+        self.selenium.find_element_by_name("password").send_keys(password)
+        self.selenium.find_element_by_xpath("/html/body/div/form/div[2]/button").click()
+        print("Logged in")
+        time.sleep(1)
+
+    def upload_csv(self, file):
+        # self.selenium.find_element_by_xpath("/html/body/div/div/nav[1]/div/ul[1]/li[2]/a").click()
+        self.selenium.find_element_by_id("load_csv").click()
+        time.sleep(1)
+        self.selenium.find_element_by_name('input').send_keys(self.path + file)
+        time.sleep(1)    
+        self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/button').click()
+        print("Uploaded excel file")
+        time.sleep(1)
+
+    def test_normal_csv(self):
+        time.sleep(2)
+        print("Testing uploading of normal csv")
+        file = "2by2.xlsx"
+        self.selenium.refresh()
+        self.create_user()
+        self.login()
+        self.upload_csv(file)
+        try: self.selenium.find_element_by_id("map-item-2by2.xlsx")
+        except NoSuchElementException: self.fail("normal map could not be found")
+
+    def test_empty_csv(self):
+        print("Testing uploading of empty csv")
+        file = "Empty.xlsx"
+        self.selenium.refresh()
+        self.create_user()
+        self.login()
+        self.upload_csv(file)
+        try: self.selenium.find_element_by_id("map-item-Empty.xlsx")
+        except NoSuchElementException: self.fail("uploaded map cannot be found")
+
+    # def test_small_csv(self):
+    #     print("Testing uploading of normal csv")
+    #     # booth_test = self.selenium.find_element_by_xpath('//*[@id="booth-id-1"]')
+    #     self.selenium.find_element_by_xpath("/html/body/div/div/nav[1]/div/ul[1]/li[2]/a").click()
+    #     time.sleep(3)
+    #     # self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/input[2]').click()
+    #     self.selenium.find_element_by_name('input').send_keys("C:\\Users\\Tan Yu Xiang\\Desktop\\SUTD\\Year 2\\Term 5\\Elements of Software Construction\\ESC Project\\Swapstone\\Excel Testing\\BlackBoard Testing\\2by2.xlsx")
+    #     time.sleep(2)    
+    #     self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/button').click()
+    #     time.sleep(2)    
+    #     self.selenium.find_element_by_xpath('/html/body/div/div/nav[2]/div/form/button').click()
+    #     time.sleep(5)
+    #     map_item = self.selenium.findElements(By.id("map-item-2by2.xlsx"))
+    #     print(type(map_item))
+    #     print(len(map_item))
+    #     self.assertEqual(len(map_item) != 0, True)
 

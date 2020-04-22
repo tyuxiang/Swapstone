@@ -92,7 +92,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'csv'%}">
+            <a class="nav-link" id="load_csv" href="{% url 'csv'%}">
               <span data-feather="file"></span>
               Load CSV File
             </a>
@@ -696,6 +696,10 @@
     var ref_id = map_data[0].curr_map_ref - 1
     var selected_map = document.getElementById("map-item-" + map_data[ref_id].name)
     selected_map.className += " active";
+
+    if(data.length==0){
+      alert("there is no booths in this excel file")
+    }
 
     for (var i = 0; i < data.length; i++){
       // if (!checkValidXY(i)){

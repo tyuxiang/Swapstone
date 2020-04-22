@@ -1,116 +1,65 @@
 Project ID,Project Name,Length,Width,In Campus Centre?,Industry
-<<<<<<< HEAD
-1,Dummy,2,2,Yes,1
-2,Dummy,2,2,Yes,1
-3,Dummy,2,2,Yes,1
-4,Dummy,2,2,Yes,1
-5,Dummy,2,2,Yes,1
-6,Dummy,2,2,Yes,1
-7,Dummy,2,2,Yes,1
-8,Dummy,2,2,Yes,1
-9,Dummy,2,2,Yes,1
-10,Dummy,2,2,Yes,1
-11,Dummy,2,2,Yes,1
-12,Dummy,2,2,Yes,1
-13,Dummy,2,2,Yes,1
-14,Dummy,2,2,Yes,1
-15,Dummy,2,2,Yes,1
-16,Dummy,2,2,Yes,1
-17,Dummy,2,2,Yes,1
-18,Dummy,2,2,Yes,1
-19,Dummy,2,2,Yes,1
-20,Dummy,2,2,Yes,1
-21,Dummy,2,2,Yes,1
-22,Dummy,2,2,Yes,1
-23,Dummy,2,2,Yes,1
-24,Dummy,2,2,Yes,1
-25,Dummy,2,2,Yes,1
-26,Dummy,2,2,Yes,1
-27,Dummy,2,2,Yes,1
-28,Dummy,2,2,Yes,1
-29,Dummy,2,2,Yes,1
-30,Dummy,2,2,Yes,1
-31,Dummy,2,2,Yes,1
-32,Dummy,2,2,Yes,1
-33,Dummy,2,2,Yes,1
-34,Dummy,2,2,Yes,1
-35,Dummy,2,2,Yes,1
-36,Dummy,2,2,Yes,1
-37,Dummy,2,2,Yes,1
-38,Dummy,2,2,Yes,1
-39,Dummy,2,2,Yes,1
-40,Dummy,2,2,Yes,1
-41,Dummy,2,2,Yes,1
-42,Dummy,2,2,Yes,1
-43,Dummy,2,2,Yes,1
-44,Dummy,2,2,Yes,1
-45,Dummy,2,2,Yes,1
-46,Dummy,2,2,Yes,1
-47,Dummy,2,2,Yes,1
-48,Dummy,2,2,Yes,1
-49,Dummy,2,2,Yes,1
-50,Dummy,2,2,Yes,1
-51,Dummy,2,2,Yes,1
-52,Dummy,2,2,Yes,1
-53,Dummy,2,2,Yes,1
-54,Dummy,2,2,Yes,1
-55,Dummy,2,2,Yes,1
-56,Dummy,2,2,Yes,1
-57,Dummy,2,2,Yes,1
-58,Dummy,2,2,Yes,1
-59,Dummy,2,2,Yes,1
-60,Dummy,2,2,Yes,1
-61,Dummy,2,2,Yes,1
-62,Dummy,2,2,Yes,1
-63,Dummy,2,2,Yes,1
-64,Dummy,2,2,Yes,1
-65,Dummy,2,2,Yes,1
-66,Dummy,2,2,Yes,1
-67,Dummy,2,2,Yes,1
-68,Dummy,2,2,Yes,1
-69,Dummy,2,2,Yes,1
-70,Dummy,2,2,Yes,1
-71,Dummy,2,2,Yes,1
-72,Dummy,2,2,Yes,1
-73,Dummy,2,2,Yes,1
-74,Dummy,2,2,Yes,1
-75,Dummy,2,2,Yes,1
-76,Dummy,2,2,Yes,1
-77,Dummy,2,2,Yes,1
-78,Dummy,2,2,Yes,1
-79,Dummy,2,2,Yes,1
-=======
-1,Proj 16 - Craft Matrix_Human Powered Land Vehicles,5.0,4.0,Yes,Finance
-2,Proj S11 - NHB_Spatial Autonomy,20.0,10.0,No,Finance
-3,Proj S16 - STEE_Floatsam,8.0,5.0,Yes,Finance
-4,Proj 12 - BCA_3D printed components,3.0,2.0,Yes,Finance
-5,Proj 54 - Samsung_REFARDEN,2.0,2.5,Yes,Finance
-6,Proj S17 - Sunflower_Nursery,5.0,5.0,Yes,Finance
-7,Proj S02 - Bandwagon_Music Royalty,3.0,3.0,Yes,Finance
-8,Proj 30 - MND_Minimizing Bird Nuisance,3.0,3.0,Yes,Finance
-9,Proj 09 - BCA_Mixed Mode Ventilation,2.0,2.0,Yes,Finance
-10,Proj 34 - My Nonna_Project CARE,2.0,2.0,Yes,Finance
-11,Proj S07 - Hope_Legged Robotic ,3.5,3.5,Yes,Finance
-12,Proj 69 - WHC_Public Wheelchair Management,3.5,2.0,Yes,Finance
-13,Proj 55 - Samsung_Shooshoe,3.0,3.0,Yes,Finance
-14,Proj S03 - Certis_Security  Robot,3.0,3.0,Yes,Finance
-15,Proj S15 - Flexi Systems_Recycling,3.0,2.0,Yes,Finance
-16,Proj S08-HOPE_Kommunal,3.2,2.0,Yes,Finance
-17,Proj S04-DSO_Counter-Terrorist Bot,3.0,3.0,Yes,Finance
-18,Proj E03 - BiFrost,3.0,3.0,Yes,Finance
-19,Proj S13 - Panasonic_P-Cube,2.0,2.0,Yes,Finance
-20,Proj 35 - NNI Chinese Predictive,2.0,2.0,Yes,Finance
-21,Proj 24 - Infineon_Chatbot Packing Assistant,2.0,2.0,Yes,Finance
-22,Proj 11 - BCA_Reengineering Road Construction,3.5,2.5,Yes,Finance
-23,Proj 59 - SERI_Predictive Data Analytics,2.0,2.0,Yes,Finance
-24,Proj 01 - Accenture_Digital Consultant,2.0,2.0,Yes,Finance
-25,Proj E01 - Myx Brewery,2.0,2.0,Yes,Finance
-26,Proj 07 - Bev Eat_F&B ordering & donated meal claims,2.0,2.0,Yes,Finance
-27,Proj 32 - MSF_Refurbishment of ROMM,2.0,2.0,Yes,Finance
-28,Proj S09 - Jublia_Sparse Datasets,2.0,2.0,Yes,Finance
-29,Proj 43-PA_Future of Service Delivery,5.0,4.0,Yes,Finance
-30,Proj 17 - DBS_Future of Banking Branch Design,3.0,2.0,Yes,Finance
-31,Proj 45 - PICO_Musical Engineering Installation,3.5,3.5,Yes,Finance
-32,Proj 50 - Queensway Sec Sch_Design for Reading,4.0,4.0,Yes,Finance
-33,Proj 10 - BCA_Net Zero Energy Buildings,5.0,4.0,Yes,Finance
->>>>>>> d7ee7d9609c4ac6d1b38c79d35377b0acbda051b
+1,Dummy1,2,2,Yes,Finance
+2,Dummy2,2,2,Yes,Finance
+3,Dummy3,2,2,Yes,Finance
+4,Dummy4,2,2,Yes,Finance
+5,Dummy5,2,2,Yes,Finance
+6,Dummy6,2,2,Yes,Finance
+7,Dummy7,2,2,Yes,Finance
+8,Dummy8,2,2,Yes,Finance
+9,Dummy9,2,2,Yes,Finance
+10,Dummy10,2,2,Yes,Finance
+11,Dummy11,2,2,Yes,Finance
+12,Dummy12,2,2,Yes,Finance
+13,Dummy13,2,2,Yes,Finance
+14,Dummy14,2,2,Yes,Finance
+15,Dummy15,2,2,Yes,Finance
+16,Dummy16,2,2,Yes,Finance
+17,Dummy17,2,2,Yes,Finance
+18,Dummy18,2,2,Yes,Finance
+19,Dummy19,2,2,Yes,Finance
+20,Dummy20,2,2,Yes,Finance
+21,Dummy21,2,2,Yes,Finance
+22,Dummy22,2,2,Yes,Finance
+23,Dummy23,2,2,Yes,Finance
+24,Dummy24,2,2,Yes,Finance
+25,Dummy25,2,2,Yes,Finance
+26,Dummy26,2,2,Yes,Finance
+27,Dummy27,2,2,Yes,Finance
+28,Dummy28,2,2,Yes,Finance
+29,Dummy29,2,2,Yes,Finance
+30,Dummy30,2,2,Yes,Finance
+31,Dummy31,2,2,Yes,Finance
+32,Dummy32,2,2,Yes,Finance
+33,Dummy33,2,2,Yes,Finance
+34,Dummy34,2,2,Yes,Finance
+35,Dummy35,2,2,Yes,Finance
+36,Dummy36,2,2,Yes,Finance
+37,Dummy37,2,2,Yes,Finance
+38,Dummy38,2,2,Yes,Finance
+39,Dummy39,2,2,Yes,Finance
+40,Dummy40,2,2,Yes,Finance
+41,Dummy41,2,2,Yes,Finance
+42,Dummy42,2,2,Yes,Finance
+43,Dummy43,2,2,Yes,Finance
+44,Dummy44,2,2,Yes,Finance
+45,Dummy45,2,2,Yes,Finance
+46,Dummy46,2,2,Yes,Finance
+47,Dummy47,2,2,Yes,Finance
+48,Dummy48,2,2,Yes,Finance
+49,Dummy49,2,2,Yes,Finance
+50,Dummy50,2,2,Yes,Finance
+51,Dummy51,2,2,Yes,Finance
+52,Dummy52,2,2,Yes,Finance
+53,Dummy53,2,2,Yes,Finance
+54,Dummy54,2,2,Yes,Finance
+55,Dummy55,2,2,Yes,Finance
+56,Dummy56,2,2,Yes,Finance
+57,Dummy57,2,2,Yes,Finance
+58,Dummy58,2,2,Yes,Finance
+59,Dummy59,2,2,Yes,Finance
+60,Dummy60,2,2,Yes,Finance
+61,Dummy61,2,2,Yes,Finance
+62,Dummy62,2,2,Yes,Finance
+63,Dummy63,2,2,Yes,Finance
+64,Dummy64,2,2,Yes,Finance

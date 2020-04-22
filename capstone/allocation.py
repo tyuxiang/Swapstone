@@ -51,6 +51,7 @@ class Group:
                 return True
             else:       
                 return False
+
         elif self.shape == "vertical":
             if(self.point[1]+booth.length_pixel <=self.end[1] and booth.width <=4):
                 booth.rotation = 0
@@ -62,6 +63,7 @@ class Group:
                 return True
             else:
                 return False
+                
         elif self.shape == "slanted":
             theta = 90 - self.angle
             x =booth.length_pixel*Decimal(math.sin(theta))
@@ -147,7 +149,7 @@ def allocate(booths):
     group_count =0
     group_full = 0
     while (overall_booth_count < len(booths)):
-        print("allocating booths")
+        # print("allocating booths")
         if(booth_count[industry_count]>=0):
             
             booth = booths_byindustry[industry_count][booth_count[industry_count]]

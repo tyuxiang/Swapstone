@@ -306,22 +306,22 @@ class FunctionalityTests(StaticLiveServerTestCase):
         time.sleep(1)
         x_input.send_keys(x)
 
-    # def test_zoom(self):
-    #     map_layout = self.selenium.find_element_by_xpath('//*[@id="map-layout"]')
-    #     actions = ActionChains(self.selenium)
-    #     actions.move_to_element(map_layout)
-    #     actions.double_click()
-    #     actions.perform()
-    #     scale = map_layout.get_attribute("transform").split(' ')[1][6:-1]
-    #     self.assertEqual(scale, '1')
-    #     self.selenium.find_element_by_xpath('//*[@id="zoom-button"]').click()
-    #     actions.move_to_element(map_layout)
-    #     actions.double_click()
-    #     actions.perform()
-    #     scale = map_layout.get_attribute("transform").split(' ')[1][6:-1]
-    #     self.assertNotEqual(scale, '1')
+    def test_zoom(self):
+        map_layout = self.selenium.find_element_by_xpath('//*[@id="map-layout"]')
+        actions = ActionChains(self.selenium)
+        actions.move_to_element(map_layout)
+        actions.double_click()
+        actions.perform()
+        scale = map_layout.get_attribute("transform").split(' ')[1][6:-1]
+        self.assertEqual(scale, '1')
+        self.selenium.find_element_by_xpath('//*[@id="zoom-button"]').click()
+        actions.move_to_element(map_layout)
+        actions.double_click()
+        actions.perform()
+        scale = map_layout.get_attribute("transform").split(' ')[1][6:-1]
+        self.assertNotEqual(scale, '1')
         
-    #     print("test_zoom test done!")
+        print("test_zoom test done!")
 
 class CSV_Tests(StaticLiveServerTestCase):
 

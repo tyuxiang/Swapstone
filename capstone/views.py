@@ -70,7 +70,9 @@ def csv(request):
 		myfile = request.FILES['input']
 		fs = FileSystemStorage()
 		filename = fs.save("data.xlsx", myfile)
-		load_csv_data(filename,request)
+		display_name = myfile.name
+		print(display_name)
+		load_csv_data(filename,display_name,request)
 		return redirect('/')
 	return render(request, 'capstone/csv.html')
 

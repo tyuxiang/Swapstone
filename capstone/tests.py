@@ -84,6 +84,7 @@ class MySeleniumTests(StaticLiveServerTestCase):
         print("Wrong_username test done!...")
         
         
+    # tests both login and loading the csv file
     def test_2login(self):
         print("Testing test_login...")
         self.setUpClass()
@@ -136,13 +137,13 @@ class MySeleniumTests(StaticLiveServerTestCase):
         print("test_login test done!")
 
 
-    # def test_3uploadcsv(self):
+    def test_3uploadcsv(self):
         
-    #     self.selenium.find_element_by_xpath('/html/body/div/div/nav[1]/div/ul[1]/li[2]/a').click()
-    #     self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/input[2]').click()
-    #     self.selenium.send_keys('data.xlsx')
+        self.selenium.find_element_by_xpath('/html/body/div/div/nav[1]/div/ul[1]/li[2]/a').click()
+        self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/input[2]').click()
+        self.selenium.send_keys('data.xlsx')
 
-    #     print("test_uploadcsv test done!...")
+        print("test_uploadcsv test done!...")
 
     def test_drag(self):
         print("Testing drag...")
@@ -234,3 +235,49 @@ class MySeleniumTests(StaticLiveServerTestCase):
     #     self.assertNotEqual(scale, '1')
         
     #     print("test_zoom test done!")
+
+class CSV_Tests(StaticLiveServerTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        print("Setting Up...")
+        super().setUpClass()
+        cls.selenium = WebDriver()
+        cls.selenium.implicitly_wait(10)
+        cls.selenium.get('%s%s' % (cls.live_server_url, '/'))
+        
+        # Click on the create account button
+        cls.selenium.find_element_by_xpath("/html/body/div/form/div[4]/a").click()
+        
+        # Key in username, first password and key in the password agn
+        cls.selenium.find_element_by_name("username").send_keys(username)
+        cls.selenium.find_element_by_name("first_password").send_keys(password)
+        cls.selenium.find_element_by_name("password").send_keys(password)
+
+        # Click on the create account button and go back to login page
+        cls.selenium.find_element_by_xpath("/html/body/div/form/div[1]/button").click()
+        cls.selenium.find_element_by_xpath("/html/body/div/form/div[2]/a").click()
+
+        # Login
+        cls.selenium.find_element_by_name("username").send_keys(username)
+        cls.selenium.find_element_by_name("password").send_keys(password)
+        cls.selenium.find_element_by_xpath("/html/body/div/form/div[2]/button").click()
+
+        time.sleep(2)
+
+        print("Setting Up Done...")
+
+    def test_normal_csv(self):
+        print("Testing uploading of normal csv")
+        # booth_test = self.selenium.find_element_by_xpath('//*[@id="booth-id-1"]')
+        self.selenium.find_element_by_xpath("/html/body/div/div/nav[1]/div/ul[1]/li[2]/a").click()
+        time.sleep(3)
+        # self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/input[2]').click()
+        self.selenium.find_element_by_name('input').send_keys("C:\\Users\\Tan Yu Xiang\\Desktop\\SUTD\\Year 2\\Term 5\\Elements of Software Construction\\ESC Project\\Swapstone\\Excel Testing\\BlackBoard Testing\\2by2.xlsx")
+        time.sleep(2)    
+        self.selenium.find_element_by_xpath('/html/body/div/div/main/div/div/form/button').click()
+        time.sleep(2)    
+        self.selenium.find_element_by_xpath('/html/body/div/div/nav[2]/div/form/button').click()
+        time.sleep(10)
+        
+

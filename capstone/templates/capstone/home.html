@@ -695,6 +695,9 @@
     }
     var ref_id = map_data[0].curr_map_ref - 1
     var selected_map = document.getElementById("map-item-" + map_data[ref_id].name)
+    var empty_name = false
+    var empty_size = false
+    var empty_industry = false
     selected_map.className += " active";
 
     if(data.length==0){
@@ -702,6 +705,15 @@
     }
 
     for (var i = 0; i < data.length; i++){
+        if(data[i].project_name == ""){
+          empty_name=true
+        }
+        if(data[i].length == "" || data[i].width == ""){
+          empty_size=true
+        }
+        if(data[i].industry == ""){
+          empty_industry=true
+        }
       // if (!checkValidXY(i)){
         // $("#booth-container-id-" + data[i].id).hide()
         // $("#booth-text-id-" + data[i].id).hide()
@@ -763,6 +775,19 @@
         $('#booth-item-container-'+ data[i].project_id).hide();
         $('#booth-item-'+ data[i].project_id).hide();
       }
+    }
+
+    if(empty_name){
+      alert("there is an empty name in the excel sheet please double check")
+    }
+    if(empty_size){
+      alert("there is an incomplete definition for size in the excel sheet please double check")
+    }
+    {% for message in messages %}
+      alert("{{message}}")
+    {%endfor%}
+    if(empty_industry){
+      alert("there is an empty industry in the excel sheet please double check")
     }
 
     /*

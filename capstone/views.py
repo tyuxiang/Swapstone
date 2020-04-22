@@ -72,7 +72,9 @@ def csv(request):
 		filename = fs.save("data.xlsx", myfile)
 		display_name = myfile.name
 		print(display_name)
-		load_csv_data(filename,display_name,request)
+		msg = load_csv_data(filename,display_name,request)
+		if msg=="no_size":
+			messages.info(request, 'there is a booth without a size in this excel sheet')
 		return redirect('/')
 	return render(request, 'capstone/csv.html')
 

@@ -348,6 +348,54 @@ class CSV_Tests(StaticLiveServerTestCase):
         numOfBooths = len(allBooths)
         self.assertEqual(numOfBooths,999)
 
+    def test_1booth_missingName_csv(self):
+        time.sleep(2)
+        print("Testing uploading of correct csv with 1 booth")
+        file = "2by2_1_missingName.xlsx"
+        self.selenium.refresh()
+        self.create_user()
+        self.login()
+        self.upload_csv(file)
+        try:
+            WebDriverWait(self.selenium, 3).until(EC.alert_is_present(),
+                                   'Timed out waiting for PA creation ' +
+                                   'confirmation popup to appear.')
+            self.selenium.switch_to.alert.accept()
+        except TimeoutException:
+            self.fail("Alert did not show even though excel file has a missing name")
+
+    def test_1booth_missingSize_csv(self):
+        time.sleep(2)
+        print("Testing uploading of correct csv with 1 booth")
+        file = "2by2_1_emptyLength.xlsx"
+        self.selenium.refresh()
+        self.create_user()
+        self.login()
+        self.upload_csv(file)
+        try:
+            WebDriverWait(self.selenium, 3).until(EC.alert_is_present(),
+                                   'Timed out waiting for PA creation ' +
+                                   'confirmation popup to appear.')
+            self.selenium.switch_to.alert.accept()
+        except TimeoutException:
+            self.fail("Alert did not show even though excel file has a missing size")
+
+    def test_1booth_missingIndustry_csv(self):
+        time.sleep(2)
+        print("Testing uploading of correct csv with 1 booth")
+        file = "2by2_1_emptyIndustry.xlsx"
+        self.selenium.refresh()
+        self.create_user()
+        self.login()
+        self.upload_csv(file)
+        try:
+            WebDriverWait(self.selenium, 3).until(EC.alert_is_present(),
+                                   'Timed out waiting for PA creation ' +
+                                   'confirmation popup to appear.')
+            self.selenium.switch_to.alert.accept()
+        except TimeoutException:
+            self.fail("Alert did not show even though excel file has a missing industry")
+
     # @classmethod
     # def tearDownClass(cls):
     #     cls.selenium.quit()

@@ -22,6 +22,8 @@ def load_csv_data(file_name,display_name,request):
     curr_map.curr_map_ref = map.id
     curr_map.save()
 
+    msg = ""
+
     with open("./data.csv") as csvfile:
             reader = csv.DictReader(csvfile)
             print("Data loaded successfully")
@@ -31,6 +33,9 @@ def load_csv_data(file_name,display_name,request):
                 booth.project_name = row['Project Name']
                 booth.length = row['Length'] 
                 booth.width = row['Width']
+                if booth.length=="" or booth.width=="":
+                    msg = "no_size"
+                    continue
                 booth.length_pixel = float(booth.length)*13.397
                 booth.width_pixel = float(booth.width)*13.397
                 booth.area = float(booth.length)*float(booth.width)
@@ -46,5 +51,5 @@ def load_csv_data(file_name,display_name,request):
                 curr_map_booth.saved_map = curr_map
                 curr_map_booth.save()
                 
-    return map
+    return msg
             

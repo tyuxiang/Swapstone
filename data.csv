@@ -1,140 +1,65 @@
-<<<<<<< HEAD
-
-=======
 Project ID,Project Name,Length,Width,In Campus Centre?,Industry
-<<<<<<< HEAD
 1,Dummy1,2,2,Yes,Finance
-2,Dummy2,3,3,Yes,Finance
-3,Dummy3,4,4,Yes,Finance
-4,Dummy4,2,3,Yes,Finance
-5,Dummy5,3,2,Yes,Finance
+2,Dummy2,2,2,Yes,Finance
+3,Dummy3,2,2,Yes,Finance
+4,Dummy4,2,2,Yes,Finance
+5,Dummy5,2,2,Yes,Finance
 6,Dummy6,2,2,Yes,Finance
-7,Dummy7,3,3,Yes,Finance
-8,Dummy8,4,4,Yes,Finance
-9,Dummy9,2,3,Yes,Finance
-10,Dummy10,3,2,Yes,Finance
+7,Dummy7,2,2,Yes,Finance
+8,Dummy8,2,2,Yes,Finance
+9,Dummy9,2,2,Yes,Finance
+10,Dummy10,2,2,Yes,Finance
 11,Dummy11,2,2,Yes,Finance
-12,Dummy12,3,3,Yes,Finance
-13,Dummy13,4,4,Yes,Finance
-14,Dummy14,2,3,Yes,Finance
-15,Dummy15,3,2,Yes,Finance
-16,Dummy16,5,5,Yes,Finance
+12,Dummy12,2,2,Yes,Finance
+13,Dummy13,2,2,Yes,Finance
+14,Dummy14,2,2,Yes,Finance
+15,Dummy15,2,2,Yes,Finance
+16,Dummy16,2,2,Yes,Finance
 17,Dummy17,2,2,Yes,Finance
-18,Dummy18,3,3,Yes,Finance
-19,Dummy19,4,4,Yes,Finance
-20,Dummy20,2,3,Yes,Finance
-21,Dummy21,3,2,Yes,Finance
-22,Dummy22,5,5,Yes,Finance
+18,Dummy18,2,2,Yes,Finance
+19,Dummy19,2,2,Yes,Finance
+20,Dummy20,2,2,Yes,Finance
+21,Dummy21,2,2,Yes,Finance
+22,Dummy22,2,2,Yes,Finance
 23,Dummy23,2,2,Yes,Finance
-24,Dummy24,3,3,Yes,Finance
-25,Dummy25,4,4,Yes,Finance
-26,Dummy26,2,3,Yes,Finance
-27,Dummy27,3,2,Yes,Finance
+24,Dummy24,2,2,Yes,Finance
+25,Dummy25,2,2,Yes,Finance
+26,Dummy26,2,2,Yes,Finance
+27,Dummy27,2,2,Yes,Finance
 28,Dummy28,2,2,Yes,Finance
-29,Dummy29,3,3,Yes,Finance
-30,Dummy30,4,4,Yes,Finance
-31,Dummy31,2,3,Yes,Finance
-32,Dummy32,3,2,Yes,Finance
+29,Dummy29,2,2,Yes,Finance
+30,Dummy30,2,2,Yes,Finance
+31,Dummy31,2,2,Yes,Finance
+32,Dummy32,2,2,Yes,Finance
 33,Dummy33,2,2,Yes,Finance
-34,Dummy34,3,3,Yes,Finance
-35,Dummy35,4,4,Yes,Finance
-36,Dummy36,2,3,Yes,Finance
-37,Dummy37,3,2,Yes,Finance
+34,Dummy34,2,2,Yes,Finance
+35,Dummy35,2,2,Yes,Finance
+36,Dummy36,2,2,Yes,Finance
+37,Dummy37,2,2,Yes,Finance
 38,Dummy38,2,2,Yes,Finance
-39,Dummy39,3,3,Yes,Finance
-40,Dummy40,4,4,Yes,Finance
-41,Dummy41,2,3,Yes,Finance
-42,Dummy42,3,2,Yes,Finance
+39,Dummy39,2,2,Yes,Finance
+40,Dummy40,2,2,Yes,Finance
+41,Dummy41,2,2,Yes,Finance
+42,Dummy42,2,2,Yes,Finance
 43,Dummy43,2,2,Yes,Finance
-44,Dummy44,3,3,Yes,Finance
-45,Dummy45,4,4,Yes,Finance
-46,Dummy46,2,3,Yes,Finance
-47,Dummy47,3,2,Yes,Finance
+44,Dummy44,2,2,Yes,Finance
+45,Dummy45,2,2,Yes,Finance
+46,Dummy46,2,2,Yes,Finance
+47,Dummy47,2,2,Yes,Finance
 48,Dummy48,2,2,Yes,Finance
-49,Dummy49,3,3,Yes,Finance
-50,Dummy50,4,4,Yes,Finance
-51,Dummy51,2,3,Yes,Finance
-52,Dummy52,3,2,Yes,Finance
+49,Dummy49,2,2,Yes,Finance
+50,Dummy50,2,2,Yes,Finance
+51,Dummy51,2,2,Yes,Finance
+52,Dummy52,2,2,Yes,Finance
 53,Dummy53,2,2,Yes,Finance
-54,Dummy54,3,3,Yes,Finance
-55,Dummy55,4,4,Yes,Finance
-56,Dummy56,2,3,Yes,Finance
-57,Dummy57,3,2,Yes,Finance
+54,Dummy54,2,2,Yes,Finance
+55,Dummy55,2,2,Yes,Finance
+56,Dummy56,2,2,Yes,Finance
+57,Dummy57,2,2,Yes,Finance
 58,Dummy58,2,2,Yes,Finance
-59,Dummy59,3,3,Yes,Finance
-60,Dummy60,4,4,Yes,Finance
-61,Dummy61,2,3,Yes,Finance
-62,Dummy62,3,2,Yes,Finance
-63,Dummy63,5,5,Yes,Finance
-64,Dummy64,5,5,Yes,Finance
-=======
-1,Proj 16 - Craft Matrix_Human Powered Land Vehicles,5.0,4.0,Yes,Finance
-2,Proj S11 - NHB_Spatial Autonomy,20.0,10.0,No,Finance
-3,Proj S16 - STEE_Floatsam,8.0,5.0,Yes,Finance
-4,Proj 12 - BCA_3D printed components,3.0,2.0,Yes,Finance
-5,Proj 54 - Samsung_REFARDEN,2.0,2.5,Yes,Finance
-6,Proj S17 - Sunflower_Nursery,5.0,5.0,Yes,Finance
-7,Proj S02 - Bandwagon_Music Royalty,3.0,3.0,Yes,Finance
-8,Proj 30 - MND_Minimizing Bird Nuisance,3.0,3.0,Yes,Finance
-9,Proj 09 - BCA_Mixed Mode Ventilation,2.0,2.0,Yes,Finance
-10,Proj 34 - My Nonna_Project CARE,2.0,2.0,Yes,Finance
-11,Proj S07 - Hope_Legged Robotic ,3.5,3.5,Yes,Finance
-12,Proj 69 - WHC_Public Wheelchair Management,3.5,2.0,Yes,Finance
-13,Proj 55 - Samsung_Shooshoe,3.0,3.0,Yes,Finance
-14,Proj S03 - Certis_Security  Robot,3.0,3.0,Yes,Finance
-15,Proj S15 - Flexi Systems_Recycling,3.0,2.0,Yes,Finance
-16,Proj S08-HOPE_Kommunal,3.2,2.0,Yes,Finance
-17,Proj S04-DSO_Counter-Terrorist Bot,3.0,3.0,Yes,Finance
-18,Proj E03 - BiFrost,3.0,3.0,Yes,Finance
-19,Proj S13 - Panasonic_P-Cube,2.0,2.0,Yes,Finance
-20,Proj 35 - NNI Chinese Predictive,2.0,2.0,Yes,Finance
-21,Proj 24 - Infineon_Chatbot Packing Assistant,2.0,2.0,Yes,Finance
-22,Proj 11 - BCA_Reengineering Road Construction,3.5,2.5,Yes,Finance
-23,Proj 59 - SERI_Predictive Data Analytics,2.0,2.0,Yes,Finance
-24,Proj 01 - Accenture_Digital Consultant,2.0,2.0,Yes,Finance
-25,Proj E01 - Myx Brewery,2.0,2.0,Yes,Finance
-26,Proj 07 - Bev Eat_F&B ordering & donated meal claims,2.0,2.0,Yes,Finance
-27,Proj 32 - MSF_Refurbishment of ROMM,2.0,2.0,Yes,Finance
-28,Proj S09 - Jublia_Sparse Datasets,2.0,2.0,Yes,Finance
-29,Proj 43-PA_Future of Service Delivery,5.0,4.0,Yes,Finance
-30,Proj 17 - DBS_Future of Banking Branch Design,3.0,2.0,Yes,Finance
-31,Proj 45 - PICO_Musical Engineering Installation,3.5,3.5,Yes,Finance
-32,Proj 50 - Queensway Sec Sch_Design for Reading,4.0,4.0,Yes,Finance
-33,Proj 10 - BCA_Net Zero Energy Buildings,5.0,4.0,Yes,Finance
-34, Proj 13 - CGH_Redesign Ward 14,3.5,3.0,Yes,Finance
-35,Proj 36 - NNI_Exoskeleton,5.0,5.0,No,Finance
-36,Proj S01 - Arup_Empowering spaces,3.0,3.0,Yes,Banking
-37,Proj 31 - MSF_Immersive Rehabilitative Learning,2.0,2.0,Yes,Banking
-38,Proj 46 - PICO_Creative Data Visualisation,10.0,10.0,Yes,Banking
-39,Proj S18-V-key_Blockchain,2.0,2.0,Yes,Banking
-40,Proj 44 - Philips_Analytics for Signify Managed Data,2.0,2.0,Yes,Banking
-41,Proj 21 - FinC_MoneyGYM Mobile App,2.0,2.0,Yes,Banking
-42,Proj P47 - P&G_Combing,2.0,2.0,Yes,Banking
-43,Proj E02 - Valte,2.5,2.5,Yes,Banking
-44,Proj 15 - Citibank_Redesign Commercial Banking,3.0,2.0,Yes,Banking
-45,Proj E05 - IOT,2.5,2.5,Yes,Banking
-46,Proj S12 - Nvidia _AIRA,2.0,2.0,Yes,Banking
-47,Proj 65 - Tata Comms_Cloud based Security Services,2.0,2.0,Yes,Banking
-48,Proj 67 - UOB_Recognition of Information,2.0,2.0,Yes,Banking
-49,Proj S10-NDR_Biopsy Needle,2.0,2.0,Yes,Banking
-50,Proj 62 - ST Enrg Electronics_Coworking Space Management,2.0,2.0,Yes,Banking
-51,Proj 53 - Rolls Royce_Ergonomic and Compact Battery System,2.0,2.0,Yes,EPD
-52,Proj 40 - OCBC_Powering youth passions with FRANK,2.0,2.0,Yes,EPD
-53,Proj 37 - NPB_Non-destructive geometric measurement of tree parts,3.0,3.0,Yes,EPD
-54,Proj F03 - Alpha Ori_Ship Cargo Optimization,2.0,2.0,Yes,EPD
-55,Proj E04 - Fantasy,2.0,2.0,Yes,EPD
-56,Proj 57 - SBS Transit_Predictive Maintenance,2.0,2.0,Yes,EPD
-57,Proj S05 - Flotech_Tagging,3.0,2.0,Yes,EPD
-58,Proj 02 - Alpha Ori_AI Application for Maritime Industry,2.0,2.0,Yes,EPD
-59,Proj 66 - Tjombol_Payment of Salary,2.0,2.0,Yes,EPD
-60,Proj 61 - ST Enrg Electronics_Effective UX,2.0,2.0,Yes,EPD
-61,Proj 05 - Arup_Acoustic Furniture,3.5,3.5,Yes,EPD
-62,Proj S14 - Performance_SHADOW,5.0,4.0,Yes,EPD
-63,Proj 18 - DPA_Bridging the Dichotomy of PPVC,3.0,2.0,Yes,EPD
-64,Proj 41 - One Kind House_Window Farm,2.0,2.0,Yes,EPD
-65,Proj S06 - GRAB_Food Image ,2.0,2.0,Yes,EPD
-66,Proj 23 - GovTech_AI Trained Robotic Arm,4.0,3.0,Yes,EPD
-67,Proj 26 - Jurong Port _ Anomaly detection,2.0,2.0,Yes,EPD
-68,Proj 68 - WHC_Augmenting Wayfinding,5.0,5.0,Yes,EPD
->>>>>>> 6fabe1813e83fab66df3c7b1ff860e71c9dc4804
->>>>>>> 7548e21e95d9e1db196e545e4ccf2601c21a2c40
+59,Dummy59,2,2,Yes,Finance
+60,Dummy60,2,2,Yes,Finance
+61,Dummy61,2,2,Yes,Finance
+62,Dummy62,2,2,Yes,Finance
+63,Dummy63,2,2,Yes,Finance
+64,Dummy64,2,2,Yes,Finance

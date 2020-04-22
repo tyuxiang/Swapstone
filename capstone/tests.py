@@ -318,13 +318,19 @@ class CSV_Tests(StaticLiveServerTestCase):
         time.sleep(2)
         print("Testing uploading of correct csv with 1 booth")
         file = "2by2_1.xlsx"
-        self.selenium.refresh()
-        self.create_user()
-        self.login()
-        self.upload_csv(file)
         allBooths = self.selenium.find_elements_by_class_name("booth-link")
         numOfBooths = len(allBooths)
         self.assertEqual(numOfBooths,1)
+
+    # def test_oversized_csv(self):
+    #     print("Testing uploading of oversized csv")
+    #     file = "Oversized.xlsx"
+    #     self.selenium.refresh()
+    #     self.create_user()
+    #     self.login()
+    #     self.upload_csv(file)
+    #     try: self.selenium.find_element_by_id("map-item-Oversized.xlsx")
+    #     except NoSuchElementException: self.fail("uploaded map cannot be found")
 
     def test_999booth_csv(self):
         time.sleep(2)

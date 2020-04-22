@@ -94,7 +94,7 @@
           <li class="nav-item">
             <a class="nav-link" id="load_csv" href="{% url 'csv'%}">
               <span data-feather="file"></span>
-              Load CSV File
+              Upload Excel File
             </a>
           </li>
         </ul>
@@ -247,7 +247,7 @@
   // const selectedText = ["#selected-booth-name", "#selected-booth-actual-area", "#selected-booth-project-name", 
   //                       "#selected-project-id", "#selected-booth-industry"]
 
-  // FIX
+
   function setSelectedBoothInformation(d){
       $("#selected-booth-name").text("Selected Booth: " + d.project_name);
       $("#input-x").val(Math.round(d.position_x));
@@ -342,7 +342,7 @@
               .select("#allocation-container")
               .append("svg")
               .attr("id", "allocation")
-              .attr("width", MAX_WIDTH ) //account the padding total
+              .attr("width", MAX_WIDTH + 30 ) //account the padding total
               .attr("height", MAX_HEIGHT )
               ;
 
@@ -442,10 +442,14 @@
 
 
   $("#input-x").keyup(function(){
-    var value = $(this).val();
+    var value = parseFloat($(this).val());
     svg.select("#booth-id-" + curBoothID)
         .attr("x", function(d){
-          d.position_x = parseFloat(value);
+          if (isNaN(value) || value == ""){
+              $("#input-x").val(Math.round(d.position_x))
+              alert("Please input a number")
+          }
+          d.position_x = value;
           return d.position_x;
         });
     svg.select("#booth-text-id-" + curBoothID)
@@ -458,10 +462,14 @@
       Allows user to change the booth's y-position by manually keying the value.
   */
   $("#input-y").keyup(function(){
-    var value = $(this).val();
+    var value = parseFloat($(this).val());
     svg.select("#booth-id-" + curBoothID)
         .attr("y", function(d){
-          d.position_y = parseFloat(value);
+          if (isNaN(value) || value == ""){
+              $("#input-y").val(Math.round(d.position_y))
+              alert("Please input a number")
+          }
+          d.position_y = value;
           return d.position_y;
         });
     svg.select("#booth-text-id-" + curBoothID)
@@ -474,10 +482,14 @@
       Allows user to change the booth's length by manually keying the value.
   */
   $("#input-length").keyup(function(){
-    var value = $(this).val();
+    var value = parseFloat($(this).val());
     svg.select("#booth-id-" + curBoothID)
         .attr("height", function(d){
-          d.length = parseFloat(value);
+          if (isNaN(value) || value == ""){
+              $("#input-length").val(Math.round(d.length))
+              alert("Please input a number")
+          }
+          d.length = value;
           d.length_pixel = d.length * mapRatio;
           return d.length_pixel;
         });
@@ -492,9 +504,13 @@
       Allows user to change the booth's width by manually keying the value.
   */
   $("#input-width").keyup(function(){
-    var value = $(this).val();
+    var value = parseFloat($(this).val());
     svg.select("#booth-id-" + curBoothID)
         .attr("width", function(d){
+          if (isNaN(value) || value == ""){
+              $("#input-width").val(Math.round(d.width))
+              alert("Please input a number")
+          }
           d.width = parseFloat(value);
           d.width_pixel = d.width * mapRatio;
           return d.width_pixel;

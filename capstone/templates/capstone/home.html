@@ -172,7 +172,8 @@
 </html>
 <script src="http://d3js.org/d3.v5.js"></script>
 <script>
-  // initialize constant
+
+  // Get the image from the backend
   var img = new Image();
   img.src = "{% static 'images/campuscentre-lvl1.jpg' %}"
 
@@ -183,16 +184,10 @@
   const ratioy = MAX_HEIGHT / 1000;
 
   const mapRatio = 13.397; //pixel / meter
-
-  //for zoom functionality
-  const MAX_TRANSLATE_X = MAX_WIDTH / 2;
-  const MIN_TRANSLATE_X = -MAX_TRANSLATE_X;
-  const MAX_TRANSLATE_Y = MAX_HEIGHT / 2;
-  const MIN_TRANSLATE_Y = -MAX_TRANSLATE_Y;
   
-
-
-  // Converting the data received from the backend (from string to json)
+  /*
+      Converting data received from the backend -- string and parsed the string to obtain JSON object to be used.
+  */
   const ALLDATA = JSON.parse("{{obj|escapejs}}");
   const BOOTHDATA = JSON.parse(ALLDATA.booths);
   const MAPDATA = JSON.parse(ALLDATA.maps);
@@ -284,7 +279,43 @@
     }
   }
 
-  // inititalizing the axis and scale
+  function calculateTranslation(deg, x, y){
+    // console.log(x, y)
+    // var h = Math.hypot(x, y)    
+    // var additional_deg = Math.atan2(y, x) * 180 / Math.PI;
+    // console.log(additional_deg)
+    // var total_deg = deg + additional_deg;
+
+    // var newX = Math.cos(total_deg * Math.PI / 180) * h
+    // var newY = Math.sin(total_deg * Math.PI / 180) * h
+    // console.log(newX, newY)
+
+    // var newh = Math.hypot((newX - x), (newY - y))
+    // console.log(newh)
+    // var new_deg = 90 - ((180 - deg) / 2)
+    // console.log(new_deg)
+
+    // var yTranslate = Math.cos(new_deg * Math.PI / 180) * newh
+    // var xTranslate = Math.sin(new_deg * Math.PI / 180) * newh 
+    // console.log(-xTranslate, -yTranslate)
+
+    // console.log((x - newX), (y - newY))
+
+    var newX = Math.cos(-deg * Math.PI / 180) * x +  (-Math.sin(-deg * Math.PI  / 180)) * y
+    var newY = Math.sin(-deg * Math.PI / 180) * x +  Math.cos(-deg * Math.PI  / 180) * y
+
+    console.log(newX, newY)
+    console.log(newX - x, newY- y)
+
+    // return "translate (" + (x - newX) + " " + (y - newY) + ")";
+    return "translate (" + (newX - x) + " " + (newY - y)  +")";
+  }
+
+  data[0].position_x = 500
+  data[0].position_y = 100
+  data[0].rotation = 40
+
+  // Initialize scale for SVG
   var xscale = d3.scaleLinear()
           .domain([-1, MAX_WIDTH])  // The domain is the complete set of values
           .range([0, MAX_WIDTH])    // The range is the set of resulting function
@@ -306,7 +337,7 @@
           // .ticks(40)
           ;
 
-  // create svg canvas
+  // Initialize svg canvas to contain all the booths, booth-name, map image.
   var svg = d3.select("#main")
               .select("#allocation-container")
               .append("svg")
@@ -325,7 +356,10 @@
       .attr("stroke", "none")
       ;
 
-  // include zoom and drag functionality
+  /*
+      Include zoom and drag functionality.
+      var zoom handles the zoom event when called, with translation range from [0, 0] to [MAX_WIDTH, MAX_HEIGHT]
+  */
   var zoom = d3.zoom()
       .scaleExtent([1, 2])
       .translateExtent([
@@ -338,7 +372,7 @@
           // gY.call(y_axis.scale(d3.event.transform.rescaleY(yscale)));
           image.attr("transform", d3.event.transform);
           booth.attr("transform", d3.event.transform);
-        } else {
+        // } else {
         }
       });
 
@@ -365,15 +399,11 @@
         }
       })
       .on("drag", function(d){
-        if(canDragBooth){
+        if(canDragBooth){       // Update the booth and the boooth's name position when dragged
           d3.select(this).raise()
           .attr("transform", function(d){
-            if (d.rotation > 0){
-              // return "translate (" + d.position_x + " " + d.position_y + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
-            } else {
-              // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
-            }
-
+            var translate = calculateTranslation(d.rotation, d.position_x, d.position_y);
+            return "rotate( " + d.rotation + ") " + translate;
           })
           .attr("x", function(d){
               d.position_x += d3.event.dx;
@@ -391,11 +421,8 @@
 
           svg.select("#booth-text-id-"+ d.project_id)
               .attr("transform", function(d){
-                if (d.rotation > 0){
-                  // return "translate (" + d.position_x + (d.width_pixel / 2) + " " + d.position_y + (d.length_pixel / 2) + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
-                } else {
-                  // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
-                }
+                var translate = calculateTranslation(d.rotation, d.position_x, d.position_y);
+                return "rotate( " + d.rotation + ") " + translate;
               })
               .attr("x", function(d){
                 return d.position_x + (d.width_pixel / 2);
@@ -410,38 +437,10 @@
         if(canDragBooth){
           curBoothID = d.project_id;
           firstSelectedSwap = curBoothID;
-
-          // var stateStartPointer;
-          // var stateCurrentPointer = 0;
-          // var changeLimitIndex;
-
-          // console.log(stateStartPointer) -- undefined
-          
-
-          //POST TO DATABASE
-          // var tobeSent = $.param(data);
-          // var jsonString = JSON.stringify(data);
-          // // console.log(jsonString)
-          // // console.log(data);
-          // // console.log(cookies.crsftoken);
-          // // $.ajax({
-          // //     url: '/accounts/change_allocation',
-          // //     type: 'POST',
-          // //     contentType: 'application/json; charset=utf-8',
-          // //     data: data,
-          // //     dataType: 'text',
-          // // });
-
-          // $.post('accounts/change_allocation', jsonString) ;
-          // const xhr = new XMLHttpRequest();
-
-          // xhr.open("POST", "accounts/change_allocation");
-          // xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-          // xhr.send("data");
         }
       });
 
-  // change booth attributes by keying the value
+
   $("#input-x").keyup(function(){
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
@@ -455,6 +454,9 @@
         });
   }).keyup();
 
+  /*
+      Allows user to change the booth's y-position by manually keying the value.
+  */
   $("#input-y").keyup(function(){
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
@@ -468,6 +470,9 @@
         });
   }).keyup();
 
+  /*
+      Allows user to change the booth's length by manually keying the value.
+  */
   $("#input-length").keyup(function(){
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
@@ -483,6 +488,9 @@
     // $('#selected-booth-actual-area').text(data[curBoothID].width * data[curBoothID].length);
   }).keyup();
 
+  /*
+      Allows user to change the booth's width by manually keying the value.
+  */
   $("#input-width").keyup(function(){
     var value = $(this).val();
     svg.select("#booth-id-" + curBoothID)
@@ -498,6 +506,9 @@
     // $('#selected-booth-actual-area').text(data[curBoothID].width * data[curBoothID].length);
   }).keyup();
 
+  /*
+      Allows user to remove the booth, and placed it to unallocated-booth list
+  */
   $("#remove-button").click(function(){
     booth.select('#booth-id-' + curBoothID)
       .attr("visibility", "hidden");  
@@ -510,18 +521,18 @@
     console.log("HIHIHIHIHI")
   })
 
-  // image
+  // Add image to the SVG
   var image = svg.append('image')
                 .attr("id", "map-layout")
                 .attr("clip-path","url(#clip)")
                 .attr('x', 0)
                 .attr('y', 0)
                 .attr("href", "{% static 'images/campuscentre-lvl1.jpg' %}")
-                .attr("transform", "translate(15,15) scale(1)")
+                .attr("transform", "translate(0,0) scale(1)")
                 ;
 
 
-  // axis handler
+  // Call SVG axis
   var gX =  svg.append("g")
         .attr("id", "x-axis")
         .call(x_axis)
@@ -536,10 +547,13 @@
 
   $("#y-axis").hide()
 
+  /*
+      Create booths on the SVG
+  */
   var booth = svg.selectAll('.booth')
                 .data(data)
                 .enter()
-                .append("g")
+                .append("g")                                    // Group booth and the booth-name together
                 .attr("class", function(d){
                   return "booth-containers";
                 })
@@ -548,58 +562,43 @@
                 })
 
     booth.append("text")
-            .attr("class", "name")
-            .attr("id", function(d){
-              return "booth-text-id-" + d.project_id;
-            })
-            .attr('text-anchor', 'middle')
-            .style("font-size", function(){
-              return "11px";
-            })
-            .attr("x", function(d){
-              return d.position_x + (d.width_pixel / 2);
-            })
-            .attr("y", function(d){
-              return d.position_y + (d.length_pixel / 2);
-            })
-            .attr("transform", function(d){
-              if (d.rotation > 0){
-                // return "translate (" + d.position_x + " " + d.position_y  + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
-                return "translate (" + d.position_x  + " " + d.position_y + ") rotate(" + d.rotation + ")";
-              } else {
-                // return "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
-              }
-            })
-            .text(function(d){
-              return d.project_id;
-            })
-            .attr("visibility", function(d){
-              if (d.position_x < 0){
-                return "hidden"
-              }
-            })
-            ;        
-            
+          .attr("class", "name")
+          .attr("id", function(d){
+            return "booth-text-id-" + d.project_id;
+          })
+          .attr('text-anchor', 'middle')
+          .style("font-size", function(){
+            return "11px";
+          })
+          .attr("x", function(d){
+            return d.position_x + (d.width_pixel / 2);
+          })
+          .attr("y", function(d){
+            return d.position_y + (d.length_pixel / 2);
+          })
+          .attr("transform", function(d){                       
+            var translate = calculateTranslation(d.rotation, d.position_x, d.position_y);
+            return "rotate( " + d.rotation + ") " + translate;
+          })
+          .text(function(d){
+            return d.project_id;
+          })
+          .attr("visibility", function(d){
+            if (d.position_x < 0){
+              return "hidden"
+            }
+          })
+
     booth.append("rect")
           .attr("class", "booth")
           .attr("id", function(d){
             return 'booth-id-' + d.project_id;
           })
           .attr("x", function(d, i){
-            // if (d.rotation > 0){
-              return 0;
-            // }
-            // if(d.position_x > 0){
               return d.position_x;
-            // }
           })
           .attr("y", function(d){
-            // if (d.rotation > 0){
-              return 0;
-            // }
-            // if(d.position_y > 0){
               return d.position_y;
-            // }
           })
           .attr("height", function(d){
             return d.length_pixel;
@@ -609,12 +608,8 @@
           })
           .attr("clip-path","url(#clip)")
           .attr("transform", function(d){
-            // if (d.rotation > 0){
-              // return "translate (" + d.position_x  + " " + d.position_y  + ") rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")";
-              return "translate (" + d.position_x  + " " + d.position_y + ") rotate(" + d.rotation + ")";
-            // } else {
-              // return  "rotate(" + d.rotation + " " + (d.position_x  + d.width_pixel / 2) + " " + (d.position_y + d.length_pixel / 2) +")"
-            // }
+              var translate = calculateTranslation(d.rotation, d.position_x, d.position_y);
+              return "rotate( " + d.rotation + ") " + translate;
           })
           .attr("visibility", function(d){
             if (d.position_x < 0){
@@ -673,9 +668,10 @@
 
             
             setSelectedBoothInformation(d);
-          })
-          ;
+          });
+          
 
+         
     svg.call(zoom);
 
      // <li class="nav-item">
@@ -685,14 +681,14 @@
      //        </a>
      //      </li>
 
-     var form_allocate = document.getElementById("allocate_btn");
-      var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
-      var numberOfBooth = $("ul li:visible").length;
+    var form_allocate = document.getElementById("allocate_btn");
+    var numberOfBooth = document.getElementById("booth-list").getElementsByTagName("li").length;
+    var numberOfBooth = $("ul li:visible").length;
 
-      console.log(numberOfBooth);
-      if (numberOfBooth>=30){
-        form_allocate.className += " allocate-relative";
-      }
+    console.log(numberOfBooth);
+    if (numberOfBooth>=30){
+      form_allocate.className += " allocate-relative";
+    }
 
     for (var i=1; i < map_data.length; i++){
       var id = i+1
@@ -766,6 +762,9 @@
       }
     }
 
+    /*
+        Setting up tool handlers
+    */
     function turnOffOtherTools(){
       if(canDragBooth){
         $("#dragbooth-button").toggleClass("active");
@@ -806,8 +805,6 @@
       }
     }
 
-    // console.log(undoArray);
-
     function undoButtonHandler(){
 
       if (undoCount != 0 ){
@@ -845,7 +842,7 @@
     
       $.post('/accounts/change_allocation', jsonString) ;
     }
-//crystal I think u run the code on your  terminal, I dont think we can share the same localhost. 
+
     console.log(data);
     
     // document.onkeydown = checkKey;

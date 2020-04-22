@@ -306,6 +306,16 @@ class CSV_Tests(StaticLiveServerTestCase):
         self.upload_csv(file)
         try: self.selenium.find_element_by_id("map-item-Empty.xlsx")
         except NoSuchElementException: self.fail("uploaded map cannot be found")
+    
+    def test_oversize_csv(self):
+        print("Testing uploading of oversize csv")
+        file = "Oversize.xlsx"
+        self.selenium.refresh()
+        self.create_user()
+        self.login()
+        self.upload_csv(file)
+        try: self.selenium.find_element_by_id("map-item-Oversize.xlsx")
+        except NoSuchElementException: self.fail("uploaded map cannot be found")
 
     # def test_small_csv(self):
     #     print("Testing uploading of normal csv")

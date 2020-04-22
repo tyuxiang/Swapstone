@@ -23,26 +23,10 @@ class Group:
                 self.angle = math.degrees(math.atan((start[1]-end[1])/(start[0]-end[0])))
             else:
                 self.angle= math.degrees(math.atan((end[1]-start[1])/(end[0]-start[0])))
-        # elif shape =='circle':
-        #     self.point_angle = self.start_angle
-        #     self.point =[0,0]
-        #     if start_angle>=0 and start_angle<=90:
-        #         self.point[0] = self.centre[0] - self.radius*math.cos(self.start_angle)
-        #         self.point[1] = self.centre[1] - self.radius*math.sin(self.start_angle)
-        #     elif start_angle>90 and start_angle<=180:
-        #         self.point[0] = self.centre[0] + self.radius*math.cos(180-self.start_angle)
-        #         self.point[1] = self.centre[1] - self.radius*math.sin(180-self.start_angle)
-        #     elif start_angle>180 and start_angle<=270:
-        #         self.point[0] = self.centre[0] + self.radius*math.cos(self.start_angle)
-        #         self.point[1] = self.centre[1] + self.radius*math.sin(self.start_angle)
-        #     elif start_angle>270 and start_angle<=360:
-        #         self.point[0] = self.centre[0] + self.radius*math.cos(self.start_angle)
-        #         self.point[1] = self.centre[1] + self.radius*math.sin(self.start_angle)
 
 
     def add(self, booth):
         if self.shape == "horizontal":
-            # do we need to check for width?
             if(self.point[0]+booth.width_pixel <=self.end[0]) and booth.length <= self.max_height:
                 booth.position_x = self.point[0] 
                 booth.position_y = self.point[1]-booth.length_pixel
@@ -96,40 +80,8 @@ class Group:
                 else:
                     return False
 
-
-        # elif self.shape =="circle":
-        #     # do we need to check for width?
-        #     theta =2*math.asin((booth.length_pixel/self.radius)/2)
-        #     if(self.point_angle +theta <= self.end_angle):
-        #         booth.position_x = self.point[0]
-        #         booth.position_y = self.point[1]
-        #         self.point[0] = self.point[0] + booth.length_pixel*Decimal(math.cos((180-theta)/2))
-        #         self.point[1] = self.point[1] + booth.length_pixel*Decimal(math.sin((180-theta)/2))
-        #         booth.angle = 0
-        #         booth.save()
-        #         return True
-        #     else:
-        #         return False
-
-
-def swap(booth_1,booth_2):
-    x = booth_1.position_x
-    y = booth_1.position_y
-    rotation = booth_1.rotation
-    booth_1.position_x = booth_2.position_x
-    booth_1.position_y = booth_2.position_y
-    booth_1.rotation = booth_2.rotation
-    booth_2.position_x = x
-    booth_2.position_y = y
-    booth_2.rotation = rotation
-    booth_1.save()
-    booth_2.save()
-
-
-
-
 def allocate(booths):
-    print("allocate is called")
+    #defining the spaces
     space_1 = Group(shape="vertical",start = (85,120),end = (85,255),max_height=3)
     space_2 = Group(shape="horizontal",start = (130,100),end = (275,100),max_height=4)
     space_3 = Group(shape="vertical",start = (280,120),end = (280,255),max_height=3)
@@ -144,14 +96,15 @@ def allocate(booths):
     space_12 = Group(shape="slanted",downward_sloping = False,start = (500,1180),end = (720,960),max_height=6)
     groups = [space_1,space_2,space_3,space_4,space_5,space_6,space_7,space_8,space_9,space_10,space_11,space_12]
 
+
+    #finding out how many industries are there
     industries = []
     for booth in booths:
         if booth.industry not in industries:
             industries.append(booth.industry)
-    
-    # print("Starting allocation algorithm")
-    #booths = deepcopy(final_booths)
-    #booths.objects.order_by('-area','industry')
+
+    #sort booths by industry into booths_byindustry where each element is a list of booths in the same industry
+    #booths are also sorted by size for easy allocation
     booths_byindustry =[]
     booth_count = []
     booths = sorted(booths, key=lambda t: t.width)
@@ -164,8 +117,6 @@ def allocate(booths):
                 booth.save()
                 booth_temp.append(booth)
                 print(industry,booth.project_id)
-        
-        print(type(booth))
         booth_count.append(len(booth_temp)-1)
         booths_byindustry.append(booth_temp)
 
@@ -175,26 +126,26 @@ def allocate(booths):
     group_count =0
     group_full = 0
     while (overall_booth_count < len(booths)):
-        # print("allocating booths")
         if(booth_count[industry_count]>=0):
             
             booth = booths_byindustry[industry_count][booth_count[industry_count]]
             
             
-            #adds booth to a group, if group is full, move on to the next one
-            #if all groups are full, return
+            #adds booth to a group, if group is full/booth cannot fit, move on to the next one
             group_full = 0
             overall_booth_count+=1
             while not groups[group_count].add(booth):
                 group_full +=1
                 group_count = (group_count+1)%len(groups)
                 if group_full>=len(groups):
+                    #if all groups are full, booth cannot fit, move on to the next booth
                     if(overall_booth_count<len(booths)):
                         break
+                    #if all booths are done, finish the allocation
                     else:
                         return
 
-            #decrease the booth
+            #decrease the booth_count
             booth_count[industry_count]=booth_count[industry_count]-1
 
         #increment the industry

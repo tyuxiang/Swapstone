@@ -318,6 +318,10 @@ class CSV_Tests(StaticLiveServerTestCase):
         time.sleep(2)
         print("Testing uploading of correct csv with 1 booth")
         file = "2by2_1.xlsx"
+        self.selenium.refresh()
+        self.create_user()
+        self.login()
+        self.upload_csv(file)
         allBooths = self.selenium.find_elements_by_class_name("booth-link")
         numOfBooths = len(allBooths)
         self.assertEqual(numOfBooths,1)
